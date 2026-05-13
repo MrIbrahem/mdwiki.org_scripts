@@ -1,14 +1,5 @@
 <?php
-// find: ^(\$[^ ]+\s*=\s*)\$_REQUEST\[(['"][^'"]+['"])\]\s*\?\?
-// replace: $1$_GET[$2] ?? $_POST[$2] ??
 
-if (isset($_GET['test']) || isset($_COOKIE['test'])) {
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
-}
-
-//---
 // Output HTML structure
 echo <<<HTML
     <div class="card">
@@ -44,14 +35,8 @@ if (empty($start) || empty($GLOBALS['global_username'])) {
     // Define command
     echo "starting....";
 
-    $faf = "kubectl create job dup0 --output=json --image=busybox -- public_html/fix_duplicate.sh";
+    $faf = 'toolforge jobs run fixduplict --image python3.9 --command "python3 fix_duplicate.py save"';
 
-    // TODO: Load or validate the script path for fix_duplicate.sh
-    // and use the Kubernetes API client to create the job, for example:
-    // $job = $client->batchV1()->createNamespacedJob($namespace, $jobSpec);
-    // Handle errors and log responses accordingly.
-
-    // Output command if in test mode
     if (!empty($test)) {
         echo $faf;
     }
@@ -64,5 +49,3 @@ if (empty($start) || empty($GLOBALS['global_username'])) {
 echo <<<HTML
     </div>
 HTML;
-
-// Include footer
