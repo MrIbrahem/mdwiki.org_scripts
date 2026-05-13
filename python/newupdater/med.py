@@ -4,8 +4,8 @@ python3 I:/MD_TOOLS/mdwiki.toolforge.org/PYTHON_REPOS/pybot/src/newupdater/med.p
 """
 import sys
 
-from new_updater import work_on_text
 from mdapi import GetPageText, page_put
+from new_updater import work_on_text
 
 
 def get_new_text(title):

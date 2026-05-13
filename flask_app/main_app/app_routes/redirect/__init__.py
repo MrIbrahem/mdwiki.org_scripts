@@ -1,6 +1,4 @@
-"""
-
-"""
+""" """
 
 from __future__ import annotations
 
@@ -24,7 +22,7 @@ def redirect():
 
     result = None
     if request.method == "POST":
-        if (title or titlelist):
+        if title or titlelist:
             logger.info(f"redirect triggered: title={title}")
             # TODO: integrate red.py backend call directly
             if title:

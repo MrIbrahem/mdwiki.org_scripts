@@ -1,6 +1,4 @@
-"""
-
-"""
+""" """
 
 from __future__ import annotations
 
@@ -27,7 +25,7 @@ def import_history():
 
     result = None
     if request.method == "POST":
-        if (title or titlelist):
+        if title or titlelist:
             logger.info(f"import-history triggered: title={title}, from={from_}")
             # TODO: integrate imp.py backend call directly
             if title:
