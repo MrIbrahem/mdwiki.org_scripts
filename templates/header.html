@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<HTML lang=en dir=ltr data-bs-theme="light" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="robots" content="noindex">
+    <link rel="icon" href="/favicon.svg" sizes="any">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WikiProjectMed Tools</title>
+    <link rel='stylesheet' href='/Translation_Dashboard/css/styles.css'>
+    <link rel='stylesheet' href='/Translation_Dashboard/css/Responsive_Table.css'>
+    <link rel='stylesheet' href='/Translation_Dashboard/css/dashboard_new1.css'>
+    <link rel='stylesheet' href='/Translation_Dashboard/css/theme.css'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css'>
+    <link rel='stylesheet'
+        href='https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs5/1.13.1/dataTables.bootstrap5.css'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css'>
+    <link rel='stylesheet'
+        href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css'>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/datatables.net/2.1.1/jquery.dataTables.min.js'></script>
+    <script
+        src='https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs5/1.13.1/dataTables.bootstrap5.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js'></script>
+    <script src='/Translation_Dashboard/js/sorttable.js'></script>
+    <script src='/Translation_Dashboard/js/to.js'></script>
+    <script src='/Translation_Dashboard/js/theme.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/ace/1.42.0/ace.js'></script>
+    <script type="module" src="/Translation_Dashboard/js/color-modes.js"></script>
+    <style>
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="mb-3 border-bottom">
+        <nav id="mainnav" class="navbar navbar-expand-lg shadow">
+            <div class="container-fluid" id="navbardiv">
+                <a class="tool_title navbar-brand mb-0 h1" href="/index.php" style="color:#0d6efd;">
+                    WikiProjectMed Tools
+                </a>
+                <button class="navbar-toggler me_ms_by_dir" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                    <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav">
+                        <li class="nav-item col-4 col-lg-auto">
+                            <a class="nav-link py-2 px-0 px-lg-2" href="/Translation_Dashboard/index.php"
+                                target="_blank">
+                                <span class="navtitles">Translation Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item col-4 col-lg-auto">
+                            <a class="nav-link py-2 px-0 px-lg-2" href="/Translation_Dashboard/leaderboard.php"
+                                target="_blank">
+                                <span class="navtitles">Leaderboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item col-4 col-lg-auto">
+                            <a class="nav-link py-2 px-0 px-lg-2" href="/views">
+                                <span class="navtitles">PageViews</span>
+                            </a>
+                        </li>
+                        <li class="nav-item col-4 col-lg-auto">
+                            <a class="nav-link py-2 px-0 px-lg-2"
+                                href="https://github.com/MrIbrahem/mdwiki.toolforge.org" target="_blank">
+                                <span class="navtitles">Github</span>
+                            </a>
+                        </li>
+                        <li class="nav-item col-4 col-lg-auto">
+                            <span class="nav-link py-2 px-0 px-lg-2" id="load_time"></span>
+                        </li>
+                    </ul>
+                    <hr class="d-lg-none text-dark-subtle text-50">
+                    <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav ms-lg-auto">
+                        <li class="nav-item col-4 col-lg-auto">
+                            <a href="#" class="nav-link py-2 px-0 px-lg-2">
+                                <i class="fas fa-user fa-sm fa-fw mr-2"></i> <span class="navtitles">Mr. Ibrahem</span>
+                            </a>
+                        </li>
+                        <li class="nav-item col-4 col-lg-auto">
+                            <a class="nav-link py-2 px-0 px-lg-2" href="/auth/logout.php">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2"></i> <span
+                                    class="d-lg-none navtitles">Logout</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="d-flex ms-2">
+                    <button class="theme-toggle btn btn-link me-ms-auto" aria-label="Toggle theme">
+                        <i class="bi bi-moon-stars-fill"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>

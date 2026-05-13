@@ -1,0 +1,53 @@
+<!-- header.html -->
+<main id="body">
+	<!-- <div id="maindiv" class="container-fluid"> -->
+	<div id="maindiv" class="container">
+		<div class="card">
+			<div class="card-header aligncenter" style="font-weight:bold;">
+				<h3>Normalize references (mdwiki).</h3>
+			</div>
+			<div class="card-body">
+				<form action='fixref.php' method='POST'>
+
+					<div class='container'>
+						<div class='container'>
+							<div class='row'>
+								<div class='col-lg-12'>
+									<div class='form-group'>
+										<label for='find'>
+											<h4>All pages:</h4>
+										</label>
+										<div class='input-group mb-3'>
+											<div class='input-group-prepend'>
+												<span class='input-group-text'>Number of pages</span>
+											</div>
+											<input class='form-control' type='number' name='number' value=''
+												placeholder='5000' />
+										</div>
+									</div>
+								</div>
+								<div class='col-lg-12'>
+									<h3 class='aligncenter'>or</h3>
+								</div>
+								<div class='col-lg-12'>
+									<div class='form-group'>
+										<label for='titlelist'>
+											<h4>List of titles:</h4>
+										</label>
+										<textarea class='form-control' cols='60' rows='7' id='titlelist'
+											name='titlelist'></textarea>
+									</div>
+								</div>
+								<div class='col-lg-12'>
+									<h4 class='aligncenter'>
+										<input class='btn btn-outline-primary' type='submit' value='send'>
+									</h4>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div> <!-- <div id="maindiv" class="container"> -->
+</main>
+<!-- footer.html -->
