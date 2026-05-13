@@ -1,6 +1,6 @@
 /php/replace/find
 *.7z
 .pylintrc
-/php/tools/bots/sh
+/php/bots/sh
 **/old/**
 *.pyc

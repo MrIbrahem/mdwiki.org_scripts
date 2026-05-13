@@ -27,7 +27,7 @@
     - **If `titlelist` is populated:**
         - Writes list to `importlist.txt`
         - Builds command: `imp.py -file:path save`
-    - Executes via `do_py_sh()`
+    - Executes via `do_py()`
 
 ## Python: `python/imp.py`
 
@@ -46,12 +46,12 @@
 
 ### Mapping
 
-| PHP                       | Python CLI                  |
-| ------------------------- | --------------------------- |
-| `$_GET/POST['title']`     | `-page:urlencoded_title`    |
-| `$_GET/POST['from']`      | `-from:urlencoded_value`    |
-| `$_GET/POST['titlelist']` | `-file:importlist.txt`      |
-| `test=1`                  | `test` in `do_py_sh` params |
+| PHP                       | Python CLI               |
+| ------------------------- | ------------------------ |
+| `$_GET/POST['title']`     | `-page:urlencoded_title` |
+| `$_GET/POST['from']`      | `-from:urlencoded_value` |
+| `$_GET/POST['titlelist']` | `-file:importlist.txt`   |
+| `test=1`                  | `test` in `do_py` params |
 
 ---
 

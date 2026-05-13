@@ -1,8 +1,8 @@
 <?php
 
-include_once __DIR__ . '/bots/tfj.php';
+include_once __DIR__ . '/bots/python.php';
 
-use function BOTS\TFJ\do_py_sh;
+use function BOTS\Python\do_py;
 
 echo <<<HTML
     <div class="card">
@@ -72,7 +72,7 @@ function get_results($title)
 		'test' => $test
 	);
 	//---
-	$result = do_py_sh($params, 'fixred0');
+	$result = do_py($params, 'fixred0');
 	//---
 	return $result;
 }

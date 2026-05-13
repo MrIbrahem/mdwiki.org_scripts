@@ -20,7 +20,7 @@
         - Single line → `-title:escaped_title`
         - Multiple lines → writes to temp file, uses `-file:path`
     - **If `number` is populated:** → `allpages -number:N`
-    - Executes via `do_py_sh()`: `fixref/start.py command save`
+    - Executes via `do_py()`: `fixref/start.py command save`
 
 ## Python: `python/fixref/start.py`
 
@@ -40,12 +40,12 @@
 
 ### Mapping
 
-| PHP                                     | Python CLI                  |
-| --------------------------------------- | --------------------------- |
-| `$_GET/POST['titlelist']` (single line) | `-title:escaped_title`      |
-| `$_GET/POST['titlelist']` (multiple)    | `-file:temp_file_path`      |
-| `$_GET/POST['number']`                  | `allpages -number:N`        |
-| `test=1`                                | `test` in `do_py_sh` params |
+| PHP                                     | Python CLI               |
+| --------------------------------------- | ------------------------ |
+| `$_GET/POST['titlelist']` (single line) | `-title:escaped_title`   |
+| `$_GET/POST['titlelist']` (multiple)    | `-file:temp_file_path`   |
+| `$_GET/POST['number']`                  | `allpages -number:N`     |
+| `test=1`                                | `test` in `do_py` params |
 
 ---
 

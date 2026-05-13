@@ -21,7 +21,7 @@
     - **If `titlelist` is populated:**
         - Writes list to `redirectlist.txt`
         - Builds command: `red.py -file:path save`
-    - Executes via `do_py_sh()`
+    - Executes via `do_py()`
 
 ## Python: `python/red.py`
 
@@ -45,11 +45,11 @@
 
 ### Mapping
 
-| PHP                       | Python CLI                  |
-| ------------------------- | --------------------------- |
-| `$_GET/POST['title']`     | `-page2:urlencoded_title`   |
-| `$_GET/POST['titlelist']` | `-file:redirectlist.txt`    |
-| `test=1`                  | `test` in `do_py_sh` params |
+| PHP                       | Python CLI                |
+| ------------------------- | ------------------------- |
+| `$_GET/POST['title']`     | `-page2:urlencoded_title` |
+| `$_GET/POST['titlelist']` | `-file:redirectlist.txt`  |
+| `test=1`                  | `test` in `do_py` params  |
 
 ---
 

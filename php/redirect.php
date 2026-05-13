@@ -1,9 +1,9 @@
 <?php
 
-include_once __DIR__ . '/bots/tfj.php';
+include_once __DIR__ . '/bots/python.php';
 include_once __DIR__ . '/bots/file_bots.php';
 
-use function BOTS\TFJ\do_py_sh;
+use function BOTS\Python\do_py;
 use function BOTS\FILE_BOTS\dump_to_file;
 
 $test       = $_GET['test'] ?? $_POST['test'] ?? '';
@@ -80,7 +80,7 @@ function get_results($aargs)
         'test' => $test
     );
     //---
-    $result = do_py_sh($params, "redirect0");
+    $result = do_py($params, "redirect0");
     //---
     return $result;
 }

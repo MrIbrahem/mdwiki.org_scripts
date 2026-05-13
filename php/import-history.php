@@ -1,9 +1,9 @@
 <?php
 
-include_once __DIR__ . '/bots/tfj.php';
+include_once __DIR__ . '/bots/python.php';
 include_once __DIR__ . '/bots/file_bots.php';
 
-use function BOTS\TFJ\do_py_sh;
+use function BOTS\Python\do_py;
 use function BOTS\FILE_BOTS\dump_to_file;
 
 $ROOT_PATH = getenv("HOME") ?: 'I:/MD_TOOLS/MDWIKI_MAIN_REPO';
@@ -31,7 +31,7 @@ function get_results($aargs)
         'test' => $test
     );
     //---
-    $result = do_py_sh($params, "import0");
+    $result = do_py($params, "import0");
     //---
     return $result;
 }

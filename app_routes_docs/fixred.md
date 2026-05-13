@@ -16,12 +16,12 @@
 3. On submit with logged-in user:
     - Sanitizes title: replaces `+` and spaces with `_`, then `rawurlencode`
     - Builds command: `fixred.py -page2:title save`
-    - Executes via `do_py_sh()` (Toolforge job runner)
+    - Executes via `do_py()` (Toolforge job runner)
 4. Displays the result
 
 ### `get_results($title)` function
 
--   Calls `do_py_sh()` with params:
+-   Calls `do_py()` with params:
     ```
     dir="c9", localdir="c9", pyfile="pwb.py", other="fixred.py -page2:title save", test=test
     ```
