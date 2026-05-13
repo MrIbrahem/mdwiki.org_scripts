@@ -4,7 +4,7 @@ import functools
 import logging
 import os
 
-from newapi import AllAPIS
+from flask_app.main_app.newapi import AllAPIS
 
 logger = logging.getLogger(__name__)
 

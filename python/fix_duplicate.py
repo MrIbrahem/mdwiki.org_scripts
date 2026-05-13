@@ -11,7 +11,7 @@ import logging
 import os
 import sys
 
-from newapi import AllAPIS
+from flask_app.main_app.newapi import AllAPIS
 
 logger = logging.getLogger(__name__)
 
