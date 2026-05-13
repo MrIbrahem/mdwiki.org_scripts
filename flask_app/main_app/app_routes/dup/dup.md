@@ -1,59 +1,59 @@
-# تحليل: dup (إصلاح التحويلات المزدوجة)
+# Analysis: dup (Fix Duplicate Redirects)
 
 ## PHP: `php/dup.php`
 
-### المدخلات (Parameters)
+### Parameters
 
-| المتغير | المصدر              | النوع         | الوصف                                        |
-| ------- | ------------------- | ------------- | -------------------------------------------- |
-| `start` | `$_POST`            | submit button | زر بدء العملية (name="start", value="start") |
-| `test`  | `$_GET` أو `$_POST` | hidden        | وضع الاختبار (value="1")                     |
+| Variable | Source              | Type          | Description                                    |
+| -------- | ------------------- | ------------- | ---------------------------------------------- |
+| `start`  | `$_POST`            | submit button | Triggers the job (name="start", value="start") |
+| `test`   | `$_GET` or `$_POST` | hidden        | Test mode flag (value="1")                     |
 
-### سير العمل
+### Flow
 
-1. يعرض نموذج HTML مع زر "start" فقط
-2. إذا كان المستخدم غير مسجل الدخول → رابط تسجيل الدخول بدلاً من الزر
-3. عند الضغط على start (POST) والمستخدم مسجل:
-    - ينفذ أمر shell: `toolforge jobs run fixduplict --image python3.9 --command "python3 fix_duplicate.py save"`
-    - إذا كان test=1: يعرض الأمر فقط دون تنفيذ فعلي (أظهر الكود على الصفحة)
+1. Renders an HTML form with a single "start" button
+2. If user is not logged in → login link instead of button
+3. On POST with `start` and logged-in user:
+    - Executes shell: `toolforge jobs run fixduplict --image python3.9 --command "python3 fix_duplicate.py save"`
+    - If `test=1`: displays the command without actual execution
 
 ## Python: `python/fix_duplicate.py`
 
-### آلية العمل
+### How it works
 
-1. يستعلم API ميدياويكي لجلب قائمة `DoubleRedirects` (التحويلات المزدوجة)
-2. لكل تحويلة مزدوجة:
-    - يتحقق من وجود الصفحة
-    - يقارن النص الحالي بالنص الجديد
-    - يحفظ الصفحة مع ملخص "fix duplicate redirect to [[target]]"
-3. وسائط سطر الأوامر:
-    - `save` — حفظ فعلي
-    - بدون `save` — وضع تجريبي
-    - `-offset:N` — البدء من رقم معين
+1. Queries the MediaWiki API for the `DoubleRedirects` list
+2. For each double redirect:
+    - Checks if the page exists
+    - Compares current text with the new redirect text
+    - Saves the page with summary "fix duplicate redirect to [[target]]"
+3. CLI arguments:
+    - `save` — actually save
+    - Without `save` — dry run
+    - `-offset:N` — start from a specific index
 
-### المعادلات
+### Mapping
 
-| PHP                    | Python CLI                   |
-| ---------------------- | ---------------------------- |
-| `$_POST['start']` (زر) | يشغل `fix_duplicate.py save` |
-| `test=1`               | لا يمرر — فقط يظهر الأمر     |
+| PHP                        | Python CLI                         |
+| -------------------------- | ---------------------------------- |
+| `$_POST['start']` (button) | triggers `fix_duplicate.py save`   |
+| `test=1`                   | Not passed — only displays command |
 
 ---
 
-## رؤية النقل إلى Flask
+## Flask Migration Vision
 
-### ملف route الحالي: `flask_app/main_app/app_routes/dup.py`
+### Current route: `flask_app/main_app/app_routes/dup/__init__.py`
 
 ```
-GET  /dup/  → عرض النموذج
-POST /dup/  → استقبال start + test
+GET  /dup/  → render form
+POST /dup/  → accept start + test
 ```
 
-### ما يحتاج تكملة
+### Remaining work
 
-1. **استدعاء `fix_duplicate.py` مباشرة** بدلاً من `shell_exec`
-    - استيراد دالة `main()` أو `fix_dup()` من `fix_duplicate.py`
-    - تمرير المعطيات مباشرة دون الحاجة لـ CLI args
-2. **التحقق من تسجيل الدخول** (Flask-Login / session)
-    - حالياً: `request.values.get("global_username")` كبديل مؤقت
-3. **عرض النتائج بشكل حي** (WebSocket أو polling للحالة)
+1. **Direct `fix_duplicate.py` call** instead of `shell_exec`
+    - Import `main()` or `fix_dup()` from `fix_duplicate.py`
+    - Pass data directly instead of CLI args
+2. **Authentication** (Flask-Login / session)
+    - Currently: `request.values.get("global_username")` as placeholder
+3. **Live result display** (WebSocket or polling for job status)

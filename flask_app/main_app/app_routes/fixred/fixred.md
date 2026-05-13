@@ -1,67 +1,67 @@
-# تحليل: fixred (إصلاح التحويلات في النصوص)
+# Analysis: fixred (Fix Redirects in Page Text)
 
 ## PHP: `php/fixred.php`
 
-### المدخلات (Parameters)
+### Parameters
 
-| المتغير | المصدر  | النوع           | الوصف                               |
-| ------- | ------- | --------------- | ----------------------------------- |
-| `title` | `$_GET` | text (required) | عنوان الصفحة المراد إصلاح تحويلاتها |
-| `test`  | `$_GET` | hidden          | وضع الاختبار (value="1")            |
+| Variable | Source  | Type            | Description                    |
+| -------- | ------- | --------------- | ------------------------------ |
+| `title`  | `$_GET` | text (required) | Page title to fix redirects in |
+| `test`   | `$_GET` | hidden          | Test mode flag (value="1")     |
 
-### سير العمل
+### Flow
 
-1. يعرض نموذج GET بحقل `title` مطلوب
-2. المستخدم يدخل عنوان صفحة (أو "all" لكل الصفحات)
-3. عند الإرسال والمستخدم مسجل:
-    - يعالج العنوان: يستبدل `+` ومسافات بـ `_`، ثم `rawurlencode`
-    - يبني الأمر: `fixred.py -page2:title save`
-    - ينفذ عبر `do_tfj_sh()` (تنفيذ أوامر Toolforge)
-4. يعرض النتيجة
+1. Renders a GET form with a required `title` field
+2. User enters a page title (or "all" for all pages)
+3. On submit with logged-in user:
+    - Sanitizes title: replaces `+` and spaces with `_`, then `rawurlencode`
+    - Builds command: `fixred.py -page2:title save`
+    - Executes via `do_tfj_sh()` (Toolforge job runner)
+4. Displays the result
 
-### دالة `get_results($title)`
+### `get_results($title)` function
 
--   تستدعي `do_tfj_sh()` مع params:
+-   Calls `do_tfj_sh()` with params:
     ```
     dir="c9", localdir="c9", pyfile="pwb.py", other="fixred.py -page2:title save", test=test
     ```
 
 ## Python: `python/fixred.py`
 
-### آلية العمل
+### How it works
 
-1. يقرأ وسائط CLI:
-    - `-page2:title` (مشفرة URL) — عنوان واحد
-    - `-page:title` — عنوان واحد
-2. إذا كانت القائمة فارغة أو "all" → يجلب كل الصفحات غير التحويلية
-3. لكل صفحة:
-    - يجلب روابط الصفحة (`Get_page_links`)
-    - يبحث عن التحويلات لكل رابط (`find_redirects`)
-    - يستبدل الروابط القديمة بالروابط الصحيحة (`replace_links2`)
-    - يحفظ الصفحة مع ملخص "Fix redirects"
+1. Reads CLI args:
+    - `-page2:title` (URL-encoded) — single title
+    - `-page:title` — single title
+2. If the list is empty or "all" → fetches all non-redirect pages
+3. For each page:
+    - Gets page links (`Get_page_links`)
+    - Finds redirect targets for each link (`find_redirects`)
+    - Replaces old links with correct targets (`replace_links2`)
+    - Saves the page with summary "Fix redirects"
 
-### المعادلات
+### Mapping
 
 | PHP              | Python CLI                |
 | ---------------- | ------------------------- |
 | `$_GET['title']` | `-page2:urlencoded_title` |
-| `test=1`         | `test` في `sys.argv`      |
+| `test=1`         | `test` in `sys.argv`      |
 
 ---
 
-## رؤية النقل إلى Flask
+## Flask Migration Vision
 
-### ملف route الحالي: `flask_app/main_app/app_routes/fixred.py`
+### Current route: `flask_app/main_app/app_routes/fixred/__init__.py`
 
 ```
-GET /fixred/?title=X&test=1  → معالجة وعرض نتيجة
-GET /fixred/                 → عرض النموذج فارغاً
+GET /fixred/?title=X&test=1  → process and display result
+GET /fixred/                 → render empty form
 ```
 
-### ما يحتاج تكملة
+### Remaining work
 
-1. **استدعاء `fixred.py` مباشرة**
-    - استيراد `treat_page()` من `fixred.py`
-    - تمرير `title` مباشرة بدلاً من CLI args
-2. **التعامل مع "all"** — جلب كل الصفحات غير التحويلية
-3. **إعادة هيكلة `replace_links2`** لتعمل بشكل مستقل عن `sys.argv`
+1. **Direct `fixred.py` call**
+    - Import `treat_page()` from `fixred.py`
+    - Pass `title` directly instead of CLI args
+2. **Handle "all"** — fetch all non-redirect pages
+3. **Refactor `replace_links2`** to work independently of `sys.argv`

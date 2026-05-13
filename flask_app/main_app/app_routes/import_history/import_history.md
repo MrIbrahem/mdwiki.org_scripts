@@ -1,74 +1,74 @@
-# تحليل: import-history (استيراد التاريخ من enwiki)
+# Analysis: import-history (Import History from enwiki)
 
 ## PHP: `php/import-history.php`
 
-### المدخلات (Parameters)
+### Parameters
 
-| المتغير     | المصدر              | النوع    | الوصف                                |
-| ----------- | ------------------- | -------- | ------------------------------------ |
-| `test`      | `$_GET` أو `$_POST` | hidden   | وضع الاختبار (value="1")             |
-| `from`      | `$_GET` أو `$_POST` | text     | اللغة المصدر (اختياري، مع title فقط) |
-| `title`     | `$_GET` أو `$_POST` | text     | عنوان صفحة واحدة                     |
-| `titlelist` | `$_GET` أو `$_POST` | textarea | قائمة عناوين (بديل عن title)         |
+| Variable    | Source              | Type     | Description                                   |
+| ----------- | ------------------- | -------- | --------------------------------------------- |
+| `test`      | `$_GET` or `$_POST` | hidden   | Test mode flag (value="1")                    |
+| `from`      | `$_GET` or `$_POST` | text     | Source language (optional, only with `title`) |
+| `title`     | `$_GET` or `$_POST` | text     | Single page title                             |
+| `titlelist` | `$_GET` or `$_POST` | textarea | List of titles (alternative to `title`)       |
 
-### الصلاحيات
+### Authorization
 
--   المستخدمون المصرح لهم فقط: `Doc James`, `Mr. Ibrahem`
--   غير المصرح لهم يرون رسالة "Access denied"
+-   Authorized users only: `Doc James`, `Mr. Ibrahem`
+-   Unauthorized users see "Access denied"
 
-### سير العمل
+### Flow
 
-1. يعرض نموذج POST مع:
-    - حقل `title` أو `titlelist` (textarea)
-    - حقل `from` اختياري (للغة المصدر)
-2. عند الإرسال والمستخدم مصرح:
-    - **إذا كان title غير فارغ:**
-        - يبني الأمر: `imp.py -page:urlencoded_title -from:urlencoded_from save`
-    - **إذا كان titlelist غير فارغ:**
-        - يكتب القائمة لملف `importlist.txt`
-        - يبني الأمر: `imp.py -file:path save`
-    - ينفذ عبر `do_tfj_sh()`
+1. Renders a POST form with:
+    - `title` field OR `titlelist` textarea
+    - Optional `from` field (source language)
+2. On submit with authorized user:
+    - **If `title` is populated:**
+        - Builds command: `imp.py -page:urlencoded_title -from:urlencoded_from save`
+    - **If `titlelist` is populated:**
+        - Writes list to `importlist.txt`
+        - Builds command: `imp.py -file:path save`
+    - Executes via `do_tfj_sh()`
 
 ## Python: `python/imp.py`
 
-### آلية العمل
+### How it works
 
-1. يستورد تاريخ الصفحة من `family="wikipedia"` إلى `family="mdwiki"`
-2. إذا نجح الاستيراد (>0 revisions):
-    - يحفظ الصفحة مجدداً لاستعادة النص بعد الاستيراد
-    - إذا فشل الحفظ → يحفظ في `User:Mr._Ibrahem/title`
-3. وسائط CLI المدعومة:
-    - `-page:title`, `-page2:title` — عنوان مفرد
-    - `-file:path` — ملف قائمة
-    - `-from:LANG` — لغة المصدر
+1. Imports page history from `family="wikipedia"` to `family="mdwiki"`
+2. On successful import (>0 revisions):
+    - Re-saves the page to restore text after import
+    - If save fails → saves to `User:Mr._Ibrahem/title`
+3. Supported CLI args:
+    - `-page:title`, `-page2:title` — single title
+    - `-file:path` — title list file
+    - `-from:LANG` — source language
     - `-newpages:N`, `-user:NAME`, `-start:X`, `-ns:N`, `search:TERM`
     - `-offset:N`, `-limit:N`
 
-### المعادلات
+### Mapping
 
 | PHP                       | Python CLI                   |
 | ------------------------- | ---------------------------- |
 | `$_GET/POST['title']`     | `-page:urlencoded_title`     |
 | `$_GET/POST['from']`      | `-from:urlencoded_value`     |
 | `$_GET/POST['titlelist']` | `-file:importlist.txt`       |
-| `test=1`                  | `test` في `do_tfj_sh` params |
+| `test=1`                  | `test` in `do_tfj_sh` params |
 
 ---
 
-## رؤية النقل إلى Flask
+## Flask Migration Vision
 
-### ملف route الحالي: `flask_app/main_app/app_routes/import_history.py`
+### Current route: `flask_app/main_app/app_routes/import_history/__init__.py`
 
 ```
-GET  /import-history/  → عرض النموذج
-POST /import-history/  → استقبال ومعالجة
+GET  /import-history/  → render form
+POST /import-history/  → accept and process
 ```
 
-### ما يحتاج تكملة
+### Remaining work
 
-1. **استدعاء `imp.py` مباشرة**
-    - استيراد `work()` من `imp.py`
-    - فصل بناء قائمة الصفحات عن `sys.argv`
-2. **نظام الصلاحيات** — دمج مع Flask-Login وصلاحيات المستخدمين
-3. **دعم `from`** — إضافة حقل اللغة المصدر مع قائمة منسدلة
-4. **التعامل مع الملفات** — استبدال كتابة الملفات بتمرير القائمة مباشرة
+1. **Direct `imp.py` call**
+    - Import `work()` from `imp.py`
+    - Decouple page list building from `sys.argv`
+2. **Authorization system** — integrate with Flask-Login and user roles
+3. **Support `from`** — add source language field with dropdown
+4. **File handling** — replace file writing with direct list passing

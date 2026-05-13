@@ -1,67 +1,67 @@
-# تحليل: fixref (تطبيع المراجع)
+# Analysis: fixref (Normalize References)
 
 ## PHP: `php/fixref.php`
 
-### المدخلات (Parameters)
+### Parameters
 
-| المتغير     | المصدر              | النوع    | الوصف                              |
-| ----------- | ------------------- | -------- | ---------------------------------- |
-| `titlelist` | `$_GET` أو `$_POST` | textarea | قائمة عناوين (سطر لكل عنوان)       |
-| `number`    | `$_GET` أو `$_POST` | number   | عدد الصفحات للمعالجة (لـ allpages) |
-| `test`      | `$_GET` أو `$_POST` | hidden   | وضع الاختبار (value="1")           |
+| Variable    | Source              | Type     | Description                               |
+| ----------- | ------------------- | -------- | ----------------------------------------- |
+| `titlelist` | `$_GET` or `$_POST` | textarea | List of titles (one per line)             |
+| `number`    | `$_GET` or `$_POST` | number   | Number of pages to process (for allpages) |
+| `test`      | `$_GET` or `$_POST` | hidden   | Test mode flag (value="1")                |
 
-### سير العمل
+### Flow
 
-1. يعرض نموذج POST مع:
-    - حقل `number` (عدد الصفحات)
-    - أو `titlelist` (textarea لقائمة العناوين)
-2. عند الإرسال والمستخدم مسجل:
-    - **إذا كان titlelist غير فارغ:**
-        - عنوان واحد → `-title:escaped_title`
-        - عدة عناوين → يكتبها لملف مؤقت ويستخدم `-file:path`
-    - **إذا كان number غير فارغ:** → `allpages -number:N`
-    - ينفذ عبر `do_tfj_sh()`: `fixref/start.py command save`
+1. Renders a POST form with:
+    - `number` field (page count)
+    - OR `titlelist` (textarea for title list)
+2. On submit with logged-in user:
+    - **If `titlelist` is populated:**
+        - Single line → `-title:escaped_title`
+        - Multiple lines → writes to temp file, uses `-file:path`
+    - **If `number` is populated:** → `allpages -number:N`
+    - Executes via `do_tfj_sh()`: `fixref/start.py command save`
 
 ## Python: `python/fixref/start.py`
 
-### آلية العمل
+### How it works
 
-1. يقرأ وسائط CLI:
-    - `-number:N` — عدد الصفحات
-    - `-file:path` — ملف بقائمة العناوين
-    - `allpages` — كل الصفحات
-    - `-cat:Category` — صفحة تصنيف
-    - `-page:title` أو `-title:title` — عنوان واحد
-2. لكل صفحة:
-    - يجلب النص
-    - يستدعي `fix_ref_template()` لتطبيع المراجع
-    - إذا تغير النص → يحفظ الصفحة
-3. حد أقصى: `thenumbers[1]` (افتراضي 20000)
+1. Reads CLI args:
+    - `-number:N` — page count
+    - `-file:path` — file with title list
+    - `allpages` — all pages
+    - `-cat:Category` — category page
+    - `-page:title` or `-title:title` — single title
+2. For each page:
+    - Fetches the page text
+    - Calls `fix_ref_template()` to normalize references
+    - If text changed → saves the page
+3. Max limit: `thenumbers[1]` (default 20000)
 
-### المعادلات
+### Mapping
 
-| PHP                                  | Python CLI                   |
-| ------------------------------------ | ---------------------------- |
-| `$_GET/POST['titlelist']` (سطر واحد) | `-title:escaped_title`       |
-| `$_GET/POST['titlelist']` (متعدد)    | `-file:temp_file_path`       |
-| `$_GET/POST['number']`               | `allpages -number:N`         |
-| `test=1`                             | `test` في `do_tfj_sh` params |
+| PHP                                     | Python CLI                   |
+| --------------------------------------- | ---------------------------- |
+| `$_GET/POST['titlelist']` (single line) | `-title:escaped_title`       |
+| `$_GET/POST['titlelist']` (multiple)    | `-file:temp_file_path`       |
+| `$_GET/POST['number']`                  | `allpages -number:N`         |
+| `test=1`                                | `test` in `do_tfj_sh` params |
 
 ---
 
-## رؤية النقل إلى Flask
+## Flask Migration Vision
 
-### ملف route الحالي: `flask_app/main_app/app_routes/fixref.py`
+### Current route: `flask_app/main_app/app_routes/fixref/__init__.py`
 
 ```
-GET  /fixref/  → عرض النموذج
-POST /fixref/  → استقبال ومعالجة
+GET  /fixref/  → render form
+POST /fixref/  → accept and process
 ```
 
-### ما يحتاج تكملة
+### Remaining work
 
-1. **استدعاء `fixref/start.py` مباشرة**
-    - استيراد `work()` من `start.py`
-    - فصل بناء قائمة العناوين عن `sys.argv`
-2. **التعامل مع الملفات المؤقتة** — بدلاً من كتابة ملف، تمرير القائمة مباشرة
-3. **دعم التصنيفات (`-cat`)** — إضافة حقل اختياري في النموذج
+1. **Direct `fixref/start.py` call**
+    - Import `work()` from `start.py`
+    - Decouple title list building from `sys.argv`
+2. **Temp file handling** — pass list directly instead of writing files
+3. **Category support (`-cat`)** — add optional field to the form
