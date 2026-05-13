@@ -1,14 +1,12 @@
-"""
-
-"""
+""" """
 
 from flask import Flask
 
-from .main import bp_main
 from .dup import bp_dup
 from .fixred import bp_fixred
 from .fixref import bp_fixref
 from .import_history import bp_import_history
+from .main import bp_main
 from .newupdater import bp_newupdater
 from .redirect import bp_redirect
 from .replace import bp_replace

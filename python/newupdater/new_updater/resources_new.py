@@ -2,13 +2,15 @@
 !
 """
 
+import logging
+
 # ---
 import re
 
 import wikitextparser as wtp
 
 from .bots.Remove import portal_remove, remove_cite_web
-import logging
+
 logger = logging.getLogger(__name__)
 from .lists.identifier_params import identifiers_params
 

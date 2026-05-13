@@ -1,6 +1,4 @@
-"""
-
-"""
+""" """
 
 from __future__ import annotations
 
@@ -17,7 +15,9 @@ logger = logging.getLogger(__name__)
 
 @bp_redirect.route("/", methods=["GET"])
 def redirect():
-    return render_template("redirect.html", )
+    return render_template(
+        "redirect.html",
+    )
 
 
 __all__ = ["bp_redirect"]

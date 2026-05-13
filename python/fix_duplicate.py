@@ -7,9 +7,10 @@ python3 core8/pwb.py md_core/mdpy/fix_duplicate ask
 
 """
 import functools
-import os
 import logging
+import os
 import sys
+
 from newapi import AllAPIS
 
 logger = logging.getLogger(__name__)

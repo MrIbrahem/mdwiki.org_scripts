@@ -1,8 +1,9 @@
 #
 """ """
+import logging
+
 import wikitextparser as wtp
 
-import logging
 from .lists.chem_params import rename_chem_params
 
 logger = logging.getLogger(__name__)

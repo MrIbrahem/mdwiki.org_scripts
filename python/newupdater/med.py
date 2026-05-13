@@ -3,8 +3,9 @@
 python3 I:/MD_TOOLS/mdwiki.toolforge.org/PYTHON_REPOS/pybot/src/newupdater/med.py -page:Aspirin from_toolforge
 """
 import sys
-from python.mdapi import GetPageText, page_put
+
 from new_updater import ec_de_code, work_on_text
+from python.mdapi import GetPageText, page_put
 
 
 def get_new_text(title):

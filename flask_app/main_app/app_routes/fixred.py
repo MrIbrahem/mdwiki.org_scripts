@@ -1,6 +1,4 @@
-"""
-
-"""
+""" """
 
 from __future__ import annotations
 
@@ -17,7 +15,9 @@ logger = logging.getLogger(__name__)
 
 @bp_fixred.route("/", methods=["GET"])
 def fixred():
-    return render_template("fixred.html", )
+    return render_template(
+        "fixred.html",
+    )
 
 
 __all__ = ["bp_fixred"]

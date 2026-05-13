@@ -4,6 +4,7 @@ python3 pwb.py newupdater/med Aspirin from_toolforge
 python3 pwb.py newupdater/med Retinol from_toolforge
 
 """
+import logging
 import re
 
 # ---
@@ -12,7 +13,7 @@ from .bots import expend_new  # expend_infoboxs(text)
 from .bots import old_params
 from .chembox import fix_Chembox
 from .drugbox import TextProcessor
-import logging
+
 logger = logging.getLogger(__name__)
 from .mv_section import move_External_links_section
 from .resources_new import move_resources

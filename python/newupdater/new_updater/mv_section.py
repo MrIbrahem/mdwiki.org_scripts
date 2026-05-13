@@ -1,8 +1,8 @@
+import logging
 import re
 
 import wikitextparser
 
-import logging
 logger = logging.getLogger(__name__)
 
 

@@ -2,9 +2,10 @@
 from .bots.expend import expend_infoboxs_and_fix
 """
 
+import logging
+
 import wikitextparser as wtp
 
-import logging
 from ..lists.expend_lists import IMC_params, dup_params
 
 logger = logging.getLogger(__name__)

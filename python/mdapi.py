@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 """ """
-import os
-import logging
 import functools
+import logging
+import os
+
 from newapi import AllAPIS
 
-logger =logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 @functools.lru_cache(maxsize=1)

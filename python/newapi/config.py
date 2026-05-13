@@ -114,6 +114,7 @@ class BotConfig:
         no_login: Disable login assertion
         no_cookies: Disable cookie storage
     """
+
     no_login: bool = False
     no_cookies: bool = False
 

@@ -1,7 +1,9 @@
 """
 from .bots.old_params import rename_params
 """
+
 import logging
+
 import wikitextparser as wtp
 
 logger = logging.getLogger(__name__)

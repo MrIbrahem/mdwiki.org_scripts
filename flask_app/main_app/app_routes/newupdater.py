@@ -1,6 +1,4 @@
-"""
-
-"""
+""" """
 
 from __future__ import annotations
 
@@ -17,7 +15,9 @@ logger = logging.getLogger(__name__)
 
 @bp_newupdater.route("/", methods=["GET"])
 def newupdater():
-    return render_template("newupdater.html", )
+    return render_template(
+        "newupdater.html",
+    )
 
 
 __all__ = ["bp_newupdater"]

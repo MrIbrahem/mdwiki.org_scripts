@@ -1,8 +1,8 @@
+import logging
 import re
 
 import wikitextparser as wtp
 
-import logging
 logger = logging.getLogger(__name__)
 from .lists.bot_params import all_formola_params, all_params, params_placeholders, params_to_add
 

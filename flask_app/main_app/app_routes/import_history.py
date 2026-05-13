@@ -1,6 +1,4 @@
-"""
-
-"""
+""" """
 
 from __future__ import annotations
 
@@ -17,7 +15,9 @@ logger = logging.getLogger(__name__)
 
 @bp_import_history.route("/", methods=["GET"])
 def import_history():
-    return render_template("import-history.html", )
+    return render_template(
+        "import-history.html",
+    )
 
 
 __all__ = ["bp_import_history"]
