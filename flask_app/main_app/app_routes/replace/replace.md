@@ -1,66 +1,66 @@
-# تحليل: replace (بحث واستبدال)
+# Analysis: replace (Find and Replace)
 
 ## PHP: `php/replace/index.php`
 
-### المدخلات (Parameters)
+### Parameters
 
-| المتغير    | المصدر              | النوع               | الوصف                                            |
-| ---------- | ------------------- | ------------------- | ------------------------------------------------ |
-| `listtype` | `$_GET` أو `$_POST` | radio               | `newlist` (API search) أو `oldlist` (كل الصفحات) |
-| `test`     | `$_GET` أو `$_POST` | radio               | وضع الاختبار (value="1")                         |
-| `find`     | `$_GET` أو `$_POST` | textarea (required) | النص المراد البحث عنه                            |
-| `replace`  | `$_GET` أو `$_POST` | textarea (required) | النص البديل                                      |
-| `number`   | `$_GET` أو `$_POST` | number              | الحد الأقصى لعدد الاستبدالات                     |
+| Variable   | Source              | Type                | Description                                     |
+| ---------- | ------------------- | ------------------- | ----------------------------------------------- |
+| `listtype` | `$_GET` or `$_POST` | radio               | `newlist` (API search) or `oldlist` (all pages) |
+| `test`     | `$_GET` or `$_POST` | radio               | Test mode flag (value="1")                      |
+| `find`     | `$_GET` or `$_POST` | textarea (required) | Text to find                                    |
+| `replace`  | `$_GET` or `$_POST` | textarea (required) | Replacement text                                |
+| `number`   | `$_GET` or `$_POST` | number              | Max number of replacements                      |
 
-### الصلاحيات
+### Authorization
 
--   المستخدمون المصرح لهم فقط: `Doc James`, `Mr. Ibrahem`
--   غير المصرح لهم يرون رسالة "Access denied"
+-   Authorized users only: `Doc James`, `Mr. Ibrahem`
+-   Unauthorized users see "Access denied"
 
-### سير العمل — آلية الملفات
+### Flow — File-Based Mechanism
 
-1. يعرض نموذج POST يحتوي على:
-    - `find` (textarea) — النص المطلوب
-    - `replace` (textarea) — النص البديل
-    - `number` — حد أقصى للاستبدالات
-    - `listtype` — `newlist` أو `oldlist`
-2. عند الإرسال والمستخدم مصرح:
-    - يولد `$nn` (رقم عشوائي)
-    - **يكتب إلى ملفات:**
+1. Renders a POST form with:
+    - `find` (textarea) — search text
+    - `replace` (textarea) — replacement text
+    - `number` — max replacements
+    - `listtype` — `newlist` or `oldlist`
+2. On submit with authorized user:
+    - Generates `$nn` (random integer)
+    - **Writes to files:**
         - `replace/find/{nn}/find.txt` ← `$find`
         - `replace/find/{nn}/replace.txt` ← `$replace`
         - `replace/find/{nn}/info.json` ← `{find, replace, number, listtype, nn}`
-    - يعرض رابط: `replace-log.php?id={nn}`
+    - Displays link: `replace-log.php?id={nn}`
 
-### ⚠️ ملاحظة هامة
+### Key Note
 
-هذا هو الملف الوحيد الذي **يكتب المعطيات إلى ملفات** بدلاً من تمريرها مباشرة إلى البوت. البوت (`find_replace_bot`) يعمل بشكل منفصل ويقرأ من هذه الملفات.
+This is the **only** PHP file that writes parameters to files instead of passing them directly to the bot. The bot (`find_replace_bot`) runs as a separate process and reads from these files.
 
 ## Python: `python/find_replace_bot/`
 
-### هيكل الملفات
+### File Structure
 
-| الملف        | الدور                                                   |
-| ------------ | ------------------------------------------------------- |
-| `bot.py`     | يجلب قائمة jobs من المجلدات، يشغل `do_one_job` لكل منها |
-| `one_job.py` | ينفذ عملية البحث والاستبدال لمهمة واحدة                 |
+| File         | Role                                                       |
+| ------------ | ---------------------------------------------------------- |
+| `bot.py`     | Gets job list from directories, runs `do_one_job` for each |
+| `one_job.py` | Executes the find-and-replace for a single job             |
 
-### آلية العمل
+### How it works
 
 1. `bot.py::get_jobs()`:
-    - يقرأ المجلدات الفرعية في `replace/find/`
-    - يتجاهل المجلدات التي تحتوي على `done.txt`
+    - Reads subdirectories in `replace/find/`
+    - Skips directories containing `done.txt`
 2. `bot.py::main()`:
-    - لكل job: يستدعي `one_job.do_one_job(nn)`
+    - For each job: calls `one_job.do_one_job(nn)`
 3. `one_job.py::do_one_job(nn)`:
-    - يقرأ `info.json`, `find.txt`, `replace.txt` من `replace/find/{nn}/`
-    - يحدد العناوين: API search (إذا `newlist`) أو كل الصفحات
-    - لكل صفحة: يستبدل النص ويحفظ
-    - يكتب `log.txt` و `text.txt` و `done.txt`
+    - Reads `info.json`, `find.txt`, `replace.txt` from `replace/find/{nn}/`
+    - Determines titles: API search (if `newlist`) or all pages
+    - For each page: replaces text and saves
+    - Writes `log.txt`, `text.txt`, and `done.txt`
 
-### المعادلات
+### Mapping
 
-| PHP Form   | مكان التخزين            | المستهلك                               |
+| PHP Form   | Storage Location        | Consumer                               |
 | ---------- | ----------------------- | -------------------------------------- |
 | `find`     | `find/{nn}/find.txt`    | `one_job.get_find_and_replace()`       |
 | `replace`  | `find/{nn}/replace.txt` | `one_job.get_find_and_replace()`       |
@@ -69,39 +69,39 @@
 
 ---
 
-## رؤية النقل إلى Flask
+## Flask Migration Vision
 
-### ملف route الحالي: `flask_app/main_app/app_routes/replace.py`
+### Current route: `flask_app/main_app/app_routes/replace/__init__.py`
 
 ```
-GET  /replace/  → عرض النموذج
-POST /replace/  → استقبال ومعالجة
+GET  /replace/  → render form
+POST /replace/  → accept and process
 ```
 
-### ما يحتاج تكملة — إعادة هيكلة كاملة
+### Remaining work — Major Refactor Needed
 
-1. **تمرير المعطيات مباشرة** بدلاً من نظام الملفات
+1. **Pass data directly** instead of the file-based system
 
-    - استيراد `do_one_job` أو تفكيكها لاستقبال المعطيات مباشرة:
+    - Import `do_one_job` or refactor it to accept data directly:
         ```python
         def do_replace(find, replace, number, listtype):
-            # بدلاً من قراءة الملفات
+            # instead of reading from files
         ```
-    - إزالة الاعتماد على `work_dir` والمجلدات المؤقتة
+    - Remove dependency on `work_dir` and temp directories
 
-2. **نظام تتبع المهام**
+2. **Job tracking system**
 
-    - استبدال `{nn}` العشوائي بمعرف مهمة (task ID)
-    - تخزين الحالة في قاعدة بيانات بدلاً من `done.txt`, `log.txt`
+    - Replace random `{nn}` with a proper task ID
+    - Store status in a database instead of `done.txt`, `log.txt`
 
-3. **التنفيذ المتزامن وغير المتزامن**
+3. **Sync vs async execution**
 
-    - المهام الكبيرة (oldlist = كل الصفحات) تحتاج معالجة خلفية (background worker)
-    - المهام الصغيرة (newlist مع نتائج قليلة) يمكن تنفيذها مباشرة
+    - Large jobs (oldlist = all pages) need background workers
+    - Small jobs (newlist with few results) can run synchronously
 
-4. **نظام الإيقاف**
+4. **Stop mechanism**
 
-    - استبدال `stop.txt` بآلية إيقاف عبر API
+    - Replace `stop.txt` with an API-based stop endpoint
 
-5. **الصلاحيات**
-    - دمج مع نظام مصادقة Flask
+5. **Authorization**
+    - Integrate with Flask authentication system
