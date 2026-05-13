@@ -1,10 +1,16 @@
 #!/usr/bin/python3
 """
 
+Category:CS1 errors: redundant parameter
+
+python3 core8/pwb.py md_core/mdpy/fix_duplicate ask
+
 """
+import functools
+import os
 import logging
 import sys
-from .mdapi import GetPageText, page_put, post_s
+from newapi import AllAPIS
 
 logger = logging.getLogger(__name__)
 
@@ -20,23 +26,59 @@ for arg in sys.argv:
 from_to = {}
 
 
-def fix_dup(From, To):
+@functools.lru_cache(maxsize=1)
+def load_main_api() -> AllAPIS:
+    username = os.getenv("WIKIPEDIA_HIMO_USERNAME")
+    password = os.getenv("MDWIKI_HIMO_PASSWORD")
+
+    if not username or not password:
+        raise RuntimeError("Missing credentials: WIKIPEDIA_HIMO_USERNAME / MDWIKI_HIMO_PASSWORD")
+
+    return AllAPIS(
+        lang="www",
+        family="mdwiki",
+        username=username,
+        password=password,
+        use_cookies=False,
+    )
+
+
+def post_s(params, addtoken=False, files=None):
+    # ---
+    main_api = load_main_api()
+    # ---
+    api_new = main_api.NewApi("www", family="mdwiki")
+    # ---
+    params["format"] = "json"
+    params["utf8"] = 1
+    # ---
+    json1 = api_new.post_params(params, addtoken=addtoken, files=files)
+    # ---
+    return json1
+
+
+def fix_dup(from_title, to_title):
     """Treat one double redirect."""
     # ---
-    if To in from_to:
-        To = from_to[To]
+    if to_title in from_to:
+        to_title = from_to[to_title]
     # ---
-    newtext = f"#REDIRECT [[{To}]]"
+    newtext = f"#REDIRECT [[{to_title}]]"
     # ---
-    oldtext = GetPageText(From)
+    main_api = load_main_api()
     # ---
-    sus = f"fix duplicate redirect to [[{To}]]"
+    page = main_api.MainPage(from_title, "www", family="mdwiki")
+    _exists = page.exists()
+    # ---
+    oldtext = page.get_text()
+    # ---
+    sus = f"fix duplicate redirect to [[{to_title}]]"
     # ---
     if oldtext == newtext:
         logger.info("no changes.")
-        return
+        return False
     # ---
-    page_put(oldtext=oldtext, newtext=newtext, summary=sus, title=From, returntrue=False, diff=True)
+    return page.save(newtext=newtext, summary=sus)
 
 
 def main():
@@ -64,16 +106,16 @@ def main():
     redirects = lista.get("query", {}).get("redirects", [])
     # ---
     for gg in redirects:
-        From = gg["from"]
-        To = gg["to"]
-        from_to[From] = To
+        from_title = gg["from"]
+        to_title = gg["to"]
+        from_to[from_title] = to_title
     # ---
     for nu, title in enumerate(redirects, start=1):
-        From = title["from"]
-        logger.info(f'-------\n*<<yellow>> >{nu}/{len(redirects)} From:"{From}".')
-        To = title["to"]
-        if To in from_to:
-            fix_dup(From, To)
+        from_title = title["from"]
+        logger.info(f'-------\n*<<yellow>> >{nu}/{len(redirects)} from_title:"{from_title}".')
+        to_title = title["to"]
+        if to_title in from_to:
+            fix_dup(from_title, to_title)
 
 
 if __name__ == "__main__":
