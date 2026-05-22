@@ -15,32 +15,14 @@ The service is reentrant: credentials and the API client are cached via
 
 from __future__ import annotations
 
-import functools
 import logging
-import os
 from threading import Event
 from typing import Any, Callable, Optional
 
 from ..newapi import AllAPIS
+from ._api import get_api
 
 logger = logging.getLogger(__name__)
-
-
-@functools.lru_cache(maxsize=1)
-def _load_api() -> AllAPIS:
-    username = os.getenv("WIKIPEDIA_HIMO_USERNAME")
-    password = os.getenv("MDWIKI_HIMO_PASSWORD")
-    if not username or not password:
-        raise RuntimeError(
-            "Missing credentials: set WIKIPEDIA_HIMO_USERNAME and MDWIKI_HIMO_PASSWORD"
-        )
-    return AllAPIS(
-        lang="www",
-        family="mdwiki",
-        username=username,
-        password=password,
-        use_cookies=False,
-    )
 
 
 def _list_double_redirects(api: AllAPIS) -> list[dict[str, str]]:
@@ -98,7 +80,7 @@ def run(
         if on_progress is not None:
             on_progress(done, total, message=msg)
 
-    api = _load_api()
+    api = get_api()
     redirects = _list_double_redirects(api)
 
     # Build the chain map first, exactly like the legacy script.

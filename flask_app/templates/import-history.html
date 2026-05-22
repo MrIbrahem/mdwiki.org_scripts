@@ -1,56 +1,51 @@
-<!-- header.html -->
-<main id="body">
-    <!-- <div id="maindiv" class="container-fluid"> -->
-    <div id="maindiv" class="container">
-        <div class="card">
-            <div class="card-header aligncenter" style="font-weight:bold;">
-                <h3>Import history from enwiki</h3>
-            </div>
-            <div class="card-body">
-                <form action='import-history.php' method='POST'>
+{% extends "_base.html" %}
+{% from "_macros.html" import csrf %}
 
-                    <div class='container'>
-                        <div class='container'>
-                            <div class='row'>
-                                <div class='col-lg-12'>
-                                    <div class='form-group'>
-                                        <div class='input-group mb-3'>
-                                            <div class='input-group-prepend'>
-                                                <span class='input-group-text'>Title:</span>
-                                            </div>
-                                            <input class='form-control' type='text' id='title' name='title' value='' />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class='col-lg-12'>
-                                    <h3 class='aligncenter'>or</h3>
-                                </div>
-                                <div class='col-lg-12'>
-                                    <div class='form-group'>
-                                        <div class='input-group mb-3'>
-                                            <div class='input-group-prepend'>
-                                                <span class='input-group-text'>List of titles:</span>
-                                            </div>
-                                            <textarea class='form-control' cols='20' rows='7' id='titlelist'
-                                                name='titlelist'></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class='col-lg-12'>
-                                    <div class='input-group mb-3'>
-
-                                    </div>
-                                </div>
-                                <div class='col-lg-12'>
-                                    <h4 class='aligncenter'>
-                                        <input class='btn btn-outline-primary' type='submit' value='send'>
-                                    </h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div> <!-- <div id="maindiv" class="container"> -->
-</main>
-<!-- footer.html -->
+{% block content %}
+<div class="card">
+  <div class="card-header" style="font-weight:bold;">
+    <h3>{{ title or "Import history from enwiki" }}</h3>
+  </div>
+  <div class="card-body">
+    <p class="text-muted">
+      Imports the full revision history of the given mdwiki page(s) from
+      English Wikipedia, then re-saves the current mdwiki body on top so
+      the visible content is unchanged. Restricted to allow-listed users.
+    </p>
+    <form method="POST" action="{{ url_for('import_history.import_history') }}">
+      {{ csrf() }}
+      <div class="row g-3 mb-3">
+        <div class="col-md-9">
+          <label for="ih-title" class="form-label">Single title</label>
+          <input
+            id="ih-title"
+            name="title"
+            type="text"
+            class="form-control"
+            value="{{ form_title or '' }}"
+            placeholder="e.g. Crohn's disease">
+        </div>
+        <div class="col-md-3">
+          <label for="ih-from" class="form-label">Source lang (reserved)</label>
+          <input
+            id="ih-from"
+            name="from"
+            type="text"
+            class="form-control"
+            value="{{ form_from or 'en' }}">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="ih-titlelist" class="form-label">Or list of titles (one per line)</label>
+        <textarea
+          id="ih-titlelist"
+          name="titlelist"
+          class="form-control"
+          rows="8"
+          placeholder="Aspirin&#10;Paracetamol">{{ form_titlelist or '' }}</textarea>
+      </div>
+      <button class="btn btn-outline-primary" type="submit">Start</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

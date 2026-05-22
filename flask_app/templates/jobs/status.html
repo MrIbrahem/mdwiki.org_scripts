@@ -1,11 +1,22 @@
 {% extends "_base.html" %}
+{% from "_macros.html" import csrf %}
 
 {% block content %}
 {% set status_class = {'pending':'secondary','running':'primary','done':'success','error':'danger'}.get(job.status, 'secondary') %}
 <div class="card">
-  <div class="card-header" style="font-weight:bold;">
-    Job <code>{{ job.id }}</code> &mdash; {{ job.tool }} &mdash;
-    <span class="badge bg-{{ status_class }}">{{ job.status }}</span>
+  <div class="card-header d-flex align-items-center justify-content-between" style="font-weight:bold;">
+    <span>
+      Job <code>{{ job.id }}</code> &mdash; {{ job.tool }} &mdash;
+      <span class="badge bg-{{ status_class }}">{{ job.status }}</span>
+    </span>
+    {% if job.status in ("pending", "running") %}
+    <form method="POST"
+          action="{{ url_for('jobs.stop', job_id=job.id) }}"
+          onsubmit="return confirm('Stop job {{ job.id }}? It will halt at the next page boundary.');">
+      {{ csrf() }}
+      <button class="btn btn-sm btn-outline-warning" type="submit">Stop</button>
+    </form>
+    {% endif %}
   </div>
   <div class="card-body">
     <dl class="row mb-3">

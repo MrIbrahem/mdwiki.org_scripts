@@ -1,67 +1,68 @@
-<!-- header.html -->
-<main id="body">
-    <!-- <div id="maindiv" class="container-fluid"> -->
-    <div id="maindiv" class="container">
-        <div class="card">
-            <div class="card-header aligncenter" style="font-weight:bold;">
-                <h3>Find and replace.</h3>
-            </div>
-            <div class="card-body">
-                <form action='index.php' method='POST'>
-                    <div class='container-fluid'>
-                        <div class='row'>
-                            <div class='col-sm'>
-                                <div class='form-group'>
-                                    <label for='find'>Find:</label>
-                                    <textarea class='form-control' cols='40' rows='6' id='find' name='find'
-                                        required></textarea>
-                                </div>
-                            </div>
-                            <div class='col-sm'>
-                                <div class='form-group'>
-                                    <label for='replace'>Replace with:</label>
-                                    <textarea class='form-control' cols='40' rows='6' id='replace' name='replace'
-                                        placeholder='(write empty to replace it with empty value.)' required></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row'>
-                            <div class='col-sm'>
-                                <div class='input-group mb-3'>
-                                    <div class='input-group-prepend'>
-                                        <span class='input-group-text'>Number of replacements</span>
-                                    </div>
-                                    <input class='form-control' type='number' name='number' value=''
-                                        placeholder='max' />
-                                </div>
-                                <div class='input-group mb-3'>
-                                    <div class='input-group-prepend'>
+{% extends "_base.html" %}
+{% from "_macros.html" import csrf %}
 
-                                    </div>
-
-                                </div>
-                            </div>
-                            <div class='col-sm'>
-                                <div class='custom-control custom-radio custom-control-inline'>
-                                    <input type='radio' class='custom-control-input' id='customRadio2' name='listtype'
-                                        value='newlist' checked>
-                                    <label class='custom-control-label' for='customRadio2'>Use API search</label>
-                                </div>
-                                <div class='custom-control custom-radio custom-control-inline'>
-                                    <input type='radio' class='custom-control-input' id='customRadio' name='listtype'
-                                        value='oldlist'>
-                                    <label class='custom-control-label' for='customRadio'>Work in all pages</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='col-lg-12'>
-                            <h4 class='aligncenter'>
-                                <input class='btn btn-outline-primary' type='submit' value='send'>
-                            </h4>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div> <!-- <div id="maindiv" class="container"> -->
-</main>
-<!-- footer.html -->
+{% block content %}
+<div class="card">
+  <div class="card-header" style="font-weight:bold;">
+    <h3>{{ title or "Find and replace" }}</h3>
+  </div>
+  <div class="card-body">
+    <p class="text-muted">
+      Find a literal string in mdwiki pages and replace it. Restricted to
+      allow-listed users. Use the
+      <strong>newlist</strong> mode to search only pages that contain the
+      query (recommended); <strong>oldlist</strong> walks every mainspace
+      page and is slower.
+    </p>
+    <form method="POST" action="{{ url_for('replace.replace') }}">
+      {{ csrf() }}
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label for="r-find" class="form-label">Find</label>
+          <textarea
+            id="r-find"
+            name="find"
+            class="form-control"
+            rows="6"
+            required
+            placeholder="exact string to find">{{ form_find or '' }}</textarea>
+        </div>
+        <div class="col-md-6">
+          <label for="r-replace" class="form-label">Replace</label>
+          <textarea
+            id="r-replace"
+            name="replace"
+            class="form-control"
+            rows="6"
+            placeholder="replacement (may be empty to delete)">{{ form_replace or '' }}</textarea>
+        </div>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <label for="r-listtype" class="form-label">List type</label>
+          <select id="r-listtype" name="listtype" class="form-select">
+            <option value="newlist" {% if form_listtype == 'newlist' %}selected{% endif %}>
+              newlist (search for `find`)
+            </option>
+            <option value="oldlist" {% if form_listtype == 'oldlist' %}selected{% endif %}>
+              oldlist (all mainspace pages)
+            </option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="r-number" class="form-label">Max modifications (optional)</label>
+          <input
+            id="r-number"
+            name="number"
+            type="number"
+            min="1"
+            class="form-control"
+            value="{{ form_number or '' }}"
+            placeholder="e.g. 100">
+        </div>
+      </div>
+      <button class="btn btn-outline-primary" type="submit">Start</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

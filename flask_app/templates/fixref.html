@@ -1,53 +1,53 @@
-<!-- header.html -->
-<main id="body">
-	<!-- <div id="maindiv" class="container-fluid"> -->
-	<div id="maindiv" class="container">
-		<div class="card">
-			<div class="card-header aligncenter" style="font-weight:bold;">
-				<h3>Normalize references (mdwiki).</h3>
-			</div>
-			<div class="card-body">
-				<form action='fixref.php' method='POST'>
+{% extends "_base.html" %}
+{% from "_macros.html" import csrf %}
 
-					<div class='container'>
-						<div class='container'>
-							<div class='row'>
-								<div class='col-lg-12'>
-									<div class='form-group'>
-										<label for='find'>
-											<h4>All pages:</h4>
-										</label>
-										<div class='input-group mb-3'>
-											<div class='input-group-prepend'>
-												<span class='input-group-text'>Number of pages</span>
-											</div>
-											<input class='form-control' type='number' name='number' value=''
-												placeholder='5000' />
-										</div>
-									</div>
-								</div>
-								<div class='col-lg-12'>
-									<h3 class='aligncenter'>or</h3>
-								</div>
-								<div class='col-lg-12'>
-									<div class='form-group'>
-										<label for='titlelist'>
-											<h4>List of titles:</h4>
-										</label>
-										<textarea class='form-control' cols='60' rows='7' id='titlelist'
-											name='titlelist'></textarea>
-									</div>
-								</div>
-								<div class='col-lg-12'>
-									<h4 class='aligncenter'>
-										<input class='btn btn-outline-primary' type='submit' value='send'>
-									</h4>
-								</div>
-							</div>
-						</div>
-					</div>
-				</form>
-			</div>
-		</div> <!-- <div id="maindiv" class="container"> -->
-</main>
-<!-- footer.html -->
+{% block content %}
+<div class="card">
+  <div class="card-header" style="font-weight:bold;">
+    <h3>{{ title or "Normalize references" }}</h3>
+  </div>
+  <div class="card-body">
+    <p class="text-muted">
+      Normalize <code>cite</code>-template formatting on mdwiki pages.
+      Provide one of: a title list, a category to walk, or a number of
+      mainspace pages to scan.
+    </p>
+    <form method="POST" action="{{ url_for('fixref.fixref') }}">
+      {{ csrf() }}
+      <div class="mb-3">
+        <label for="fixref-titlelist" class="form-label">Title list (one per line)</label>
+        <textarea
+          id="fixref-titlelist"
+          name="titlelist"
+          class="form-control"
+          rows="6"
+          placeholder="Aspirin&#10;Paracetamol">{{ form_titlelist or '' }}</textarea>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label for="fixref-cat" class="form-label">Category</label>
+          <input
+            id="fixref-cat"
+            name="cat"
+            type="text"
+            class="form-control"
+            value="{{ form_cat or '' }}"
+            placeholder="e.g. CS1_errors:_deprecated_parameters">
+        </div>
+        <div class="col-md-6">
+          <label for="fixref-number" class="form-label">Or first N mainspace pages</label>
+          <input
+            id="fixref-number"
+            name="number"
+            type="number"
+            min="1"
+            class="form-control"
+            value="{{ form_number or '' }}"
+            placeholder="e.g. 1000">
+        </div>
+      </div>
+      <button class="btn btn-outline-primary" type="submit">Start</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

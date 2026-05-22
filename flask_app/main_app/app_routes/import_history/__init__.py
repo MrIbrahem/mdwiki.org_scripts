@@ -1,47 +1,105 @@
-""" """
+"""Blueprint for `/import-history/` — import enwiki history (allow-list only)."""
 
 from __future__ import annotations
 
 import logging
 
-from flask import (
-    Blueprint,
-    render_template,
-    request,
-)
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+
+from ...auth import current_user
+from ...auth.decorators import authorized_only, login_required
+from ...jobs import runner
+from ...jobs.store import get_store
+from ...services import imp as svc
 
 bp_import_history = Blueprint("import_history", __name__, url_prefix="/import-history")
 logger = logging.getLogger(__name__)
 
-AUTHORIZED_USERS = ["Doc James", "Mr. Ibrahem"]
+# Mirrors plan §4.4 cap.
+MAX_IMPORT_TITLES = 500
+
+
+def _split_titles(raw_title: str, raw_titlelist: str) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    candidates: list[str] = []
+    if raw_title:
+        candidates.append(raw_title)
+    if raw_titlelist:
+        candidates.extend(raw_titlelist.splitlines())
+    for c in candidates:
+        t = c.replace("_", " ").strip()
+        if not t or t in seen:
+            continue
+        seen.add(t)
+        out.append(t)
+    return out
 
 
 @bp_import_history.route("/", methods=["GET", "POST"])
+@login_required
+@authorized_only
 def import_history():
+    user = current_user()
 
-    from_ = request.values.get("from", "")
-    title = request.values.get("title", "")
-    titlelist = request.values.get("titlelist", "")
+    raw_title = request.values.get("title", "")
+    raw_titlelist = request.values.get("titlelist", "")
+    raw_from = (request.values.get("from", "") or "en").strip() or "en"
 
-    result = None
     if request.method == "POST":
-        if title or titlelist:
-            logger.info(f"import-history triggered: title={title}, from={from_}")
-            # TODO: integrate imp.py backend call directly
-            if title:
-                result = f"Import history for {title}"
-                if from_:
-                    result += f" from {from_}"
-            elif titlelist:
-                lines_count = len([x for x in titlelist.strip().split("\n") if x.strip()])
-                result = f"Import history for {lines_count} title(s)"
+        titles = _split_titles(raw_title, raw_titlelist)
+        if not titles:
+            flash("Provide at least one title.", "warning")
+            return render_template(
+                "import-history.html",
+                title="Import history from enwiki",
+                form_title=raw_title,
+                form_titlelist=raw_titlelist,
+                form_from=raw_from,
+            )
+        if len(titles) > MAX_IMPORT_TITLES:
+            flash(
+                f"Too many titles ({len(titles)}); cap is {MAX_IMPORT_TITLES}.",
+                "warning",
+            )
+            return render_template(
+                "import-history.html",
+                title="Import history from enwiki",
+                form_title=raw_title,
+                form_titlelist=raw_titlelist,
+                form_from=raw_from,
+            )
+
+        active = get_store().find_active("import_history")
+        if active is not None:
+            flash(f"An import-history job is already running ({active.id}).", "info")
+            return redirect(url_for("jobs.status", job_id=active.id))
+
+        job = runner.submit(
+            "import_history",
+            svc.run,
+            submitted_by=user.username,
+            params={"title_count": len(titles), "from_lang": raw_from, "save": True},
+            titles=titles,
+            from_lang=raw_from,
+            save=True,
+        )
+        flash(f"Started import-history job {job.id} for {len(titles)} title(s)", "success")
+        logger.info(
+            "import_history job %s submitted by %s for %d titles (from=%s)",
+            job.id,
+            user.username,
+            len(titles),
+            raw_from,
+        )
+        return redirect(url_for("jobs.status", job_id=job.id))
 
     return render_template(
         "import-history.html",
-        from_=from_,
-        title=title,
-        titlelist=titlelist,
-        result=result,
+        title="Import history from enwiki",
+        form_title=raw_title,
+        form_titlelist=raw_titlelist,
+        form_from=raw_from,
     )
 
 
