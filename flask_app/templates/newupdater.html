@@ -1,51 +1,53 @@
-<!-- header.html -->
-<main id="body">
-    <!-- <div id="maindiv" class="container-fluid"> -->
-    <div id="maindiv" class="container">
-        <div class="card">
-            <div class="card-header aligncenter" style="font-weight:bold;">
-                <h3>Med updater</h3>
-            </div>
-            <div class="card-body">
-                <form action='' method='GET'>
+{% extends "_base.html" %}
+{% from "_macros.html" import csrf %}
 
-                    <div class='container'>
-                        <div class='row'>
-                            <div class='col-md-4'>
-                                <div class='input-group mb-3'>
-                                    <div class='input-group-prepend'>
-                                        <span class='input-group-text'>Title</span>
-                                    </div>
-                                    <input class='form-control' type='text' id='title' name='title' value="" required />
-                                </div>
-                            </div>
-                            <div class='col-md-3'>
-                                <div class='form-check form-switch'>
-                                    <input class='form-check-input' type='checkbox' id='save' name='save' value='1'>
-                                    <label class='check-label' for='save'>Auto save</label>
-                                </div>
-                            </div>
-                            <div class='col-md-5'>
-                                <h4 class='aligncenter'>
-                                    <input class='btn btn-outline-primary' type='submit' value='send' />
-                                </h4>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
+{% block content %}
+<div class="card">
+  <div class="card-header" style="font-weight:bold;">
+    <h3>{{ title or "Medical content updater" }}</h3>
+  </div>
+  <div class="card-body">
+    <form method="GET" action="{{ url_for('newupdater.newupdater') }}" class="row g-2 mb-3">
+      <div class="col-md-9">
+        <label for="newupdater-title" class="form-label">Page title</label>
+        <input
+          id="newupdater-title"
+          name="title"
+          type="text"
+          class="form-control"
+          value="{{ form_title or '' }}"
+          placeholder="e.g. Aspirin"
+          required>
+      </div>
+      <div class="col-md-3 d-flex align-items-end">
+        <button class="btn btn-outline-primary w-100" type="submit">Preview</button>
+      </div>
+    </form>
+
+    {% if outcome %}
+      {% if outcome.kind == "changes" %}
+        <h5>Proposed changes for <code>{{ form_title }}</code></h5>
+        <pre class="mb-3"
+             style="max-height: 480px; overflow:auto; background:#f8f9fa; padding:10px; border:1px solid #dee2e6;">{{ diff }}</pre>
+
+        <form method="POST" action="{{ url_for('newupdater.newupdater') }}">
+          {{ csrf() }}
+          <input type="hidden" name="title" value="{{ form_title }}">
+          <button class="btn btn-success" type="submit">
+            Save with edit summary <em>"Med updater."</em>
+          </button>
+        </form>
+      {% elif outcome.kind == "no_changes" %}
+        <div class="alert alert-info">
+          <code>{{ form_title }}</code>: the rewriter produced no changes.
         </div>
-        <hr />
-        <div class='card'>
-            <div class="card-header aligncenter" style="font-weight:bold;">
-                <h3>
-                    page: <a target='_blank' href="https://mdwiki.org/w/index.php?title="></a>
-                </h3>
-            </div>
-            <div class='card-body'>
-                <div class='alert alert-warning'>log in!!</div>
-            </div>
+      {% elif outcome.kind == "notext" %}
+        <div class="alert alert-warning">
+          <code>{{ form_title }}</code>: the page is empty, missing, or the
+          rewriter produced empty output.
         </div>
-    </div> <!-- <div id="maindiv" class="container"> -->
-</main>
-<!-- footer.html -->
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
