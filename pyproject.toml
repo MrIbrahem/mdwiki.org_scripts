@@ -9,20 +9,6 @@ requires-python = ">=3.10"
 test = [
     "pytest>=7",
 ]
-
-# ============================================
-#                 PYTEST
-# ============================================
-[tool.pytest.ini_options]
-pythonpath = [".", "flask_app"]
-testpaths = ["tests"]
-python_files = ["test_*.py"]
-filterwarnings = [
-    # mwclient and friends like to use deprecated APIs; keep test output
-    # readable by demoting those to a single warning summary.
-    "ignore::DeprecationWarning",
-]
-
 # ============================================
 #                 BLACK
 # ============================================
