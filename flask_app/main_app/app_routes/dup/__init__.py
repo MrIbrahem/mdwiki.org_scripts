@@ -1,34 +1,50 @@
-""" """
+"""Blueprint for `/dup/` — fix duplicate redirects on mdwiki."""
 
 from __future__ import annotations
 
 import logging
 
-from flask import (
-    Blueprint,
-    render_template,
-    request,
-)
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+
+from ...auth import current_user
+from ...auth.decorators import login_required
+from ...jobs import runner
+from ...jobs.store import get_store
+from ...services import fix_duplicate as svc
 
 bp_dup = Blueprint("dup", __name__, url_prefix="/dup")
 logger = logging.getLogger(__name__)
 
 
-@bp_dup.route("/", methods=["GET", "POST"])
-def dup():
-    start = request.values.get("start", "")
+@bp_dup.route("/", methods=["POST"])
+@login_required
+def dup_post():
+    user = current_user()
 
-    result = None
-    if request.method == "POST" and start:
-        logger.info("fix_duplicate job triggered")
-        # TODO: integrate fix_duplicate.py backend call directly
-        result = "Fix duplicate job queued"
+    if request.form.get("start") != "start":
+        return render_template("dup.html", title="Fix duplicate redirects")
 
-    return render_template(
-        "dup.html",
-        start=start,
-        result=result,
+    # Reject duplicate concurrent runs of this same tool.
+    active = get_store().find_active("dup")
+    if active is not None:
+        flash(f"A duplicate-redirect job is already running ({active.id}).", "info")
+        return redirect(url_for("jobs.status", job_id=active.id))
+
+    job = runner.submit(
+        "dup",
+        svc.run,
+        submitted_by=user.username,
+        params={"save": True},
+        save=True,
     )
+    flash(f"Started fix-duplicate job {job.id}", "success")
+    logger.info("dup job %s submitted by %s", job.id, user.username)
+    return redirect(url_for("jobs.status", job_id=job.id))
+
+
+@bp_dup.route("/", methods=["GET"])
+def dup():
+    return render_template("dup.html", title="Fix duplicate redirects")
 
 
 __all__ = ["bp_dup"]
