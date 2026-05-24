@@ -184,10 +184,8 @@ on_progress=None) -> JobResult`. Iterates `DoubleRedirects`, for each pair
     runs `fix_dup(from_title, to_title)` lifted out of
     `python/fix_duplicate.py`. Returns counts of (`scanned`, `fixed`,
     `unchanged`, `errors`).
--   **Flow:**
-    1. GET `/dup/` → render form (with auth-aware “please log in” banner if
-       anonymous).
-    2. POST `/dup/` with `start=start` → `JobRunner.submit("dup",
+-   **Flow:** 1. GET `/dup/` → render form (with auth-aware “please log in” banner if
+    anonymous). 2. POST `/dup/` with `start=start` → `JobRunner.submit("dup",
 services.fix_duplicate.run, save=True)` → 302 to `/jobs/<id>`.
 -   **Refactor needed in legacy script:** strip the module-level
     `sys.argv` parsing for `-offset:N`; promote `offset` to a parameter on
@@ -220,13 +218,9 @@ on_progress=None) -> JobResult`. Calls a refactored `treat_page(title)` (we
 -   **Auth:** `@login_required`.
 -   **Service:** `services.fixref.run(*, titles: list[str] | None = None,
 number: int | None = None, category: str | None = None, save: bool = True,
-on_progress=None) -> JobResult`. Internally:
-    -   If `titles` non-empty → iterate them.
-    -   Else if `category` → iterate category members via
-        `AllAPIS.CatDepth(category)`.
-    -   Else if `number` → iterate `Get_All_pages(limit_all=number)`.
-    -   For each page call `fix_ref_template(text)` from
-        `python/fixref/` (lifted into the service).
+on_progress=None) -> JobResult`. Internally: - If `titles` non-empty → iterate them. - Else if `category` → iterate category members via
+    `AllAPIS.CatDepth(category)`. - Else if `number` → iterate `Get_All_pages(limit_all=number)`. - For each page call `fix_ref_template(text)` from
+    `python/fixref/` (lifted into the service).
 -   **Flow:** GET → form; POST → service → 302 `/jobs/<id>`.
 -   **Refactor:** drop the `-file:` temp-file mechanism entirely. The blueprint
     splits the textarea on newlines and passes the list directly.
@@ -350,11 +344,8 @@ The fastest, safest path is a **lift-and-shim** rather than a clean rewrite:
    any module-level `sys.argv` reads; promote those values to parameters of a
    new `run(...)` entry point.
 3. Replace `from mdapi import …` and `from mdwiki_page import …` with the
-   `newapi` equivalents (`AllAPIS`, `MainPage`, `NewApi`). The mapping is:
-    - `mdapi.GetPageText(t)` → `MainPage(t, "www", family="mdwiki").get_text()`
-    - `mdapi.page_put(text, summary, t)` → `MainPage(t, ...).save(newtext=text,
-summary=summary)`
-    - `mdwiki_page.NewApi(...)` → `AllAPIS(...).NewApi()`
+   `newapi` equivalents (`AllAPIS`, `MainPage`, `NewApi`). The mapping is: - `mdapi.GetPageText(t)` → `MainPage(t, "www", family="mdwiki").get_text()` - `mdapi.page_put(text, summary, t)` → `MainPage(t, ...).save(newtext=text,
+summary=summary)` - `mdwiki_page.NewApi(...)` → `AllAPIS(...).NewApi()`
 4. Add a `_load_api()` helper using `functools.lru_cache(maxsize=1)` reading
    credentials from env (already used by `python/fix_duplicate.py`).
 5. Leave `python/*` files in place during the migration. Once all blueprints
