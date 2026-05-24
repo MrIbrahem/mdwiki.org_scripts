@@ -13,7 +13,7 @@
       background; you'll be redirected to a status page that polls for
       progress.
     </p>
-    <form method="POST" action="{{ url_for('dup.dup') }}">
+    <form method="POST" action="{{ url_for('dup.dup_post') }}">
       {{ csrf() }}
       <h4 class="aligncenter">
         <button class="btn btn-outline-primary" type="submit" name="start" value="start">
