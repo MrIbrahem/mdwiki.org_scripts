@@ -10,7 +10,7 @@ from flask_wtf.csrf import CSRFError, CSRFProtect
 
 from .app_routes import register_blueprints
 from .auth import current_user, is_authorized
-from .config import settings  # re-exported as `main_app.settings` below
+from .config import settings
 
 logger = logging.getLogger(__name__)
 

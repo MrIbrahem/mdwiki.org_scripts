@@ -3,22 +3,23 @@
 {% block content %}
 <div class="card">
   <div class="card-header" style="font-weight:bold;">
-    <h3>{{ title or "WikiProjectMed Tools" }}</h3>
+    <h3>{{ title or "mdwiki.org Tools" }}</h3>
   </div>
   <div class="card-body">
     {% if current_user and current_user.is_authenticated %}
-      <p>Signed in as <strong>{{ current_user.username }}</strong>.</p>
+    <p>Signed in as <strong>{{ current_user.username }}</strong>.</p>
     {% endif %}
     <p>Available tools:</p>
-    <ul class="list-unstyled">
-      <li><a href="{{ url_for('dup.dup') }}">Fix duplicate redirects</a></li>
-      <li><a href="{{ url_for('fixred.fixred') }}">Fix redirects in page text</a></li>
-      <li><a href="{{ url_for('fixref.fixref') }}">Normalize references</a></li>
-      <li><a href="{{ url_for('redirect.redirect') }}">Create redirects</a></li>
-      <li><a href="{{ url_for('newupdater.newupdater') }}">Medical content updater</a></li>
-      <li><a href="{{ url_for('import_history.import_history') }}">Import page history</a></li>
-      <li><a href="{{ url_for('replace.replace') }}">Find &amp; replace</a></li>
-    </ul>
+    <!-- bolted list bs5.3 -->
+    <ol class="list-group list-group-numbered mb-0">
+      <li class="list-group-item"><a href="{{ url_for('dup.dup') }}">Fix duplicate redirects</a></li>
+      <li class="list-group-item"><a href="{{ url_for('fixred.fixred') }}">Fix redirects in page text</a></li>
+      <li class="list-group-item"><a href="{{ url_for('fixref.fixref') }}">Normalize references</a></li>
+      <li class="list-group-item"><a href="{{ url_for('redirect.redirect') }}">Create redirects</a></li>
+      <li class="list-group-item"><a href="{{ url_for('newupdater.newupdater') }}">Medical content updater</a></li>
+      <li class="list-group-item"><a href="{{ url_for('import_history.import_history') }}">Import page history</a></li>
+      <li class="list-group-item"><a href="{{ url_for('replace.replace') }}">Find &amp; replace</a></li>
+    </ol>
   </div>
 </div>
 {% endblock %}
