@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from main_app.auth import ANONYMOUS, User, current_user, is_authorized
 
 

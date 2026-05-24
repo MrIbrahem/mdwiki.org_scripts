@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from main_app.services.redirect import _valid_title
 
 
@@ -28,7 +27,7 @@ class TestValidTitle:
         "title",
         [
             "Category:Drugs",
-            "category:Drugs",     # case-insensitive
+            "category:Drugs",  # case-insensitive
             "File:Pill.png",
             "Template:Drugbox",
             "User:Doc James",

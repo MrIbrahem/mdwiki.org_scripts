@@ -6,7 +6,6 @@ import time
 from threading import Event
 
 import pytest
-
 from main_app.jobs import runner
 from main_app.jobs.models import Job
 from main_app.jobs.store import JobStore, get_store

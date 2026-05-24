@@ -5,7 +5,6 @@ from __future__ import annotations
 import time
 
 import pytest
-
 from main_app.jobs import runner
 
 

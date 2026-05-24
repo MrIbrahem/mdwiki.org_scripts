@@ -18,7 +18,6 @@ from __future__ import annotations
 import time
 
 import pytest
-
 from main_app.jobs.store import get_store
 
 
@@ -416,8 +415,8 @@ class TestNewupdater:
         assert b"Save with edit summary" not in r.data
 
     def test_get_with_title_changes_renders_diff_and_save_button(self, client, monkeypatch):
-        from main_app.services.newupdater import UpdaterOutcome
         import main_app.services.newupdater as nu
+        from main_app.services.newupdater import UpdaterOutcome
 
         monkeypatch.setattr(
             nu,
@@ -429,8 +428,8 @@ class TestNewupdater:
         assert b"Save with edit summary" in r.data
 
     def test_get_with_title_no_changes_renders_info(self, client, monkeypatch):
-        from main_app.services.newupdater import UpdaterOutcome
         import main_app.services.newupdater as nu
+        from main_app.services.newupdater import UpdaterOutcome
 
         monkeypatch.setattr(
             nu,
@@ -442,8 +441,8 @@ class TestNewupdater:
         assert b"no changes" in r.data
 
     def test_get_with_title_notext_renders_warning(self, client, monkeypatch):
-        from main_app.services.newupdater import UpdaterOutcome
         import main_app.services.newupdater as nu
+        from main_app.services.newupdater import UpdaterOutcome
 
         monkeypatch.setattr(nu, "work_on_title", lambda title: UpdaterOutcome(kind="notext"))
         r = client.get("/newupdater/?title=Empty")
@@ -451,8 +450,8 @@ class TestNewupdater:
         assert b"empty" in r.data.lower()
 
     def test_post_save_calls_save_page_and_redirects(self, client, csrf_token, monkeypatch):
-        from main_app.services.newupdater import UpdaterOutcome
         import main_app.services.newupdater as nu
+        from main_app.services.newupdater import UpdaterOutcome
 
         # Render the diff page so the form has CSRF.
         monkeypatch.setattr(
@@ -476,8 +475,8 @@ class TestNewupdater:
         assert save_calls == ["Aspirin"]
 
     def test_post_without_title_redirects_with_flash(self, client, csrf_token, monkeypatch):
-        from main_app.services.newupdater import UpdaterOutcome
         import main_app.services.newupdater as nu
+        from main_app.services.newupdater import UpdaterOutcome
 
         monkeypatch.setattr(
             nu,

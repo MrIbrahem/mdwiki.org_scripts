@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from main_app.services import newupdater as svc
 
 
