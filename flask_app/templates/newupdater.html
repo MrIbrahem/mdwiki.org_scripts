@@ -10,14 +10,8 @@
     <form method="GET" action="{{ url_for('newupdater.newupdater') }}" class="row g-2 mb-3">
       <div class="col-md-9">
         <label for="newupdater-title" class="form-label">Page title</label>
-        <input
-          id="newupdater-title"
-          name="title"
-          type="text"
-          class="form-control"
-          value="{{ form_title or '' }}"
-          placeholder="e.g. Aspirin"
-          required>
+        <input id="newupdater-title" name="title" type="text" class="form-control" value="{{ form_title or '' }}"
+          placeholder="e.g. Aspirin" required>
       </div>
       <div class="col-md-3 d-flex align-items-end">
         <button class="btn btn-outline-primary w-100" type="submit">Preview</button>
@@ -25,28 +19,28 @@
     </form>
 
     {% if outcome %}
-      {% if outcome.kind == "changes" %}
-        <h5>Proposed changes for <code>{{ form_title }}</code></h5>
-        <pre class="mb-3"
-             style="max-height: 480px; overflow:auto; background:#f8f9fa; padding:10px; border:1px solid #dee2e6;">{{ diff }}</pre>
+    {% if outcome.kind == "changes" %}
+    <h5>Proposed changes for <code>{{ form_title }}</code></h5>
+    <pre class="mb-3"
+      style="max-height: 480px; overflow:auto; background:#f8f9fa; padding:10px; border:1px solid #dee2e6;">{{ diff }}</pre>
 
-        <form method="POST" action="{{ url_for('newupdater.newupdater') }}">
-          {{ csrf() }}
-          <input type="hidden" name="title" value="{{ form_title }}">
-          <button class="btn btn-success" type="submit">
-            Save with edit summary <em>"Med updater."</em>
-          </button>
-        </form>
-      {% elif outcome.kind == "no_changes" %}
-        <div class="alert alert-info">
-          <code>{{ form_title }}</code>: the rewriter produced no changes.
-        </div>
-      {% elif outcome.kind == "notext" %}
-        <div class="alert alert-warning">
-          <code>{{ form_title }}</code>: the page is empty, missing, or the
-          rewriter produced empty output.
-        </div>
-      {% endif %}
+    <form method="POST" action="{{ url_for('newupdater.newupdater_post') }}">
+      {{ csrf() }}
+      <input type="hidden" name="title" value="{{ form_title }}">
+      <button class="btn btn-success" type="submit">
+        Save with edit summary <em>"Med updater."</em>
+      </button>
+    </form>
+    {% elif outcome.kind == "no_changes" %}
+    <div class="alert alert-info">
+      <code>{{ form_title }}</code>: the rewriter produced no changes.
+    </div>
+    {% elif outcome.kind == "notext" %}
+    <div class="alert alert-warning">
+      <code>{{ form_title }}</code>: the page is empty, missing, or the
+      rewriter produced empty output.
+    </div>
+    {% endif %}
     {% endif %}
   </div>
 </div>

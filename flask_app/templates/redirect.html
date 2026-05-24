@@ -14,27 +14,18 @@
       <code>User:</code>, <code>Wikipedia:</code>) and disambiguation pages
       are skipped.
     </p>
-    <form method="POST" action="{{ url_for('redirect.redirect') }}">
+    <form method="POST" action="{{ url_for('redirect.redirect_post') }}">
       {{ csrf() }}
       <div class="mb-3">
         <label for="redirect-title" class="form-label">Single title</label>
-        <input
-          id="redirect-title"
-          name="title"
-          type="text"
-          class="form-control"
-          value="{{ form_title or '' }}"
+        <input id="redirect-title" name="title" type="text" class="form-control" value="{{ form_title or '' }}"
           placeholder="e.g. Aspirin">
       </div>
       <div class="mb-3">
         <label for="redirect-titlelist" class="form-label">
           Or list of titles (one per line)
         </label>
-        <textarea
-          id="redirect-titlelist"
-          name="titlelist"
-          class="form-control"
-          rows="8"
+        <textarea id="redirect-titlelist" name="titlelist" class="form-control" rows="8"
           placeholder="Aspirin&#10;Paracetamol&#10;Ibuprofen">{{ form_titlelist or '' }}</textarea>
       </div>
       <button class="btn btn-outline-primary" type="submit">Start</button>

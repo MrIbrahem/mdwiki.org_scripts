@@ -12,36 +12,22 @@
       English Wikipedia, then re-saves the current mdwiki body on top so
       the visible content is unchanged. Restricted to allow-listed users.
     </p>
-    <form method="POST" action="{{ url_for('import_history.import_history') }}">
+    <form method="POST" action="{{ url_for('import_history.import_history_post') }}">
       {{ csrf() }}
       <div class="row g-3 mb-3">
         <div class="col-md-9">
           <label for="ih-title" class="form-label">Single title</label>
-          <input
-            id="ih-title"
-            name="title"
-            type="text"
-            class="form-control"
-            value="{{ form_title or '' }}"
+          <input id="ih-title" name="title" type="text" class="form-control" value="{{ form_title or '' }}"
             placeholder="e.g. Crohn's disease">
         </div>
         <div class="col-md-3">
           <label for="ih-from" class="form-label">Source lang (reserved)</label>
-          <input
-            id="ih-from"
-            name="from"
-            type="text"
-            class="form-control"
-            value="{{ form_from or 'en' }}">
+          <input id="ih-from" name="from" type="text" class="form-control" value="{{ form_from or 'en' }}">
         </div>
       </div>
       <div class="mb-3">
         <label for="ih-titlelist" class="form-label">Or list of titles (one per line)</label>
-        <textarea
-          id="ih-titlelist"
-          name="titlelist"
-          class="form-control"
-          rows="8"
+        <textarea id="ih-titlelist" name="titlelist" class="form-control" rows="8"
           placeholder="Aspirin&#10;Paracetamol">{{ form_titlelist or '' }}</textarea>
       </div>
       <button class="btn btn-outline-primary" type="submit">Start</button>
