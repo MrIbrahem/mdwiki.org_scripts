@@ -5,7 +5,7 @@ from __future__ import annotations
 import time
 
 import pytest
-from main_app.jobs import runner
+from flask_app.main_app.jobs import runner
 
 
 def _wait(job, *statuses, timeout=2.0):

@@ -18,7 +18,7 @@ from __future__ import annotations
 import time
 
 import pytest
-from main_app.jobs.store import get_store
+from flask_app.main_app.jobs.store import get_store
 
 
 def _wait_done(client, job_id, timeout=2.0):
@@ -52,8 +52,8 @@ class TestDup:
         assert b"csrf_token" in r.data
 
     def test_post_starts_job_and_redirects(self, client, csrf_token, monkeypatch):
-        from main_app.app_routes.dup import bp_dup  # noqa: F401  ensure import
-        from main_app.services import fix_duplicate
+        from flask_app.main_app.app_routes.dup import bp_dup  # noqa: F401  ensure import
+        from flask_app.main_app.services import fix_duplicate
 
         seen: dict = {}
 
@@ -73,7 +73,7 @@ class TestDup:
         assert seen == {"called": True, "save": True}
 
     def test_concurrent_post_returns_existing_job(self, client, csrf_token, monkeypatch):
-        from main_app.services import fix_duplicate
+        from flask_app.main_app.services import fix_duplicate
 
         # Slow stub so the first job is still running when the second POST lands.
         def stub(*, on_progress, stop_event, **kw):
@@ -104,7 +104,7 @@ class TestFixred:
         assert b'name="title"' in r.data
 
     def test_post_with_title_submits_job(self, client, csrf_token, monkeypatch):
-        from main_app.services import fixred
+        from flask_app.main_app.services import fixred
 
         captured: dict = {}
 
@@ -126,7 +126,7 @@ class TestFixred:
     def test_get_with_title_query_also_submits_job(self, client, monkeypatch):
         """Legacy bookmark URLs like /fixred/?title=Foo continue to work."""
 
-        from main_app.services import fixred
+        from flask_app.main_app.services import fixred
 
         called = []
 
@@ -160,7 +160,7 @@ class TestRedirect:
         assert b'name="titlelist"' in r.data
 
     def test_post_single_title_submits_job(self, client, csrf_token, monkeypatch):
-        from main_app.services import redirect as redsvc
+        from flask_app.main_app.services import redirect as redsvc
 
         captured: dict = {}
 
@@ -178,7 +178,7 @@ class TestRedirect:
         assert captured["titles"] == ["Aspirin"]
 
     def test_post_titlelist_dedupes_and_strips(self, client, csrf_token, monkeypatch):
-        from main_app.services import redirect as redsvc
+        from flask_app.main_app.services import redirect as redsvc
 
         captured: dict = {}
 
@@ -222,7 +222,7 @@ class TestFixref:
         assert b'name="number"' in r.data
 
     def test_post_titlelist_submits_job(self, client, csrf_token, monkeypatch):
-        from main_app.services import fixref as fsvc
+        from flask_app.main_app.services import fixref as fsvc
 
         captured: dict = {}
 
@@ -242,7 +242,7 @@ class TestFixref:
         assert captured["number"] is None
 
     def test_post_category_submits_job(self, client, csrf_token, monkeypatch):
-        from main_app.services import fixref as fsvc
+        from flask_app.main_app.services import fixref as fsvc
 
         captured: dict = {}
 
@@ -261,7 +261,7 @@ class TestFixref:
         assert captured["titles"] in (None, [])
 
     def test_post_number_submits_job(self, client, csrf_token, monkeypatch):
-        from main_app.services import fixref as fsvc
+        from flask_app.main_app.services import fixref as fsvc
 
         captured: dict = {}
 
@@ -302,7 +302,7 @@ class TestImportHistory:
         assert b'name="titlelist"' in r.data
 
     def test_post_submits_job_with_titles_and_from(self, client, csrf_token, monkeypatch):
-        from main_app.services import imp
+        from flask_app.main_app.services import imp
 
         captured: dict = {}
 
@@ -352,7 +352,7 @@ class TestReplace:
         assert b'name="listtype"' in r.data
 
     def test_post_submits_job_with_find_replace_listtype(self, client, csrf_token, monkeypatch):
-        from main_app.services import replace as repsvc
+        from flask_app.main_app.services import replace as repsvc
 
         captured: dict = {}
 
@@ -416,7 +416,7 @@ class TestNewupdater:
 
     def test_get_with_title_changes_renders_diff_and_save_button(self, client, monkeypatch):
         import main_app.services.newupdater as nu
-        from main_app.services.newupdater import UpdaterOutcome
+        from flask_app.main_app.services.newupdater import UpdaterOutcome
 
         monkeypatch.setattr(
             nu,
@@ -429,7 +429,7 @@ class TestNewupdater:
 
     def test_get_with_title_no_changes_renders_info(self, client, monkeypatch):
         import main_app.services.newupdater as nu
-        from main_app.services.newupdater import UpdaterOutcome
+        from flask_app.main_app.services.newupdater import UpdaterOutcome
 
         monkeypatch.setattr(
             nu,
@@ -442,7 +442,7 @@ class TestNewupdater:
 
     def test_get_with_title_notext_renders_warning(self, client, monkeypatch):
         import main_app.services.newupdater as nu
-        from main_app.services.newupdater import UpdaterOutcome
+        from flask_app.main_app.services.newupdater import UpdaterOutcome
 
         monkeypatch.setattr(nu, "work_on_title", lambda title: UpdaterOutcome(kind="notext"))
         r = client.get("/newupdater/?title=Empty")
@@ -451,7 +451,7 @@ class TestNewupdater:
 
     def test_post_save_calls_save_page_and_redirects(self, client, csrf_token, monkeypatch):
         import main_app.services.newupdater as nu
-        from main_app.services.newupdater import UpdaterOutcome
+        from flask_app.main_app.services.newupdater import UpdaterOutcome
 
         # Render the diff page so the form has CSRF.
         monkeypatch.setattr(
@@ -476,7 +476,7 @@ class TestNewupdater:
 
     def test_post_without_title_redirects_with_flash(self, client, csrf_token, monkeypatch):
         import main_app.services.newupdater as nu
-        from main_app.services.newupdater import UpdaterOutcome
+        from flask_app.main_app.services.newupdater import UpdaterOutcome
 
         monkeypatch.setattr(
             nu,

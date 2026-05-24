@@ -6,9 +6,9 @@ import time
 from threading import Event
 
 import pytest
-from main_app.jobs import runner
-from main_app.jobs.models import Job
-from main_app.jobs.store import JobStore, get_store
+from flask_app.main_app.jobs import runner
+from flask_app.main_app.jobs.models import Job
+from flask_app.main_app.jobs.store import JobStore, get_store
 
 
 def wait_for(job: Job, *statuses: str, timeout: float = 2.0) -> str:

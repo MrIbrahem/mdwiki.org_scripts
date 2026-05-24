@@ -49,7 +49,7 @@ def client(app):
 def reset_job_store():
     """Reset the in-memory JobStore between tests."""
 
-    from main_app.jobs import store as store_mod
+    from flask_app.main_app.jobs import store as store_mod
 
     store_mod._store = None
     yield

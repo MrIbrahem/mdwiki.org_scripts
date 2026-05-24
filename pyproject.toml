@@ -14,6 +14,7 @@ test = [
 #                 PYTEST
 # ============================================
 [tool.pytest.ini_options]
+pythonpath = [".", "flask_app"]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 filterwarnings = [

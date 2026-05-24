@@ -5,7 +5,7 @@ from __future__ import annotations
 import threading
 
 import pytest
-from main_app.services import fix_duplicate as svc
+from flask_app.main_app.services import fix_duplicate as svc
 
 
 class FakePage:
