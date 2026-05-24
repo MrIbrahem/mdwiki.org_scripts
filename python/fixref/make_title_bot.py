@@ -62,14 +62,18 @@ def get_url(url):
     json1 = {}
     # ---
     try:
-        req = requests.get(url, timeout=10)
+        req = requests.get(
+            url,
+            timeout=10,
+            headers={"User-Agent": "mdwiki.org tools/1.0 (https://mdwiki.toolforge.org/; tools.mdwiki@toolforge.org)"},
+        )
         # ---
         if 500 <= req.status_code < 600:
             logger.info(f"received {req.status_code} status from {req.url}")
         else:
             json1 = req.json()
     # ---
-    except Exception as e:
+    except Exception:
         logger.exception("Exception:", exc_info=True)
     # ---
     return json1
@@ -132,7 +136,7 @@ def make_title(url):
     titleBlackList = re.compile(globalbadtitles, re.I | re.S | re.X)
     # ---
     if titleBlackList.match(title):
-        logger.error(f"<<red>> WARNING<<default>> {url} : " "Blacklisted title ({title})")
+        logger.error(f"<<red>> WARNING<<default>> {url} : Blacklisted title ({title})")
     # ---
     Title_cash[url] = title
     # ---
@@ -140,6 +144,3 @@ def make_title(url):
         logger.info(f"<<green>> make_title_bot: newtitle: ({title})")
     # ---
     return title
-
-
-# ---
