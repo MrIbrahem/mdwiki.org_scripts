@@ -9,6 +9,7 @@ from flask import Flask, flash, render_template
 from flask_wtf.csrf import CSRFError, CSRFProtect
 
 from .config import settings
+from .auth import current_user, is_authorized
 from .app_routes import register_blueprints
 
 logger = logging.getLogger(__name__)
@@ -101,8 +102,13 @@ def create_app() -> Flask:
     # Initialize CSRF protection
     csrf = CSRFProtect(app)  # noqa: F841
 
-    # @app.context_processor
-    # def _inject_user() -> dict[str, Any]: return context_user()
+    @app.context_processor
+    def _inject_user() -> dict:
+        """Make `current_user` and `is_authorized` available in all templates."""
+        return {
+            "current_user": current_user(),
+            "is_authorized": is_authorized,
+        }
 
     # app.jinja_env.filters["format_stage_timestamp"] = format_stage_timestamp
     # app.jinja_env.filters["short_url"] = short_url

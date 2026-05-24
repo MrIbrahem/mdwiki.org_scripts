@@ -61,10 +61,15 @@ class Settings:
     secret_key: str
     oauth_encryption_key: str
     cookie: CookieConfig
-    oauth: OAuthConfig
+    oauth: Optional[OAuthConfig]
     paths: Paths
     security: SecurityConfig
     csrf_time_limit: Optional[int]  # None means never expire
+    # Phase-1 additions (see docs/merge-plan.md §7)
+    allowlist_users: tuple[str, ...]
+    enable_oauth: bool
+    jobs_max_workers: int
+    jobs_log_lines: int
 
 
 def _load_db_data_new() -> DbConfig:
@@ -188,16 +193,18 @@ def get_settings() -> Settings:
     STATE_SESSION_KEY = os.getenv("STATE_SESSION_KEY", "oauth_state_nonce")
     REQUEST_TOKEN_SESSION_KEY = os.getenv("REQUEST_TOKEN_SESSION_KEY", "state")
 
+    enable_oauth = _env_bool("ENABLE_OAUTH", default=False)
+
     oauth_config = _load_oauth_config()
 
-    if oauth_config is None:
+    if enable_oauth and oauth_config is None:
         raise RuntimeError(
             "MediaWiki OAuth configuration is incomplete. Set OAUTH_MWURI, OAUTH_CONSUMER_KEY, and OAUTH_CONSUMER_SECRET."
         )
 
     oauth_encryption_key = os.getenv("OAUTH_ENCRYPTION_KEY", "")
-    if not oauth_encryption_key:
-        raise RuntimeError("OAUTH_ENCRYPTION_KEY environment variable is required")
+    if enable_oauth and not oauth_encryption_key:
+        raise RuntimeError("OAUTH_ENCRYPTION_KEY environment variable is required when ENABLE_OAUTH=true")
 
     cookie = CookieConfig(
         name=os.getenv("AUTH_COOKIE_NAME", "uid_enc"),
@@ -231,6 +238,14 @@ def get_settings() -> Settings:
         secret_key_fallbacks=secret_key_fallbacks,
     )
 
+    # Tool authorization allow-list (used by /import-history/ and /replace/).
+    allowlist_raw = os.getenv("ALLOWLIST_USERS", "Doc James,Mr. Ibrahem")
+    allowlist_users = tuple(name.strip() for name in allowlist_raw.split(",") if name.strip())
+
+    # Background job runner sizing.
+    jobs_max_workers = max(1, _env_int("JOBS_MAX_WORKERS", 2))
+    jobs_log_lines = max(10, _env_int("JOBS_LOG_LINES", 200))
+
     return Settings(
         is_localhost=is_localhost,
         paths=_get_paths(),
@@ -243,6 +258,10 @@ def get_settings() -> Settings:
         oauth=oauth_config,
         security=security,
         csrf_time_limit=csrf_time_limit,
+        allowlist_users=allowlist_users,
+        enable_oauth=enable_oauth,
+        jobs_max_workers=jobs_max_workers,
+        jobs_log_lines=jobs_log_lines,
     )
 
 
