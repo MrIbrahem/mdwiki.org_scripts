@@ -8,7 +8,7 @@ from typing import Tuple
 from flask import Flask, flash, render_template
 from flask_wtf.csrf import CSRFError, CSRFProtect
 
-from . import settings
+from .config import settings
 from .app_routes import register_blueprints
 
 logger = logging.getLogger(__name__)

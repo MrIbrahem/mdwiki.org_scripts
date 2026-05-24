@@ -10,7 +10,7 @@ from flask import (
     request,
 )
 
-bp_dup = Blueprint("main", __name__, url_prefix="/dup")
+bp_dup = Blueprint("dup", __name__, url_prefix="/dup")
 logger = logging.getLogger(__name__)
 
 
