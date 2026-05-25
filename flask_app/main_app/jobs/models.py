@@ -61,6 +61,14 @@ class Job:
             "updated_at": self.updated_at.isoformat(),
         }
 
+    def from_json(self, json_data: dict[str, any]):
+        """
+        """
+        json_data["created_at"] = datetime.fromisoformat(json_data.get("created_at")) if json_data.get("created_at") else _now()
+        json_data["updated_at"] = datetime.fromisoformat(json_data.get("updated_at")) if json_data.get("updated_at") else _now()
+
+        return Job(**json_data, stop_event=None)
+
     def dump(self) -> None:
         """
         save job to_dict to json file

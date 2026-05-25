@@ -34,7 +34,7 @@ class JobStore:
                 job_data = json.loads(json_file.read_text(encoding="utf-8"))
             except Exception:
                 continue
-            job = Job(**job_data, stop_event=None)
+            job = Job.from_json(job_data)
             with self._lock:
                 self._jobs[job.id] = job
 
