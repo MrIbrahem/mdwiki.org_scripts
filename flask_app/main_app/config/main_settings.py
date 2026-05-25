@@ -9,18 +9,77 @@ from typing import Optional
 
 from .classes import (
     CookieConfig,
-    # CorsConfig,
-    # JobsConfig,
-    # SessionConfig,
     DbConfig,
+    # JobsConfig,
     OAuthConfig,
     Paths,
     SecurityConfig,
+    SessionConfig,
     Settings,
 )
 
+# --- Helper Functions ---
 
-def _load_db_data_new() -> DbConfig:
+
+def _env_bool(name: str, default: bool = False) -> bool:
+    """Convert environment variable to boolean."""
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _env_int(name: str, default: int) -> int:
+    """Convert environment variable to integer."""
+    value = os.getenv(name)
+    if value is None:
+        return default
+    try:
+        return int(value)
+    except ValueError as exc:  # pragma: no cover - defensive guard
+        raise ValueError(f"Environment variable {name} must be an integer") from exc
+
+
+def resolve_path(_path) -> Path:
+    """Expand environment variables and user home directory in paths."""
+    _path = os.path.expandvars(str(_path))
+    _path = Path(_path).expanduser()
+    return _path
+
+
+# --- Configuration Loaders ---
+
+
+def _load_security_config() -> SecurityConfig:
+    """
+    Load security configuration (Flask 3.1+ features)
+    """
+    # MAX_CONTENT_LENGTH: Maximum request size (default 100MB for SVG uploads)
+    max_content_length = _env_int("MAX_CONTENT_LENGTH", 100 * 1024 * 1024)
+
+    # MAX_FORM_MEMORY_SIZE: Maximum form data in memory (default 16MB)
+    max_form_memory_size = _env_int("MAX_FORM_MEMORY_SIZE", 16 * 1024 * 1024)
+
+    # MAX_FORM_PARTS: Maximum number of form fields (default 1000)
+    max_form_parts = _env_int("MAX_FORM_PARTS", 1000)
+
+    # SECRET_KEY_FALLBACKS: Comma-separated list of fallback secret keys for rotation
+    secret_key_fallbacks_str = os.getenv("SECRET_KEY_FALLBACKS", "")
+    secret_key_fallbacks = tuple(key.strip() for key in secret_key_fallbacks_str.split(",") if key.strip())
+
+    secret_key = os.getenv("FLASK_SECRET_KEY", "")
+
+    security_config = SecurityConfig(
+        secret_key=secret_key,
+        max_content_length=max_content_length,
+        max_form_memory_size=max_form_memory_size,
+        max_form_parts=max_form_parts,
+        secret_key_fallbacks=secret_key_fallbacks,
+    )
+    return security_config
+
+
+def _load_database_config() -> DbConfig:
     """
     Construct a DbConfig populated from environment variables.
 
@@ -38,6 +97,32 @@ def _load_db_data_new() -> DbConfig:
         db_host=os.getenv("DB_HOST", ""),
         db_user=os.getenv("TOOL_REPLICA_USER", None),
         db_password=os.getenv("TOOL_REPLICA_PASSWORD", None),
+    )
+
+
+def _load_oauth_config() -> Optional[OAuthConfig]:
+    """
+    Loads OAuth settings and validates them if enabled.
+
+    Raises:
+        RuntimeError: If OAUTH_ENCRYPTION_KEY is missing.
+    """
+    mw_uri = os.getenv("OAUTH_MWURI", "")
+    consumer_key = os.getenv("OAUTH_CONSUMER_KEY", "")
+    consumer_secret = os.getenv("OAUTH_CONSUMER_SECRET", "")
+    encryption_key = os.getenv("OAUTH_ENCRYPTION_KEY", "")
+    if not (mw_uri and consumer_key and consumer_secret):
+        return None
+
+    return OAuthConfig(
+        mw_uri=mw_uri,
+        consumer_key=consumer_key,
+        consumer_secret=consumer_secret,
+        user_agent=os.getenv(
+            "USER_AGENT",
+            "Copy SVG Translations/1.0 (https://copy-svg-langs.toolforge.org; tools.copy-svg-langs@toolforge.org)",
+        ),
+        encryption_key=encryption_key,
     )
 
 
@@ -71,45 +156,6 @@ def _get_paths() -> Paths:
     )
 
 
-def _env_bool(name: str, default: bool = False) -> bool:
-    value = os.getenv(name)
-    if value is None:
-        return default
-    return value.strip().lower() in {"1", "true", "yes", "on"}
-
-
-def _env_int(name: str, default: int) -> int:
-    value = os.getenv(name)
-    if value is None:
-        return default
-    try:
-        return int(value)
-    except ValueError as exc:  # pragma: no cover - defensive guard
-        raise ValueError(f"Environment variable {name} must be an integer") from exc
-
-
-def _load_oauth_config() -> Optional[OAuthConfig]:
-    mw_uri = os.getenv("OAUTH_MWURI", "")
-    consumer_key = os.getenv("OAUTH_CONSUMER_KEY", "")
-    consumer_secret = os.getenv("OAUTH_CONSUMER_SECRET", "")
-    if not (mw_uri and consumer_key and consumer_secret):
-        return None
-
-    oauth_encryption_key = os.getenv("OAUTH_ENCRYPTION_KEY", "")
-
-    return OAuthConfig(
-        mw_uri=mw_uri,
-        consumer_key=consumer_key,
-        consumer_secret=consumer_secret,
-        user_agent=os.getenv(
-            "USER_AGENT",
-            "Copy SVG Translations/1.0 (https://copy-svg-langs.toolforge.org; tools.copy-svg-langs@toolforge.org)",
-        ),
-        encryption_key=oauth_encryption_key,
-        upload_host=os.getenv("UPLOAD_END_POINT", "commons.wikimedia.org"),
-    )
-
-
 def is_localhost(host: str) -> bool:
     local_hosts = [
         "localhost",
@@ -117,6 +163,22 @@ def is_localhost(host: str) -> bool:
     ]
 
     return any(x in host for x in local_hosts)
+
+
+def load_cookie_config() -> CookieConfig:
+    session_cookie_secure = _env_bool("SESSION_COOKIE_SECURE", default=True)
+    session_cookie_httponly = _env_bool("SESSION_COOKIE_HTTPONLY", default=True)
+    session_cookie_samesite = os.getenv("SESSION_COOKIE_SAMESITE", "Lax")
+
+    cookie = CookieConfig(
+        name=os.getenv("AUTH_COOKIE_NAME", "uid_enc"),
+        max_age=_env_int("AUTH_COOKIE_MAX_AGE", 30 * 24 * 3600),
+        secure=session_cookie_secure,
+        httponly=session_cookie_httponly,
+        samesite=session_cookie_samesite,
+    )
+
+    return cookie
 
 
 @lru_cache(maxsize=1)
@@ -134,19 +196,18 @@ def get_settings() -> Settings:
         RuntimeError: If OAUTH_ENCRYPTION_KEY is missing.
         RuntimeError: If the OAuth configuration (OAUTH_MWURI, OAUTH_CONSUMER_KEY, OAUTH_CONSUMER_SECRET) is incomplete.
     """
-    secret_key = os.getenv("FLASK_SECRET_KEY", "")
-    if not secret_key:
+    sessions = SessionConfig(
+        state_key=os.getenv("STATE_SESSION_KEY", "oauth_state_nonce"),
+        request_token_key=os.getenv("REQUEST_TOKEN_SESSION_KEY", "state"),
+    )
+    security_config = _load_security_config()
+
+    if not security_config.secret_key:
         raise RuntimeError("FLASK_SECRET_KEY environment variable is required")
 
-    session_cookie_secure = _env_bool("SESSION_COOKIE_SECURE", default=True)
-    session_cookie_httponly = _env_bool("SESSION_COOKIE_HTTPONLY", default=True)
-    session_cookie_samesite = os.getenv("SESSION_COOKIE_SAMESITE", "Lax")
-    STATE_SESSION_KEY = os.getenv("STATE_SESSION_KEY", "oauth_state_nonce")
-    REQUEST_TOKEN_SESSION_KEY = os.getenv("REQUEST_TOKEN_SESSION_KEY", "state")
+    oauth_config = _load_oauth_config()
 
     enable_oauth = _env_bool("ENABLE_OAUTH", default=False)
-
-    oauth_config = _load_oauth_config()
 
     if enable_oauth and oauth_config is None:
         raise RuntimeError(
@@ -155,38 +216,13 @@ def get_settings() -> Settings:
     if enable_oauth and not oauth_config.encryption_key:
         raise RuntimeError("OAUTH_ENCRYPTION_KEY environment variable is required when ENABLE_OAUTH=true")
 
-    cookie = CookieConfig(
-        name=os.getenv("AUTH_COOKIE_NAME", "uid_enc"),
-        max_age=_env_int("AUTH_COOKIE_MAX_AGE", 30 * 24 * 3600),
-        secure=session_cookie_secure,
-        httponly=session_cookie_httponly,
-        samesite=session_cookie_samesite,
-    )
+    cookie_config = load_cookie_config()
 
     # CSRF token lifetime (in seconds). Default 3600 (1 hour).
     # Set to 0 or None to disable expiration (not recommended for production).
     csrf_time_limit = _env_int("WTF_CSRF_TIME_LIMIT", 3600)
     if not csrf_time_limit or csrf_time_limit <= 0:
         csrf_time_limit = 3600
-
-    # Load security configuration (Flask 3.1+ features)
-    # MAX_CONTENT_LENGTH: Maximum request size (default 100MB for SVG uploads)
-    max_content_length = _env_int("MAX_CONTENT_LENGTH", 100 * 1024 * 1024)
-    # MAX_FORM_MEMORY_SIZE: Maximum form data in memory (default 16MB)
-    max_form_memory_size = _env_int("MAX_FORM_MEMORY_SIZE", 16 * 1024 * 1024)
-    # MAX_FORM_PARTS: Maximum number of form fields (default 1000)
-    max_form_parts = _env_int("MAX_FORM_PARTS", 1000)
-    # SECRET_KEY_FALLBACKS: Comma-separated list of fallback secret keys for rotation
-    secret_key_fallbacks_str = os.getenv("SECRET_KEY_FALLBACKS", "")
-    secret_key_fallbacks = tuple(key.strip() for key in secret_key_fallbacks_str.split(",") if key.strip())
-
-    security = SecurityConfig(
-        max_content_length=max_content_length,
-        max_form_memory_size=max_form_memory_size,
-        max_form_parts=max_form_parts,
-        secret_key_fallbacks=secret_key_fallbacks,
-        secret_key=secret_key,
-    )
 
     # Tool authorization allow-list (used by /import-history/ and /replace/).
     allowlist_raw = os.getenv("ALLOWLIST_USERS", "Doc James,Mr. Ibrahem")
@@ -200,15 +236,16 @@ def get_settings() -> Settings:
     family = os.getenv("WIKI_FAMILY") or "mdwiki"
     wiki_domain = f"{lang}.{family}.org"
 
+    database_data = _load_database_config()
+
     return Settings(
         is_localhost=is_localhost,
         paths=_get_paths(),
-        database_data=_load_db_data_new(),
-        STATE_SESSION_KEY=STATE_SESSION_KEY,
-        REQUEST_TOKEN_SESSION_KEY=REQUEST_TOKEN_SESSION_KEY,
-        cookie=cookie,
+        database_data=database_data,
+        cookie=cookie_config,
         oauth=oauth_config,
-        security=security,
+        security=security_config,
+        sessions=sessions,
         csrf_time_limit=csrf_time_limit,
         allowlist_users=allowlist_users,
         enable_oauth=enable_oauth,
@@ -218,6 +255,7 @@ def get_settings() -> Settings:
     )
 
 
+# Singleton settings instance
 settings = get_settings()
 
 __all__ = [

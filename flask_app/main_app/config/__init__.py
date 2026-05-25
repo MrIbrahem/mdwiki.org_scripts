@@ -4,22 +4,21 @@ from __future__ import annotations
 
 from .classes import (
     CookieConfig,
-    SessionConfig,
     DbConfig,
     OAuthConfig,
     Paths,
     SecurityConfig,
+    SessionConfig,
     Settings,
 )
-
-from .main_settings import settings
-
 from .flask_config import (
     Config,
     DevelopmentConfig,
     ProductionConfig,
     TestingConfig,
+    build_sqlalchemy_uri,
 )
+from .main_settings import settings
 
 __all__ = [
     "DbConfig",
@@ -34,6 +33,6 @@ __all__ = [
     "DevelopmentConfig",
     "ProductionConfig",
     "TestingConfig",
-
+    "build_sqlalchemy_uri",
     "settings",
 ]

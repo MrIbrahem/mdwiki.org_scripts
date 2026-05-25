@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Tuple
+from typing import Tuple, Type
 
 from flask import Flask, flash, render_template
 from flask_wtf.csrf import CSRFError, CSRFProtect
@@ -11,6 +11,7 @@ from flask_wtf.csrf import CSRFError, CSRFProtect
 from .app_routes import register_blueprints
 from .auth import current_user, is_authorized
 from .config import settings
+from .core.cookies import CookieHeaderClient
 
 logger = logging.getLogger(__name__)
 
@@ -59,28 +60,29 @@ def register_error_pages(app: Flask):
         return render_template("index.html", title="Session Expired"), 400
 
 
-def create_app(config_class) -> Flask:
-    """
-    Create and configure and return the Flask application used by the project.
+def create_app(config_class: Type) -> Flask:
+    """Instantiate and configure the Flask application.
 
-    The returned app is configured with custom template and static folders, session cookie
-    settings from project settings, CSRF protection, registered
-    application blueprints, a user context processor, a Jinja filter for stage timestamps,
-    teardown handlers that close cached connections and task store, and handlers for 404
-    and 500 errors.
+    Args:
+        config_class: Configuration class for ``app.config.from_object()``.
+            When *None*, auto-detected from the ``FLASK_ENV`` environment
+            variable (defaults to ``ProductionConfig``).
 
     Returns:
-        Flask: The fully configured Flask application instance.
+        Configured Flask application instance.
     """
+
+    if config_class is None:
+        raise ValueError("config_class must be provided")
 
     app = Flask(
         __name__,
         template_folder="../templates",
         static_folder="../static",
     )
-    app.url_map.strict_slashes = False
 
-    # Configure CSRF token lifetime
+    app.url_map.strict_slashes = False
+    app.test_client_class = CookieHeaderClient
     app.config.from_object(config_class)
 
     # Initialize CSRF protection
