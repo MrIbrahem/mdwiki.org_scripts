@@ -1,3 +1,4 @@
+{%- macro edit_form(title, domain, newtext) -%}
 <div class="card mt-3">
     <div class="card-header aligncenter" style="font-weight:bold;">
         <h3>
@@ -9,7 +10,7 @@
     </div>
     <div class="card-body">
         <form id="editform" name="editform" method="POST"
-            action="https://{{ domain }}/w/index.php?title={{ title }}?action=submit" target="_blank">
+            action="https://{{ domain }}/w/index.php?title={{ title }}&action=submit" target="_blank">
             <input type="hidden" value="" name="wpEdittime">
             <input type="hidden" value="" name="wpStarttime">
             <input type="hidden" value="" name="wpScrolltop" id="wpScrolltop">
@@ -23,9 +24,7 @@
                 <label for="wikitext-new" class="form-label fw-semibold">
                     New Wikitext
                 </label>
-                <textarea id="wikitext-new" class="form-control" name="wpTextbox1" rows="5">
-                    {{ newtext }}
-                </textarea>
+                <textarea id="wikitext-new" class="form-control" name="wpTextbox1" rows="5">{{ newtext }}</textarea>
             </div>
             <div class="editOptions aligncenter">
                 <input id="wpPreview" type="submit" class="btn btn-outline-primary" tabindex="5" title="[p]"
@@ -38,3 +37,5 @@
         </form>
     </div>
 </div>
+
+{%- endmacro -%}

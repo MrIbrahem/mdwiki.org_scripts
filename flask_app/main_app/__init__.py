@@ -108,6 +108,7 @@ def create_app() -> Flask:
         return {
             "current_user": current_user(),
             "is_authorized": is_authorized,
+            "wiki_domain": settings.wiki_domain,
         }
 
     # app.jinja_env.filters["format_stage_timestamp"] = format_stage_timestamp

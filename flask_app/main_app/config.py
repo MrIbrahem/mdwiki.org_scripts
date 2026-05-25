@@ -70,6 +70,7 @@ class Settings:
     enable_oauth: bool
     jobs_max_workers: int
     jobs_log_lines: int
+    wiki_domain: str
 
 
 def _load_db_data_new() -> DbConfig:
@@ -246,6 +247,10 @@ def get_settings() -> Settings:
     jobs_max_workers = max(1, _env_int("JOBS_MAX_WORKERS", 2))
     jobs_log_lines = max(10, _env_int("JOBS_LOG_LINES", 200))
 
+    lang = os.getenv("WIKI_LANG") or "www"
+    family = os.getenv("WIKI_FAMILY") or "mdwiki"
+    wiki_domain = f"{lang}.{family}.org"
+
     return Settings(
         is_localhost=is_localhost,
         paths=_get_paths(),
@@ -262,6 +267,7 @@ def get_settings() -> Settings:
         enable_oauth=enable_oauth,
         jobs_max_workers=jobs_max_workers,
         jobs_log_lines=jobs_log_lines,
+        wiki_domain=wiki_domain,
     )
 
 
