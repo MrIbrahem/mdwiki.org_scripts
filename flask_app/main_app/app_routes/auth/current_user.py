@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from flask import has_request_context, request, session
 
-from ..config import settings
+from ...config import settings
 
 
 @dataclass(frozen=True)

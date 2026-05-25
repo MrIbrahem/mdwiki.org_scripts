@@ -6,8 +6,8 @@ import logging
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from ...auth import current_user
-from ...auth.decorators import login_required
+from ..auth import current_user
+from ..auth.decorators import login_required
 from ...jobs import runner
 from ...jobs.store import get_store
 from ...services import fixred as svc

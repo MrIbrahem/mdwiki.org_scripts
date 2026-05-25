@@ -8,8 +8,10 @@ from typing import Tuple, Type
 from flask import Flask, flash, render_template
 from flask_wtf.csrf import CSRFError, CSRFProtect
 
+from flask_app.main_app.app_routes.auth import is_authorized
+
 from .app_routes import register_blueprints
-from .auth import current_user, is_authorized
+from .app_routes.auth import current_user
 from .config import settings
 from .core.cookies import CookieHeaderClient
 
