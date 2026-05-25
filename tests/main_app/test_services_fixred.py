@@ -5,13 +5,6 @@ from __future__ import annotations
 from flask_app.main_app.services.fixred import _replace_links, _RunState
 
 
-def _state(**maps) -> _RunState:
-    s = _RunState()
-    s.normalized.update(maps.get("normalized", {}))
-    s.from_to.update(maps.get("from_to", {}))
-    return s
-
-
 class TestReplaceLinks:
     def test_simple_link_gets_piped_with_display_text(self):
         text = "see [[Aspirin]]."
@@ -39,7 +32,6 @@ class TestReplaceLinks:
     def test_normalized_alias_is_also_replaced(self):
         # state.normalized maps the canonical title back to the alternate
         # (e.g. lowercase) form the page text uses.
-        state = _state(normalized={"Aspirin": "aspirin"})
         text = "[[aspirin]] and [[Aspirin]]"
         result = _replace_links(text, "Aspirin", "aspirin", "Acetylsalicylic acid")
         assert "[[aspirin]]" not in result
