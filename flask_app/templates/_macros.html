@@ -21,19 +21,19 @@
 {%- endmacro -%}
 
 
-{%- macro edit_form(title, newtext) -%}
+{%- macro edit_form(domain, title, newtext) -%}
 <div class="card mt-3">
   <div class="card-header aligncenter" style="font-weight:bold;">
     <h3>
       <i class="bi bi-file-earmark-text"></i>
-      <a target="_blank" href="https://{{ wiki_domain }}/w/index.php?title={{ title }}">
+      <a target="_blank" href="https://{{ domain }}/w/index.php?title={{ title }}">
         {{ title }}
       </a>
     </h3>
   </div>
   <div class="card-body">
     <form id="editform" name="editform" method="POST"
-      action="https://{{ wiki_domain }}/w/index.php?title={{ title }}&action=submit" target="_blank">
+      action="https://{{ domain }}/w/index.php?title={{ title }}&action=submit" target="_blank">
       <input type="hidden" value="" name="wpEdittime">
       <input type="hidden" value="" name="wpStarttime">
       <input type="hidden" value="" name="wpScrolltop" id="wpScrolltop">
@@ -63,18 +63,18 @@
 
 {%- endmacro -%}
 
-{%- macro saved_alert(form_title, newrevid) -%}
+{%- macro saved_alert(domain, form_title, newrevid) -%}
 <div class="container-fluid">
   <div class="row justify-content-center">
     <div class="col-md-9 col-12">
       <div class="alert alert-success d-flex align-items-center" role="alert">
         <i class="bi bi-check-circle-fill me-2"></i> Changes have been published.
         <div class="ms-auto d-flex gap-2">
-          <a href="https://{{ wiki_domain }}/w/index.php?title=Special:Diff/{{ rewrevid }}" target="_blank"
+          <a href="https://{{ domain }}/w/index.php?title=Special:Diff/{{ newrevid }}" target="_blank"
             class="btn btn-outline-primary btn-sm">
             <i class="bi bi-file-earmark-text me-1"></i> Diff
           </a>
-          <a href="https://{{ wiki_domain }}/w/index.php?title={{ form_title }}&action=history" target="_blank"
+          <a href="https://{{ domain }}/w/index.php?title={{ form_title }}&action=history" target="_blank"
             class="btn btn-outline-primary btn-sm">
             <i class="bi bi-clock-history me-1"></i> History
           </a>

@@ -33,7 +33,7 @@
         {% if outcome %}
         {% if outcome.kind == "changes" %}
         <h5>Proposed changes for <code>{{ form_title }}</code></h5>
-        {{ edit_form(form_title, outcome.new_text) }}
+        {{ edit_form(wiki_domain, form_title, outcome.new_text) }}
 
         {% elif outcome.kind == "no_changes" %}
         <div class="alert alert-info">
@@ -45,7 +45,7 @@
             rewriter produced empty output.
         </div>
         {% elif outcome.kind == "saved" %}
-        {{ saved_alert(form_title, outcome.newrevid) }}
+        {{ saved_alert(wiki_domain, form_title, outcome.newrevid) }}
         {% endif %}
         {% endif %}
     </div>
