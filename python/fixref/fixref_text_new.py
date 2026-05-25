@@ -35,6 +35,7 @@ def change_lay_source(temp):
     # ---
     if title == "" and url != "":
         title = make_title(url)
+        title = title.replace("|", "{{!}}")
     # ---
     lay_temp = ""
     # ---
@@ -61,6 +62,8 @@ def add_title(temp):
     # ---
     if not title:
         return temp
+    # ---
+    title = title.replace("|", "{{!}}")
     # ---
     if title_arg:
         title_arg.value = title
