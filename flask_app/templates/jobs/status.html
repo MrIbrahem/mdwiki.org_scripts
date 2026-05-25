@@ -4,90 +4,96 @@
 {% block content %}
 {% set status_class = {'pending':'secondary','running':'primary','done':'success','error':'danger'}.get(job.status, 'secondary') %}
 <div class="card">
-  <div class="card-header d-flex align-items-center justify-content-between" style="font-weight:bold;">
-    <span>
-      Job <code>{{ job.id }}</code> &mdash; {{ job.tool }} &mdash;
-      <span class="badge bg-{{ status_class }}">{{ job.status }}</span>
-    </span>
-    {% if job.status in ("pending", "running") %}
-    <form method="POST"
-          action="{{ url_for('jobs.stop', job_id=job.id) }}"
-          onsubmit="return confirm('Stop job {{ job.id }}? It will halt at the next page boundary.');">
-      {{ csrf() }}
-      <button class="btn btn-sm btn-outline-warning" type="submit">Stop</button>
-    </form>
-    {% endif %}
-  </div>
-  <div class="card-body">
-    <dl class="row mb-3">
-      <dt class="col-sm-3">Submitted by</dt>
-      <dd class="col-sm-9">{{ job.submitted_by or "(anonymous)" }}</dd>
-      <dt class="col-sm-3">Created</dt>
-      <dd class="col-sm-9">{{ job.created_at.isoformat() }}</dd>
-      <dt class="col-sm-3">Updated</dt>
-      <dd class="col-sm-9">{{ job.updated_at.isoformat() }}</dd>
-      <dt class="col-sm-3">Progress</dt>
-      <dd class="col-sm-9" id="job-progress">
-        {{ job.progress.done }}/{{ job.progress.total or "?" }}
-      </dd>
-      {% if job.params %}
-      <dt class="col-sm-3">Params</dt>
-      <dd class="col-sm-9"><pre class="mb-0">{{ job.params|tojson(indent=2) }}</pre></dd>
-      {% endif %}
-      {% if job.result %}
-      <dt class="col-sm-3">Result</dt>
-      <dd class="col-sm-9"><pre class="mb-0">{{ job.result|tojson(indent=2) }}</pre></dd>
-      {% endif %}
-      {% if job.error %}
-      <dt class="col-sm-3">Error</dt>
-      <dd class="col-sm-9"><pre class="mb-0 text-danger">{{ job.error }}</pre></dd>
-      {% endif %}
-    </dl>
+    <div class="card-header d-flex align-items-center justify-content-between" style="font-weight:bold;">
+        <span>
+            Job <code>{{ job.id }}</code> &mdash; {{ job.tool }} &mdash;
+            <span class="badge bg-{{ status_class }}">{{ job.status }}</span>
+        </span>
+        {% if job.status in ("pending", "running") %}
+        <form method="POST" action="{{ url_for('jobs.stop', job_id=job.id) }}"
+            onsubmit="return confirm('Stop job {{ job.id }}? It will halt at the next page boundary.');">
+            {{ csrf() }}
+            <button class="btn btn-sm btn-outline-warning" type="submit">Stop</button>
+        </form>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <dl class="row mb-3">
+            <dt class="col-sm-3">Submitted by</dt>
+            <dd class="col-sm-9">{{ job.submitted_by or "(anonymous)" }}</dd>
+            <dt class="col-sm-3">Created</dt>
+            <dd class="col-sm-9">{{ job.created_at.isoformat() }}</dd>
+            <dt class="col-sm-3">Updated</dt>
+            <dd class="col-sm-9">{{ job.updated_at.isoformat() }}</dd>
+            <dt class="col-sm-3">Progress</dt>
+            <dd class="col-sm-9" id="job-progress">
+                {{ job.progress.done }}/{{ job.progress.total or "?" }}
+            </dd>
+            {% if job.params %}
+            <dt class="col-sm-3">Params</dt>
+            <dd class="col-sm-9">
+                <pre class="mb-0">{{ job.params|tojson(indent=2) }}</pre>
+            </dd>
+            {% endif %}
+            {% if job.result %}
+            <dt class="col-sm-3">Result</dt>
+            <dd class="col-sm-9">
+                <pre class="mb-0">{{ job.result|tojson(indent=2) }}</pre>
+            </dd>
+            {% endif %}
+            {% if job.error %}
+            <dt class="col-sm-3">Error</dt>
+            <dd class="col-sm-9">
+                <pre class="mb-0 text-danger">{{ job.error }}</pre>
+            </dd>
+            {% endif %}
+        </dl>
 
-    <h6>Log</h6>
-    <pre id="job-log"
-         style="max-height: 400px; overflow:auto; background:#f8f9fa; padding:10px; border:1px solid #dee2e6;">{% for line in job.log %}{{ line }}
+        <h6>Log</h6>
+        <pre id="job-log"
+            style="max-height: 400px; overflow:auto; background:#f8f9fa; padding:10px; border:1px solid #dee2e6;">{% for line in job.log %}{{ line }}
 {% endfor %}</pre>
-  </div>
+    </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 {% if job.status in ("pending", "running") %}
 <script>
-(function () {
-  const jobId = {{ job.id|tojson }};
-  const POLL_MS = 2000;
+    (function () {
+        const jobId = {{ job.id| tojson
+    }};
+    const POLL_MS = 2000;
 
-  async function poll() {
-    try {
-      const r = await fetch("/jobs/" + jobId + ".json", { cache: "no-store" });
-      if (!r.ok) return;
-      const data = await r.json();
+    async function poll() {
+        try {
+            const r = await fetch("/jobs/" + jobId + ".json", { cache: "no-store" });
+            if (!r.ok) return;
+            const data = await r.json();
 
-      if (data.status === "done" || data.status === "error") {
-        location.reload();
-        return;
-      }
+            if (data.status === "done" || data.status === "error") {
+                location.reload();
+                return;
+            }
 
-      const log = document.getElementById("job-log");
-      if (log && Array.isArray(data.log)) {
-        log.textContent = data.log.join("\n");
-        log.scrollTop = log.scrollHeight;
-      }
+            const log = document.getElementById("job-log");
+            if (log && Array.isArray(data.log)) {
+                log.textContent = data.log.join("\n");
+                log.scrollTop = log.scrollHeight;
+            }
 
-      const prog = document.getElementById("job-progress");
-      if (prog && data.progress) {
-        const total = data.progress.total ? data.progress.total : "?";
-        prog.textContent = data.progress.done + "/" + total;
-      }
-    } catch (e) {
-      /* swallow; we'll retry */
+            const prog = document.getElementById("job-progress");
+            if (prog && data.progress) {
+                const total = data.progress.total ? data.progress.total : "?";
+                prog.textContent = data.progress.done + "/" + total;
+            }
+        } catch (e) {
+            /* swallow; we'll retry */
+        }
     }
-  }
 
-  setInterval(poll, POLL_MS);
-})();
+    setInterval(poll, POLL_MS);
+}) ();
 </script>
 {% endif %}
 {% endblock %}
