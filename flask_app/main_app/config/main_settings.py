@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Optional
 
 from .classes import (  # JobsConfig,
+    OtherConfig,
     CookieConfig,
     DbConfig,
     OAuthConfig,
@@ -155,6 +156,39 @@ def _get_paths() -> Paths:
     )
 
 
+def load_other_config() -> OtherConfig:
+    # CSRF token lifetime (in seconds). Default 3600 (1 hour).
+    # Set to 0 or None to disable expiration (not recommended for production).
+    csrf_time_limit = _env_int("WTF_CSRF_TIME_LIMIT", 3600)
+    if not csrf_time_limit or csrf_time_limit <= 0:
+        csrf_time_limit = 3600
+
+    # Tool authorization allow-list (used by /import-history/ and /replace/).
+    _allowlist_raw = os.getenv("ALLOWLIST_USERS", "Doc James,Mr. Ibrahem")
+    allowlist_users = tuple(name.strip() for name in _allowlist_raw.split(",") if name.strip())
+
+    # Background job runner sizing.
+    jobs_max_workers = max(1, _env_int("JOBS_MAX_WORKERS", 2))
+    jobs_log_lines = max(10, _env_int("JOBS_LOG_LINES", 200))
+
+    _lang = os.getenv("WIKI_LANG") or "www"
+    _family = os.getenv("WIKI_FAMILY") or "mdwiki"
+    wiki_domain = f"{_lang}.{_family}.org"
+    static_server = os.getenv("STATIC_SERVER") or "https://tools-static.wmflabs.org/cdnjs"
+
+    _config = OtherConfig(
+        csrf_time_limit=csrf_time_limit,
+        allowlist_users=allowlist_users,
+
+        jobs_max_workers=jobs_max_workers,
+        jobs_log_lines=jobs_log_lines,
+        wiki_domain=wiki_domain,
+        static_server=static_server,
+    )
+
+    return _config
+
+
 def load_cookie_config() -> CookieConfig:
     session_cookie_secure = _env_bool("SESSION_COOKIE_SECURE", default=True)
     session_cookie_httponly = _env_bool("SESSION_COOKIE_HTTPONLY", default=True)
@@ -208,23 +242,7 @@ def get_settings() -> Settings:
 
     cookie_config = load_cookie_config()
 
-    # CSRF token lifetime (in seconds). Default 3600 (1 hour).
-    # Set to 0 or None to disable expiration (not recommended for production).
-    csrf_time_limit = _env_int("WTF_CSRF_TIME_LIMIT", 3600)
-    if not csrf_time_limit or csrf_time_limit <= 0:
-        csrf_time_limit = 3600
-
-    # Tool authorization allow-list (used by /import-history/ and /replace/).
-    allowlist_raw = os.getenv("ALLOWLIST_USERS", "Doc James,Mr. Ibrahem")
-    allowlist_users = tuple(name.strip() for name in allowlist_raw.split(",") if name.strip())
-
-    # Background job runner sizing.
-    jobs_max_workers = max(1, _env_int("JOBS_MAX_WORKERS", 2))
-    jobs_log_lines = max(10, _env_int("JOBS_LOG_LINES", 200))
-
-    lang = os.getenv("WIKI_LANG") or "www"
-    family = os.getenv("WIKI_FAMILY") or "mdwiki"
-    wiki_domain = f"{lang}.{family}.org"
+    other_config = load_other_config()
 
     database_data = _load_database_config()
 
@@ -235,12 +253,9 @@ def get_settings() -> Settings:
         oauth=oauth_config,
         security=security_config,
         sessions=sessions,
-        csrf_time_limit=csrf_time_limit,
-        allowlist_users=allowlist_users,
         enable_oauth=enable_oauth,
-        jobs_max_workers=jobs_max_workers,
-        jobs_log_lines=jobs_log_lines,
-        wiki_domain=wiki_domain,
+
+        other_config=other_config,
     )
 
 

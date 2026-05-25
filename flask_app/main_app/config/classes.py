@@ -9,6 +9,19 @@ from typing import Any, Optional
 
 
 @dataclass(frozen=True)
+class OtherConfig:
+    """configs not in specific sections"""
+
+    csrf_time_limit: Optional[int]  # None means never expire
+    # Phase-1 additions (see docs/merge-plan.md §7)
+    allowlist_users: tuple[str, ...]
+    jobs_max_workers: int
+    jobs_log_lines: int
+    wiki_domain: str
+    static_server: str
+
+
+@dataclass(frozen=True)
 class DbConfig:
     db_name: str
     db_host: str
@@ -78,16 +91,12 @@ class Settings:
     oauth: Optional[OAuthConfig]
     paths: Paths
     security: SecurityConfig
-    csrf_time_limit: Optional[int]  # None means never expire
-    # Phase-1 additions (see docs/merge-plan.md §7)
-    allowlist_users: tuple[str, ...]
+    other_config: OtherConfig
     enable_oauth: bool
-    jobs_max_workers: int
-    jobs_log_lines: int
-    wiki_domain: str
 
 
 __all__ = [
+    "OtherConfig",
     "DbConfig",
     "Paths",
     "CookieConfig",

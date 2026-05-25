@@ -31,6 +31,7 @@ def context_user() -> dict[str, any]:
         "is_authenticated": user is not None,
         "username": user.username if user else None,
         "wiki_domain": settings.wiki_domain,
+        "static_server": settings.static_server,
     }
 
 
