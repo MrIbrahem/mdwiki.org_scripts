@@ -75,7 +75,7 @@ def submit(
             result = fn(on_progress=on_progress, stop_event=job.stop_event, **kwargs)
             job.result = result
             _bump(job, "done")
-        except Exception as exc:   - capture anything from user code
+        except Exception as exc:
             logger.exception("job %s (%s) failed", job.id, tool)
             job.error = repr(exc)
             _bump(job, "error")

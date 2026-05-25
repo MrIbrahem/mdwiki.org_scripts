@@ -19,8 +19,8 @@ import logging
 from threading import Event
 from typing import Any, Callable, Optional
 
-from ..newapi import AllAPIS
-from ._api import get_api
+from ...newapi import AllAPIS
+from .._api import get_api
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +120,7 @@ def run(
         try:
             outcome = _fix_one(api, from_title, final_target, save=save)
         except Exception as exc:
-            logger.exception("fix_dup failed for %s -> %s", from_title, final_target)
+            logger.exception("failed for %s -> %s", from_title, final_target)
             counts["errors"] += 1
             _emit(i, total, f"[{i}/{total}] {from_title}: error {exc!r}")
             continue

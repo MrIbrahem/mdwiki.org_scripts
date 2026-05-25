@@ -22,8 +22,8 @@ from dataclasses import dataclass, field
 from threading import Event
 from typing import Any, Callable, Literal, Optional
 
-from ..newapi import AllAPIS
-from ._api import get_api
+from ...newapi import AllAPIS
+from .._api import get_api
 
 logger = logging.getLogger(__name__)
 

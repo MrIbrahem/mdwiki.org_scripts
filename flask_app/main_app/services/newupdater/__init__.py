@@ -68,7 +68,6 @@ def work_on_title(
     try:
         new_text = work_on_text(title, old_text)
     except Exception:
-        - the legacy code can raise widely
         logger.exception("work_on_text failed for %s", title)
         raise
 

@@ -22,7 +22,7 @@ import logging
 from threading import Event
 from typing import Any, Callable, Literal, Optional
 
-from ._api import get_api
+from .._api import get_api
 
 logger = logging.getLogger(__name__)
 
@@ -71,10 +71,10 @@ def _process_one(
     if new_text == text:
         return "no-changes"
     if not save:
-        log(f"  would change (dry run)")
+        log("  would change (dry run)")
         return "changed"
 
-    summary = f"Replace via mdwiki.toolforge.org find-and-replace tool."
+    summary = "Replace via mdwiki.toolforge.org find-and-replace tool."
     saved = page.save(newtext=new_text, summary=summary)
     if saved is True:
         return "changed"
