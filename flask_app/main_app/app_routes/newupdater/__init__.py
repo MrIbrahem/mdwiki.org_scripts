@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, render_template, request
 
 from ...auth.decorators import login_required
 from ...services import newupdater as svc
@@ -48,33 +48,6 @@ def newupdater():
         outcome=outcome,
         save=save,
     )
-
-
-@bp_newupdater.route("/", methods=["POST"])
-@login_required
-def newupdater_post():
-    title = (request.form.get("title") or "").replace("_", " ").strip()
-    save = int(request.form.get("save", "0")) or 0
-
-    if not title:
-        flash("Provide a title to save.", "warning")
-        return redirect(url_for("newupdater.newupdater", save=save))
-    try:
-        ok, status = svc.save_page(title)
-    except Exception as exc:  # noqa: BLE001
-        logger.exception("save_page failed for %s", title)
-        flash(f"Save failed: {exc!r}", "danger")
-        return redirect(url_for("newupdater.newupdater", title=title, save=save))
-
-    if ok:
-        flash(f"Saved {title!r}.", "success")
-    elif status == "no_changes":
-        flash(f"{title!r}: no changes to save.", "info")
-    elif status == "notext":
-        flash(f"{title!r}: page is empty or rewriter produced no text.", "warning")
-    else:
-        flash(f"{title!r}: save failed ({status}).", "danger")
-    return redirect(url_for("newupdater.newupdater", title=title, save=save))
 
 
 __all__ = ["bp_newupdater"]

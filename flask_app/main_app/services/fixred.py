@@ -20,7 +20,7 @@ import logging
 import re
 from dataclasses import dataclass, field
 from threading import Event
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Literal, Optional
 
 from ..newapi import AllAPIS
 from ._api import get_api
@@ -29,6 +29,23 @@ logger = logging.getLogger(__name__)
 
 _LINK_CHUNK = 300
 _NS_MAIN = "0"
+
+
+OutcomeKind = Literal["notext", "no_changes", "changes", "saved"]
+
+
+@dataclass(frozen=True)
+class UpdaterOutcome:
+    """Result of running the updater on one page."""
+
+    kind: OutcomeKind
+    old_text: str = ""
+    new_text: str = ""
+    newrevid: int = 0
+
+    @property
+    def has_changes(self) -> bool:
+        return self.kind == "changes"
 
 
 @dataclass
@@ -173,16 +190,6 @@ def _treat_page(api: AllAPIS, title: str, state: _RunState, *, save: bool) -> tu
 
     _resolve_redirects_for(api, state, link_titles)
 
-    """
-    newtext = text
-    for tt, info in links["links"].items():
-        oldlink = info["title"]
-        oldlink2 = state.normalized.get(oldlink, oldlink)
-        target = state.from_to.get(oldlink) or state.from_to.get(oldlink2)
-        if target:
-            newtext = _replace_links(newtext, oldlink, oldlink2, target)
-    """
-
     new_targets = {}
     for _, info in links["links"].items():
         oldlink = info["title"]
@@ -216,71 +223,33 @@ def replace_in_text(text, new_targets):
     return newtext
 
 
-def run(
-    *,
-    title: str,
-    save: bool = True,
-    on_progress: Optional[Callable[..., None]] = None,
-    stop_event: Optional[Event] = None,
-) -> dict[str, Any]:
-    """
-    Iterate a list of pages and fix redirects in each.
-    ``title`` is a specific page name
-    """
-
-    def _emit(done: int, total: int, msg: str) -> None:
-        if on_progress is not None:
-            on_progress(done, total, message=msg)
-
-    api = get_api()
+def _work_on_text(api, title, text) -> str:
+    """ """
     state = _RunState()
 
-    counts = {
-        "scanned": 0,
-        "fixed": 0,
-        "no_changes": 0,
-        "missing": 0,
-        "errors": 0,
-        "total": 1,
-    }
+    links = _get_page_links(api, title)
 
-    _emit(0, 1, "processing 1 title")
+    for nor in links.get("normalized", []) or []:
+        state.normalized[nor["to"]] = nor["from"]
 
-    i = 1
+    link_titles = list(links["links"].keys())
+    if not link_titles:
+        return text
 
-    if stop_event is not None and stop_event.is_set():
-        _emit(i - 1, 1, "stopped by user")
-        return counts
+    _resolve_redirects_for(api, state, link_titles)
 
-    counts["scanned"] += 1
+    new_targets = {}
+    for _, info in links["links"].items():
+        oldlink = info["title"]
+        oldlink2 = state.normalized.get(oldlink, oldlink)
+        target = state.from_to.get(oldlink) or state.from_to.get(oldlink2)
+        if target:
+            new_targets[oldlink2] = target
+            new_targets[oldlink] = target
 
-    try:
-        outcome, text = _treat_page(api, title, state, save=save)
-    except Exception as exc:
-        logger.exception("treat_page failed for %s", title)
-        counts["errors"] += 1
-        _emit(i, 1, f"[{i}/{1}] {title}: error {exc!r}")
-        return counts
+    newtext = replace_in_text(text, new_targets)
 
-    if outcome == "fixed":
-        counts["fixed"] += 1
-    elif outcome == "no-changes":
-        counts["no_changes"] += 1
-    elif outcome == "missing":
-        counts["missing"] += 1
-
-    elif outcome == "would-fix":
-        counts["fixed"] += 1
-        # TODO: save text to file, add link into job log file,
-        # when user open this job details page, if text file path is there,
-        # render edit_form.html
-
-    elif outcome == "error":
-        counts["errors"] += 1
-
-    _emit(i, 1, f"[{i}/1] {title}: {outcome}")
-
-    return counts
+    return newtext
 
 
 def run_all(
@@ -338,12 +307,60 @@ def run_all(
     return counts
 
 
+def work_on_title(
+    title: str,
+    save: bool = False,
+    summary: str = "Fix redirects.",
+) -> UpdaterOutcome:
+    """
+
+    Returns one of:
+
+    * ``notext``     — the page was empty or the rewriter wiped it out.
+    * ``no_changes`` — the rewriter is satisfied with the current text.
+    * ``changes``    — there is a diff to review/save.
+    """
+
+    title = (title or "").strip()
+    if not title:
+        return UpdaterOutcome(kind="notext")
+
+    api = get_api()
+    page = api.MainPage(title)
+    if not page.exists():
+        return UpdaterOutcome(kind="notext")
+
+    old_text = page.get_text() or ""
+    if not old_text.strip():
+        return UpdaterOutcome(kind="notext", old_text=old_text)
+
+    try:
+        new_text = _work_on_text(api, title, old_text)
+    except Exception:
+        logger.exception("work_on_text failed for %s", title)
+        raise
+
+    if not new_text or not new_text.strip():
+        return UpdaterOutcome(kind="notext", old_text=old_text)
+
+    if new_text == old_text:
+        return UpdaterOutcome(kind="no_changes", old_text=old_text, new_text=new_text)
+
+    if save:
+        ok = page.save(newtext=new_text, summary=summary)
+
+        if ok is True:
+            return UpdaterOutcome(kind="saved", newrevid=page.get_newrevid())
+
+    return UpdaterOutcome(kind="changes", old_text=old_text, new_text=new_text)
+
+
 def fix_text(text):
     return text
 
 
 __all__ = [
     "run_all",
-    "run",
+    "work_on_title",
     "fix_text",
 ]

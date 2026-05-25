@@ -31,6 +31,7 @@ class UpdaterOutcome:
     kind: OutcomeKind
     old_text: str = ""
     new_text: str = ""
+    newrevid: int = 0
 
     @property
     def has_changes(self) -> bool:
@@ -94,41 +95,9 @@ def work_on_title(
         ok = page.save(newtext=new_text, summary=summary)
 
         if ok is True:
-            return UpdaterOutcome(kind="saved")
+            return UpdaterOutcome(kind="saved", newrevid=page.get_newrevid())
 
     return UpdaterOutcome(kind="changes", old_text=old_text, new_text=new_text)
 
 
-def save_page(title: str, *, summary: str = "Med updater.") -> tuple[bool, str]:
-    """Re-run :func:`work_on_title` and save the result if it changed.
-
-    We deliberately re-run the rewrite server-side instead of accepting a
-    posted ``new_text`` so a malicious form submission can't trick us into
-    saving arbitrary content. The trade-off is that the saved content
-    reflects the page as-of the save click, not the preview.
-
-    Returns ``(saved_ok, status_label)`` where ``status_label`` is one of
-    ``saved``, ``no_changes``, ``notext``, ``save_failed``.
-    """
-
-    outcome = work_on_title(title)
-
-    if outcome.kind == "notext":
-        return False, "notext"
-
-    if outcome.kind == "no_changes":
-        return False, "no_changes"
-
-    api = get_api()
-    page = api.MainPage(title)
-    ok = page.save(newtext=outcome.new_text, summary=summary)
-
-    if ok is True:
-        return True, "saved"
-
-    logger.warning("save_page %s failed: %r", title, ok)
-
-    return False, "save_failed"
-
-
-__all__ = ["UpdaterOutcome", "work_on_title", "save_page"]
+__all__ = ["UpdaterOutcome", "work_on_title"]

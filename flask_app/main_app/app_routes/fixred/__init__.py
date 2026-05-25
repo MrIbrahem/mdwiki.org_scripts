@@ -24,7 +24,14 @@ def _normalize_title(raw: str) -> str:
 @login_required
 def index():
     title = _normalize_title(request.args.get("title", ""))
-    return render_template("fixred.html", title="Fix redirects in page text", form_title=title)
+    save = int(request.args.get("save", "0")) or 0
+    return render_template(
+        "fixred.html",
+        title="Fix redirects in page text",
+        form_title=title,
+        outcome=None,
+        save=save,
+    )
 
 
 @bp_fixred.route("/all", methods=["POST"])
@@ -53,27 +60,38 @@ def fixred_post_all():
 @bp_fixred.route("/", methods=["POST"])
 @login_required
 def fixred_post():
-    user = current_user()
     title = _normalize_title(request.form.get("title", ""))
     save = int(request.form.get("save", "0")) or 0
 
     if not title:
-        flash("Please provide a title (use 'all' to process every mainspace page).", "warning")
-        return redirect(url_for("fixred.index"))
+        return render_template(
+            "fixred.html",
+            title="Fix redirects in page text",
+            form_title="",
+            outcome=None,
+            save=save,
+        )
 
-    job = runner.submit(
-        "fixred",
-        svc.run,
-        submitted_by=user.username,
-        params={"title": title, "save": save},
-        title=title,
+    try:
+        outcome = svc.work_on_title(title, save)
+    except Exception as exc:
+        logger.exception("work_on_title failed for %s", title)
+        flash(f"Error processing {title!r}: {exc!r}", "danger")
+        return render_template(
+            "fixred.html",
+            title="Fix redirects in page text",
+            form_title=title,
+            outcome=None,
+            save=save,
+        )
+
+    return render_template(
+        "fixred.html",
+        title=f"Fix redirects in page text — {title}",
+        form_title=title,
+        outcome=outcome,
         save=save,
     )
-
-    flash(f"Started fixred job {job.id} for {title!r}", "success")
-    logger.info("fixred job %s submitted by %s for title=%s", job.id, user.username, title)
-
-    return redirect(url_for("jobs.status", job_id=job.id))
 
 
 __all__ = ["bp_fixred"]

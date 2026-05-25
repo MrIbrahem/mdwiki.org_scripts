@@ -1,5 +1,7 @@
 {% extends "_base.html" %}
 {% from "_macros.html" import csrf %}
+{% from "_macros.html" import edit_form %}
+{% from "_macros.html" import saved_alert %}
 
 {% block content %}
 <div class="card">
@@ -7,6 +9,7 @@
 		<h3>{{ title or "Fix redirects in page text" }}</h3>
 	</div>
 	<div class="card-body">
+		{% if not outcome %}
 		<p class="text-muted">
 			Walks the wikilinks on the given mdwiki page and rewrites every
 			redirect link to point at its canonical target (preserving the
@@ -26,8 +29,8 @@
 					<div class="input-group-prepend">
 						<span class="input-group-text">Title</span>
 					</div>
-					<input class="form-control" type="text" id="title" name="title" value="User:Mr. Ibrahem/test"
-						required>
+					<input class="form-control" type="text" id="title" name="title"
+						value="{{ form_title or 'User:Mr. Ibrahem/test' }}" required>
 				</div>
 			</div>
 			<div class='col-md-3'>
@@ -40,6 +43,25 @@
 				<button class="btn btn-outline-primary w-100" type="submit">Start</button>
 			</div>
 		</form>
+		{% endif %}
+		{% if outcome %}
+		{% if outcome.kind == "changes" %}
+		<h5>Proposed changes for <code>{{ form_title }}</code></h5>
+		{{ edit_form(form_title, wiki_domain, outcome.new_text) }}
+
+		{% elif outcome.kind == "no_changes" %}
+		<div class="alert alert-info">
+			<code>{{ form_title }}</code>: the rewriter produced no changes.
+		</div>
+		{% elif outcome.kind == "notext" %}
+		<div class="alert alert-warning">
+			<code>{{ form_title }}</code>: the page is empty, missing, or the
+			rewriter produced empty output.
+		</div>
+		{% elif outcome.kind == "saved" %}
+		{{ saved_alert(form_title, outcome.newrevid) }}
+		{% endif %}
+		{% endif %}
 	</div>
 </div>
 {% endblock %}
