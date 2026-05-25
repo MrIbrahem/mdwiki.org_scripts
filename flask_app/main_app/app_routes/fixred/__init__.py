@@ -61,11 +61,6 @@ def fixred_post():
         flash("Please provide a title (use 'all' to process every mainspace page).", "warning")
         return redirect(url_for("fixred.index"))
 
-    active = get_store().find_active("fixred")
-    if active is not None:
-        flash(f"A fixred job is already running ({active.id}).", "info")
-        return redirect(url_for("jobs.status", job_id=active.id))
-
     job = runner.submit(
         "fixred",
         svc.run,
@@ -74,8 +69,10 @@ def fixred_post():
         title=title,
         save=save,
     )
+
     flash(f"Started fixred job {job.id} for {title!r}", "success")
     logger.info("fixred job %s submitted by %s for title=%s", job.id, user.username, title)
+
     return redirect(url_for("jobs.status", job_id=job.id))
 
 
