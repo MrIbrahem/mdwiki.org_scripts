@@ -1,4 +1,14 @@
 
+[project]
+name = "mdwiki-org-scripts"
+version = "0.0.0"
+description = "Flask app for mdwiki maintenance tools."
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7",
+]
 # ============================================
 #                 BLACK
 # ============================================

@@ -14,7 +14,7 @@ from python.mdwiki_page import MainPage, NewApi
 
 logger = logging.getLogger(__name__)
 
-user_agent = "WikiProjectMed Translation Dashboard/1.0 (https://mdwiki.toolforge.org/; tools.mdwiki@toolforge.org)"
+user_agent = "mdwiki.org tools/1.0 (https://mdwiki.toolforge.org/; tools.mdwiki@toolforge.org)"
 
 # ---
 offset = {1: 0}

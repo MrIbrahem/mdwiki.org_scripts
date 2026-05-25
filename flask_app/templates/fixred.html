@@ -1,38 +1,67 @@
-<!-- header.html -->
-<main id="body">
-	<!-- <div id="maindiv" class="container-fluid"> -->
-	<div id="maindiv" class="container">
-		<div class="card">
-			<div class="card-header aligncenter" style="font-weight:bold;">
-				<h3>Fix redirects</h3>
-			</div>
-			<div class="card-body">
-				<div class='container'>
-					<form action='fixred.php' method='GET'>
+{% extends "base.html" %}
+{% from "_macros.html" import csrf %}
+{% from "_macros.html" import edit_form %}
+{% from "_macros.html" import saved_alert %}
 
-						<div class='container'>
-							<div class='row'>
-								<div class='col-lg-12'>
-									<h6>To run the bot on all pages type: all.</h6>
-								</div>
-								<div class='col-lg-12'>
-									<div class='input-group mb-3'>
-										<div class='input-group-prepend'>
-											<span class='input-group-text'>Title</span>
-										</div>
-										<input class='form-control' type='text' id='title' name='title' value=''
-											required />
-									</div>
-								</div>
-								<div class='col-lg-12'>
-									<h4 class='aligncenter'>
-										<input class='btn btn-outline-primary' type='submit' value='send'>
-									</h4>
-								</div>
-							</div>
-						</div>
-					</form>
+{% block content %}
+<div class="card">
+	<div class="card-header" style="font-weight:bold;">
+		<h3>{{ title or "Fix redirects in page text" }}</h3>
+	</div>
+	<div class="card-body">
+		{% if not outcome %}
+		<p class="text-muted">
+			Walks the wikilinks on the given mdwiki page and rewrites every
+			redirect link to point at its canonical target (preserving the
+			original display text).
+		</p>
+		<form method="POST" action="{{ url_for('fixred.fixred_post_all') }}" class="row g-2">
+			{{ csrf() }}
+			<div class="col-md-3 d-flex align-items-end">
+				<button class="btn btn-outline-primary w-100" type="submit">Start All pages</button>
+			</div>
+		</form>
+		<br>
+		<form method="POST" action="{{ url_for('fixred.fixred_post') }}" class="row g-2">
+			{{ csrf() }}
+			<div class="col-md-4">
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<span class="input-group-text">Title</span>
+					</div>
+					<input class="form-control" type="text" id="title" name="title"
+						value="{{ form_title or 'User:Mr. Ibrahem/test' }}" required>
 				</div>
-			</div> <!-- <div id="maindiv" class="container"> -->
-</main>
-<!-- footer.html -->
+			</div>
+			<div class='col-md-3'>
+				<div class='form-check form-switch'>
+					<input class='form-check-input' type='checkbox' id='save' name='save' value='1'>
+					<label class='check-label' for='save'>Auto save</label>
+				</div>
+			</div>
+			<div class="col-md-3 d-flex align-items-end">
+				<button class="btn btn-outline-primary w-100" type="submit">Start</button>
+			</div>
+		</form>
+		{% endif %}
+		{% if outcome %}
+		{% if outcome.kind == "changes" %}
+		<h5>Proposed changes for <code>{{ form_title }}</code></h5>
+		{{ edit_form(wiki_domain, form_title, outcome.new_text) }}
+
+		{% elif outcome.kind == "no_changes" %}
+		<div class="alert alert-info">
+			<code>{{ form_title }}</code>: the rewriter produced no changes.
+		</div>
+		{% elif outcome.kind == "notext" %}
+		<div class="alert alert-warning">
+			<code>{{ form_title }}</code>: the page is empty, missing, or the
+			rewriter produced empty output.
+		</div>
+		{% elif outcome.kind == "saved" %}
+		{{ saved_alert(wiki_domain, form_title, outcome.newrevid) }}
+		{% endif %}
+		{% endif %}
+	</div>
+</div>
+{% endblock %}

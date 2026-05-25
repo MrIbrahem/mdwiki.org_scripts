@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf %}
+
+{% block content %}
+<div class="card">
+	<div class="card-header" style="font-weight:bold;">
+		<h3>Jobs list</h3>
+	</div>
+	<div class="card-body">
+		<table class="table disply">
+			<thead>
+				<th>#</th>
+				<th>tool</th>
+				<th>submitted by</th>
+				<th>status</th>
+				<th>created_at</th>
+				<th>updated_at</th>
+				<th>details</th>
+			</thead>
+			<tbody>
+				{% for job in jobs %}
+				<tr>
+					<td>{{ loop.index }}</td>
+					<td>
+						<a href="/{{ job.tool }}">
+							{{ job.tool }}
+						</a>
+					</td>
+					<td>{{ job.submitted_by }}</td>
+					<td>{{ job.status }}</td>
+					<td>{{ job.created_at }}</td>
+					<td>{{ job.updated_at }}</td>
+					<td><a href="{{ url_for('jobs.status', job_id=job.id) }}">details</a></td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+{% endblock %}

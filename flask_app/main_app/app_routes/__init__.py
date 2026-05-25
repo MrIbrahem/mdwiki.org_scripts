@@ -2,25 +2,13 @@
 
 from flask import Flask
 
-from .dup import bp_dup
-from .fixred import bp_fixred
-from .fixref import bp_fixref
-from .import_history import bp_import_history
 from .main import bp_main
-from .newupdater import bp_newupdater
-from .redirect import bp_redirect
-from .replace import bp_replace
+from .jobs import bp_jobs
 
 
 def register_blueprints(app: Flask) -> None:
     app.register_blueprint(bp_main)
-    app.register_blueprint(bp_dup)
-    app.register_blueprint(bp_fixred)
-    app.register_blueprint(bp_fixref)
-    app.register_blueprint(bp_import_history)
-    app.register_blueprint(bp_newupdater)
-    app.register_blueprint(bp_redirect)
-    app.register_blueprint(bp_replace)
+    app.register_blueprint(bp_jobs)
 
 
 __all__ = [

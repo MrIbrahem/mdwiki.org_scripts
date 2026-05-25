@@ -1,30 +1,23 @@
 """
 # isort:skip_file
-WSGI entry point for SVG Translate.
+WSGI production entry point for the app.
 """
 
 from __future__ import annotations
-import sys
 import logging
-from dotenv import load_dotenv
+import pymysql
 
-load_dotenv()
+pymysql.install_as_MySQLdb()
 
-try:
-    from logger_config import configure_logging
-except ImportError:
-    from .logger_config import configure_logging
+# environment variables in production already in toolforge envvars no need to run load_dotenv()
 
-level = logging.DEBUG if ("debug" in sys.argv or "DEBUG" in sys.argv) else logging.INFO
+from main_app import create_app  # noqa: E402
+from main_app.config import ProductionConfig  # noqa: E402
+from logger_config import configure_logging  # noqa: E402
 
-configure_logging(level)
+configure_logging(logging.WARNING)
 
-try:
-    from main_app import create_app
-except ImportError:
-    from .main_app import create_app
-
-app = create_app()
+app = create_app(ProductionConfig)
 
 if __name__ == "__main__":
-    app.run(debug=level)
+    app.run(debug=False, port=5000)

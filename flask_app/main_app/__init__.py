@@ -3,15 +3,37 @@
 from __future__ import annotations
 
 import logging
-from typing import Tuple
+from typing import Tuple, Type
 
 from flask import Flask, flash, render_template
 from flask_wtf.csrf import CSRFError, CSRFProtect
 
-from . import settings
+from .app_routes.auth.routes import bp_auth
+
+from .su_services.users_service import current_user
+from .config import settings
+
 from .app_routes import register_blueprints
+from .jobs_routes import register_jobs_blueprints
+from .core.cookies import CookieHeaderClient
+from .db import init_db
+from .extensions import db as _db
+from .extensions import migrate
 
 logger = logging.getLogger(__name__)
+
+
+def context_user() -> dict[str, any]:
+    """
+    used in @app.context_processor
+    """
+    user = current_user()
+    return {
+        "current_user": user,
+        "is_authenticated": user is not None,
+        "username": user.username if user else None,
+        "wiki_domain": settings.wiki_domain,
+    }
 
 
 def register_error_pages(app: Flask):
@@ -58,56 +80,53 @@ def register_error_pages(app: Flask):
         return render_template("index.html", title="Session Expired"), 400
 
 
-def update_app_config(app: Flask) -> None:
-    app.config.update(
-        SESSION_COOKIE_HTTPONLY=settings.cookie.httponly,
-        SESSION_COOKIE_SECURE=settings.cookie.secure,
-        SESSION_COOKIE_SAMESITE=settings.cookie.samesite,
-        # Flask 3.1+ security configurations
-        MAX_CONTENT_LENGTH=settings.security.max_content_length,
-        MAX_FORM_MEMORY_SIZE=settings.security.max_form_memory_size,
-        MAX_FORM_PARTS=settings.security.max_form_parts,
-        SECRET_KEY_FALLBACKS=list(settings.security.secret_key_fallbacks),
-    )
+def create_app(config_class: Type) -> Flask:
+    """Instantiate and configure the Flask application.
 
-
-def create_app() -> Flask:
-    """
-    Create and configure and return the Flask application used by the project.
-
-    The returned app is configured with custom template and static folders, session cookie
-    settings from project settings, CSRF protection, registered
-    application blueprints, a user context processor, a Jinja filter for stage timestamps,
-    teardown handlers that close cached connections and task store, and handlers for 404
-    and 500 errors.
+    Args:
+        config_class: Configuration class for ``app.config.from_object()``.
+            When *None*, auto-detected from the ``FLASK_ENV`` environment
+            variable (defaults to ``ProductionConfig``).
 
     Returns:
-        Flask: The fully configured Flask application instance.
+        Configured Flask application instance.
     """
+
+    if config_class is None:
+        raise ValueError("config_class must be provided")
 
     app = Flask(
         __name__,
         template_folder="../templates",
         static_folder="../static",
     )
+
     app.url_map.strict_slashes = False
-    app.secret_key = settings.secret_key
-
-    update_app_config(app)
-
-    # Configure CSRF token lifetime
-    app.config["WTF_CSRF_TIME_LIMIT"] = settings.csrf_time_limit
+    app.test_client_class = CookieHeaderClient
+    app.config.from_object(config_class())
 
     # Initialize CSRF protection
     csrf = CSRFProtect(app)  # noqa: F841
 
-    # @app.context_processor
-    # def _inject_user() -> dict[str, Any]: return context_user()
+    # Initialize Flask-SQLAlchemy and Flask-Migrate
+    # if akpp.config.get("SQLALCHEMY_DATABASE_URI"):
+    _db.init_app(app)
+    migrate.init_app(app, _db)
+
+    # Create database tables and views if they don't exist
+    init_db(app, _db)
+
+    @app.context_processor
+    def _inject_user() -> dict:
+        """Make `current_user` and `is_authorized` available in all templates."""
+        return context_user()
 
     # app.jinja_env.filters["format_stage_timestamp"] = format_stage_timestamp
     # app.jinja_env.filters["short_url"] = short_url
 
     register_error_pages(app)
     register_blueprints(app)
+    app.register_blueprint(bp_auth)
+    register_jobs_blueprints(app)
 
     return app

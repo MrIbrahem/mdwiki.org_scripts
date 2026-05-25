@@ -1,0 +1,15 @@
+{# Shared layout. Wraps header.html / footer.html (which are fragments) and
+   closes the document. Per-tool templates extend this and fill `content`. #}
+{% include "header.html" %}
+{%- from "_macros.html" import flash_messages -%}
+<main id="body">
+  <div id="maindiv" class="container">
+    {{ flash_messages() }}
+    {% block content %}{% endblock %}
+  </div>
+</main>
+{% include "footer.html" %}
+{% block scripts %}{% endblock %}
+</body>
+
+</html>

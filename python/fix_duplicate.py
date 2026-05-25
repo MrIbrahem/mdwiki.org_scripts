@@ -11,7 +11,7 @@ import logging
 import os
 import sys
 
-from flask_app.main_app.newapi import AllAPIS
+from flask_app.main_app.api_services.newapi import AllAPIS
 
 logger = logging.getLogger(__name__)
 
@@ -29,11 +29,11 @@ from_to = {}
 
 @functools.lru_cache(maxsize=1)
 def load_main_api() -> AllAPIS:
-    username = os.getenv("WIKIPEDIA_HIMO_USERNAME")
-    password = os.getenv("MDWIKI_HIMO_PASSWORD")
+    username = os.getenv("WIKI_USERNAME")
+    password = os.getenv("WIKI_PASSWORD")
 
     if not username or not password:
-        raise RuntimeError("Missing credentials: WIKIPEDIA_HIMO_USERNAME / MDWIKI_HIMO_PASSWORD")
+        raise RuntimeError("Missing credentials: WIKI_USERNAME / WIKI_PASSWORD")
 
     return AllAPIS(
         lang="www",
@@ -42,6 +42,24 @@ def load_main_api() -> AllAPIS:
         password=password,
         use_cookies=False,
     )
+
+
+def _list_double_redirects(api: AllAPIS) -> list[dict[str, str]]:
+    """Return the resolved ``[{"from", "to"}, ...]`` redirect list."""
+
+    new_api = api.NewApi()
+    params = {
+        "action": "query",
+        "format": "json",
+        "prop": "info",
+        "generator": "querypage",
+        "redirects": 1,
+        "utf8": 1,
+        "gqppage": "DoubleRedirects",
+        "gqplimit": "max",
+    }
+    data = new_api.post_params(params, method="post") or {}
+    return data.get("query", {}).get("redirects", []) or []
 
 
 def post_s(params, addtoken=False, files=None):
@@ -58,7 +76,7 @@ def post_s(params, addtoken=False, files=None):
     return json1
 
 
-def fix_dup(from_title, to_title):
+def _fix_one(from_title, to_title):
     """Treat one double redirect."""
     # ---
     if to_title in from_to:
@@ -91,20 +109,9 @@ def main():
     # python dup.py -newpages:1000
     # python dup.py -newpages:20000
     # ---
-    fop = {
-        "action": "query",
-        "format": "json",
-        "prop": "info",
-        "generator": "querypage",
-        "redirects": 1,
-        "utf8": 1,
-        "gqppage": "DoubleRedirects",
-        "gqplimit": "max",
-    }
+    api = load_main_api()
     # ---
-    lista = post_s(fop)
-    # ---
-    redirects = lista.get("query", {}).get("redirects", [])
+    redirects = _list_double_redirects(api)
     # ---
     for gg in redirects:
         from_title = gg["from"]
@@ -116,7 +123,7 @@ def main():
         logger.info(f'-------\n*<<yellow>> >{nu}/{len(redirects)} from_title:"{from_title}".')
         to_title = title["to"]
         if to_title in from_to:
-            fix_dup(from_title, to_title)
+            _fix_one(from_title, to_title)
 
 
 if __name__ == "__main__":
