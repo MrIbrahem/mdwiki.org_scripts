@@ -122,7 +122,7 @@ def _resolve_redirects_for(api: AllAPIS, state: _RunState, link_titles: list[str
                 state.from_to[src["title"]] = target
 
 
-def _replace_links(text: str, oldlink: str, oldlink2: str, newlink: str, state: _RunState) -> str:
+def _replace_links(text: str, oldlink: str, oldlink2: str, newlink: str) -> str:
     """Mirror of legacy ``replace_links2``.
 
     Each wikilink ``[[old]]`` becomes ``[[new|old]]`` (preserve the original
@@ -180,7 +180,7 @@ def _treat_page(api: AllAPIS, title: str, state: _RunState, *, save: bool) -> st
         oldlink2 = state.normalized.get(oldlink, oldlink)
         target = state.from_to.get(oldlink) or state.from_to.get(oldlink2)
         if target:
-            newtext = _replace_links(newtext, oldlink, oldlink2, target, state)
+            newtext = _replace_links(newtext, oldlink, oldlink2, target)
     """
 
     new_targets = {}
