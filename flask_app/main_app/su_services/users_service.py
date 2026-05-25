@@ -65,16 +65,3 @@ def oauth_required(func: F) -> F:  # noqa: UP047
         return func(*args, **kwargs)
 
     return cast(F, wrapper)
-
-
-def context_user() -> dict[str, Any]:
-    """
-    used in @app.context_processor
-    """
-    user = current_user()
-    return {
-        "current_user": user,
-        "is_authenticated": user is not None,
-        "username": user.username if user else None,
-        "wiki_domain": settings.wiki_domain,
-    }

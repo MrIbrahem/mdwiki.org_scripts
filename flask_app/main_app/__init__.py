@@ -8,13 +8,26 @@ from typing import Tuple, Type
 from flask import Flask, flash, render_template
 from flask_wtf.csrf import CSRFError, CSRFProtect
 
-from .su_services.users_service import context_user
+from .su_services.users_service import current_user, settings
 
 from .app_routes import register_blueprints
 from .jobs_routes import register_jobs_blueprints
 from .core.cookies import CookieHeaderClient
 
 logger = logging.getLogger(__name__)
+
+
+def context_user() -> dict[str, any]:
+    """
+    used in @app.context_processor
+    """
+    user = current_user()
+    return {
+        "current_user": user,
+        "is_authenticated": user is not None,
+        "username": user.username if user else None,
+        "wiki_domain": settings.wiki_domain,
+    }
 
 
 def register_error_pages(app: Flask):
