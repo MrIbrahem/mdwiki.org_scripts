@@ -65,6 +65,7 @@ class SecurityConfig:
     max_form_memory_size: int  # Maximum form data in memory in bytes
     max_form_parts: int  # Maximum number of form fields
     secret_key_fallbacks: tuple[str, ...]  # Fallback secret keys for rotation
+    secret_key: str
 
 
 @dataclass(frozen=True)
@@ -73,7 +74,6 @@ class Settings:
     database_data: DbConfig
     STATE_SESSION_KEY: str
     REQUEST_TOKEN_SESSION_KEY: str
-    secret_key: str
     oauth_encryption_key: str
     cookie: CookieConfig
     oauth: Optional[OAuthConfig]

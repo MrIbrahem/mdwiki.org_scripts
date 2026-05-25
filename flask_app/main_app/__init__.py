@@ -79,10 +79,9 @@ def create_app(config_class) -> Flask:
         static_folder="../static",
     )
     app.url_map.strict_slashes = False
-    app.secret_key = settings.secret_key
 
     # Configure CSRF token lifetime
-    app.config.from_object(config_class())
+    app.config.from_object(config_class)
 
     # Initialize CSRF protection
     csrf = CSRFProtect(app)  # noqa: F841

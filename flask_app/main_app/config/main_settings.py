@@ -184,6 +184,7 @@ def get_settings() -> Settings:
         max_form_memory_size=max_form_memory_size,
         max_form_parts=max_form_parts,
         secret_key_fallbacks=secret_key_fallbacks,
+        secret_key=secret_key,
     )
 
     # Tool authorization allow-list (used by /import-history/ and /replace/).
@@ -204,7 +205,6 @@ def get_settings() -> Settings:
         database_data=_load_db_data_new(),
         STATE_SESSION_KEY=STATE_SESSION_KEY,
         REQUEST_TOKEN_SESSION_KEY=REQUEST_TOKEN_SESSION_KEY,
-        secret_key=secret_key,
         oauth_encryption_key=oauth_encryption_key,
         cookie=cookie,
         oauth=oauth_config,
