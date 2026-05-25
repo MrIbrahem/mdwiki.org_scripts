@@ -71,7 +71,8 @@ class Job:
             datetime.fromisoformat(json_data.get("updated_at")) if json_data.get("updated_at") else _now()
         )
 
-        return Job(**json_data, stop_event=None)
+        json_data.pop("stop_event", None)
+        return Job(**json_data)
 
     def dump(self) -> None:
         """
