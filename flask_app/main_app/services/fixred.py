@@ -154,12 +154,12 @@ def _replace_links(text: str, oldlink: str, oldlink2: str, newlink: str) -> str:
     return text
 
 
-def _treat_page(api: AllAPIS, title: str, state: _RunState, *, save: bool) -> str:
+def _treat_page(api: AllAPIS, title: str, state: _RunState, *, save: bool) -> tuple[str, str]:
     """Return one of: ``missing``, ``no-changes``, ``would-fix``, ``fixed``, ``error``."""
 
     page = api.MainPage(title)
     if not page.exists():
-        return "missing"
+        return "missing", ""
 
     text = page.get_text()
     links = _get_page_links(api, title)
@@ -169,7 +169,7 @@ def _treat_page(api: AllAPIS, title: str, state: _RunState, *, save: bool) -> st
 
     link_titles = list(links["links"].keys())
     if not link_titles:
-        return "no-changes"
+        return "no-changes", text
 
     _resolve_redirects_for(api, state, link_titles)
 
@@ -195,13 +195,16 @@ def _treat_page(api: AllAPIS, title: str, state: _RunState, *, save: bool) -> st
     newtext = replace_in_text(text, new_targets)
 
     if newtext == text:
-        return "no-changes"
+        return "no-changes", text
 
     if not save:
-        return "would-fix"
+        return "would-fix", newtext
 
     ok = page.save(newtext=newtext, summary="Fix redirects")
-    return "fixed" if ok is True else "error"
+    if ok is True:
+        return "fixed", newtext
+
+    return "error", text
 
 
 def replace_in_text(text, new_targets):
@@ -252,7 +255,7 @@ def run(
     counts["scanned"] += 1
 
     try:
-        outcome = _treat_page(api, title, state, save=save)
+        outcome, text = _treat_page(api, title, state, save=save)
     except Exception as exc:
         logger.exception("treat_page failed for %s", title)
         counts["errors"] += 1
@@ -265,8 +268,13 @@ def run(
         counts["no_changes"] += 1
     elif outcome == "missing":
         counts["missing"] += 1
+
     elif outcome == "would-fix":
-        counts["fixed"] += 1  # treat dry-run successes as fixes for reporting
+        counts["fixed"] += 1
+        # TODO: save text to file, add link into job log file,
+        # when user open this job details page, if text file path is there,
+        # render edit_form.html
+
     elif outcome == "error":
         counts["errors"] += 1
 
@@ -307,7 +315,7 @@ def run_all(
             break
         counts["scanned"] += 1
         try:
-            outcome = _treat_page(api, t, state, save=save)
+            outcome, _ = _treat_page(api, t, state, save=save)
         except Exception as exc:
             logger.exception("treat_page failed for %s", t)
             counts["errors"] += 1
