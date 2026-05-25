@@ -31,6 +31,8 @@ def _bump(job: Job, status: Optional[str] = None) -> None:
     if status is not None:
         job.status = status
 
+    job.dump()
+
 
 def submit(
     tool: str,
