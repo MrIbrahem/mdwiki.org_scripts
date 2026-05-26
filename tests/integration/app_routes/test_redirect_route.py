@@ -7,5 +7,4 @@ from __future__ import annotations
 # ---------------------------------------------------------------------------
 
 
-class TestRedirect:
-    ...
+class TestRedirect: ...

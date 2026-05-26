@@ -1,7 +1,8 @@
 import pytest
-from flask_app.main_app.db.services.jobs_service import create_job, update_job_status, is_job_cancelled
-from flask_app.main_app.extensions import db
 from flask_app.main_app.db.models.jobs import JobRecord
+from flask_app.main_app.db.services.jobs_service import create_job, is_job_cancelled, update_job_status
+from flask_app.main_app.extensions import db
+
 
 def test_is_job_cancelled_stale_repro(app):
     with app.app_context():

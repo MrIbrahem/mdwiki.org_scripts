@@ -7,5 +7,4 @@ from __future__ import annotations
 # ---------------------------------------------------------------------------
 
 
-class TestFixred:
-    ...
+class TestFixred: ...

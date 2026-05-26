@@ -7,5 +7,4 @@ from __future__ import annotations
 # ---------------------------------------------------------------------------
 
 
-class TestImportHistory:
-    ...
+class TestImportHistory: ...

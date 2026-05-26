@@ -2,5 +2,5 @@
 
 from __future__ import annotations
 
-class TestValidTitle:
-    ...
+
+class TestValidTitle: ...

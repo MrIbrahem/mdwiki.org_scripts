@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 # from flask_app.main_app.jobs.workers.fixred_all import _replace_links
-from flask_app.main_app.shared.fixref_shared.fixred_worker import _replace_links, RunState
+from flask_app.main_app.shared.fixref_shared.fixred_worker import RunState, _replace_links
 
 
 class TestReplaceLinks:
