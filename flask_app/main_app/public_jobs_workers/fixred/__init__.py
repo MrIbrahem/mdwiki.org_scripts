@@ -72,16 +72,6 @@ def _post(api: AllAPIS, params: dict) -> dict:
     return api.NewApi().post_params(params, method="post") or {}
 
 
-def _list_nonredirects(api: AllAPIS) -> list[str]:
-    """All mainspace non-redirect titles. Cached on the API client by Get_All_pages."""
-
-    return api.NewApi().Get_All_pages(
-        start="!",
-        namespace=_NS_MAIN,
-        apfilterredir="nonredirects",
-    )
-
-
 def _get_page_links(api: AllAPIS, title: str) -> dict[str, Any]:
     """Mirror of legacy ``Get_page_links`` using the new API client."""
 
@@ -245,7 +235,24 @@ def run_all(
     api = get_api()
     state = _RunState()
 
-    titles = _list_nonredirects(api)
+    # titles = api.NewApi().Get_All_pages( start="!", namespace=_NS_MAIN, apfilterredir="nonredirects")
+    titles = site.allpages(
+        start="!",
+        prefix=None,
+        namespace=_NS_MAIN,
+        filterredir="all",
+        minsize=None,
+        maxsize=None,
+        prtype=None,
+        prlevel=None,
+        limit=None,
+        dir="ascending",
+        filterlanglinks="all",
+        generator=True,
+        end=None,
+        max_items=None,
+        api_chunk_size=None,
+    )
 
     counts = {
         "scanned": 0,
