@@ -17,7 +17,6 @@ from .core.cookies import CookieHeaderClient
 from .db import init_db
 from .extensions import db as _db
 from .extensions import migrate
-from .jobs.routes import register_jobs_blueprints
 from .su_services.users_service import current_user
 
 logger = logging.getLogger(__name__)
@@ -127,6 +126,5 @@ def create_app(config_class: Type) -> Flask:
     register_error_pages(app)
     register_blueprints(app)
     app.register_blueprint(bp_auth)
-    register_jobs_blueprints(app)
 
     return app
