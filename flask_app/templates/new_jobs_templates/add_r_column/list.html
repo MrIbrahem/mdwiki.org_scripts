@@ -1,0 +1,22 @@
+{% extends "new_jobs_templates/base_list2.html" %}
+
+{% set job_type = 'add_r_column' %}
+{% set hide_start_button = '1' %}
+
+{% block list_title %}Add R column{% endblock %}
+{% block list_headline %}Add R column{% endblock %}
+
+{% block list_info %}
+<p class="text-muted">
+    Add R column to tables. (Placeholder: logic not implemented yet)
+</p>
+
+<form method="post" action="{{ url_for('new_jobs.start_job_with_args', job_type=job_type) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="mb-3">
+        <label for="titles" class="form-label">Titles (one per line)</label>
+        <textarea class="form-control" id="titles" name="titles" rows="10" placeholder="Enter page titles..."></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Start Job</button>
+</form>
+{% endblock %}

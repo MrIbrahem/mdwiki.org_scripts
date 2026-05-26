@@ -1,0 +1,68 @@
+{% extends "new_jobs_templates/base_details2.html" %}
+{% from "_macros.html" import card_header %}
+
+{% set job_type = 'add_r_column' %}
+
+{% block detail_title %}Add R column{% endblock %}
+{% block detail_headline %}Add R column{% endblock %}
+
+{% block job_summary %}
+{% if result_data and result_data.summary %}
+<div class="table-responsive">
+    <table class="table table-striped table-sm mb-0">
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, value in result_data.summary.items() %}
+            <tr>
+                <td>{{ key }}</td>
+                <td>{{ value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block job_details %}
+{% if result_data and result_data.pages_processed %}
+<div class="card mb-3">
+    <div class="card-header">
+        {{ card_header("Pages Processed (" ~ result_data.pages_processed|length ~ ")") }}
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in result_data.pages_processed %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.title }}</td>
+                        <td>
+                            <span class="badge {% if item.status == 'updated' %}bg-success{% elif item.status == 'error' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {{ item.status }}
+                            </span>
+                        </td>
+                        <td><small>{{ item.msg }}</small></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

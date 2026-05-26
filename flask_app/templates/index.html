@@ -9,50 +9,68 @@
         {% if current_user and current_user.is_authenticated %}
         <p>Signed in as <strong>{{ current_user.username }}</strong>.</p>
         {% endif %}
-        <p>Available tools:</p>
-        <ol class="list-group list-group-numbered mb-0">
-            <li class="list-group-item ">
-                <a href="{{ url_for('new_jobs.jobs_list', job_type='copy_svg_langs') }}">
-                    copy_svg_langs
-                </a> <i class="bi bi-x-lg"></i>
+        <p>Jobs for all pages:</p>
+        <ul class="list-group mb-4">
+            <li class="list-group-item">
+                <a href="{{ url_for('new_jobs.jobs_list', job_type='add_unlinkedwikibase') }}">
+                    add unlinkedwikibase tag
+                </a>
             </li>
-            <li class="list-group-item ">
-                <a href="{{ url_for('new_jobs.jobs_list', job_type='duplicate_redirect') }}">
-                    Fix duplicate redirects
-                </a> <i class="bi bi-x-lg"></i>
-            </li>
-            <li class="list-group-item ">
-                Fix redirects: (<a href="{{ url_for('fixred.index') }}"> one page </a>, <a
-                    href="{{ url_for('new_jobs.jobs_list', job_type='fixred_all') }}">
-                    all pages
-                </a>)
+            <li class="list-group-item">
+                <a href="{{ url_for('new_jobs.jobs_list', job_type='fixred_all') }}">
+                    Fix redirects all pages
+                </a>
             </li>
             <li class="list-group-item">
                 <a href="{{ url_for('new_jobs.jobs_list', job_type='fixref') }}">
                     Normalize references
-                </a> <i class="bi bi-check-lg"></i>
+                </a>
             </li>
-            <li class="list-group-item ">
-                <a href="{{ url_for('new_jobs.jobs_list', job_type='create_redirects') }}">
-                    Create redirects
-                </a> <i class="bi bi-x-lg"></i>
+            <li class="list-group-item">
+                <a href="{{ url_for('new_jobs.jobs_list', job_type='duplicate_redirect') }}">
+                    Fix duplicate redirects
+                </a>
             </li>
-            <li class="list-group-item ">
+            <li class="list-group-item">
+                <a href="{{ url_for('new_jobs.jobs_list', job_type='find_and_replace') }}">
+                    find &amp; replace
+                </a>
+            </li>
+        </ul>
+
+        <p>Jobs for one page:</p>
+        <ul class="list-group mb-0">
+            <li class="list-group-item">
+                <a href="{{ url_for('new_jobs.jobs_list', job_type='add_r_column') }}">
+                    Add R column
+                </a>
+            </li>
+            <li class="list-group-item">
                 <a href="{{ url_for('newupdater.newupdater') }}">
                     Medical content updater
-                </a> <i class="bi bi-x-lg"></i>
+                </a>
             </li>
-            <li class="list-group-item ">
+            <li class="list-group-item">
+                <a href="{{ url_for('fixred.index') }}">
+                    Fix redirects one page
+                </a>
+            </li>
+            <li class="list-group-item">
                 <a href="{{ url_for('new_jobs.jobs_list', job_type='import_history') }}">
                     Import page history
-                </a> <i class="bi bi-x-lg"></i>
+                </a>
             </li>
-            <li class="list-group-item ">
-                <a href="{{ url_for('new_jobs.jobs_list', job_type='find_and_replace') }}">
-                    Find &amp; replace
-                </a> <i class="bi bi-x-lg"></i>
+            <li class="list-group-item">
+                <a href="{{ url_for('new_jobs.jobs_list', job_type='create_redirects') }}">
+                    Create redirects
+                </a>
             </li>
-        </ol>
+            <li class="list-group-item">
+                <a href="{{ url_for('new_jobs.jobs_list', job_type='copy_svg_langs') }}">
+                    copy_svg_langs
+                </a>
+            </li>
+        </ul>
     </div>
 </div>
 {% endblock %}

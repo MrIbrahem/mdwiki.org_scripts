@@ -1,3 +1,5 @@
+from .workers.add_r_column.worker import add_r_column_worker_entry
+from .workers.add_unlinkedwikibase.worker import add_unlinkedwikibase_worker_entry
 from .workers.copy_svg_langs.worker import copy_svg_langs_worker_entry
 from .workers.create_redirects.worker import create_redirects_worker_entry
 from .workers.duplicate_redirect.worker import duplicate_redirect_worker_entry
@@ -7,6 +9,8 @@ from .workers.fixref.worker import fixref_worker_entry
 from .workers.import_history.worker import import_history_worker_entry
 
 jobs_targets_public = {
+    "add_r_column": add_r_column_worker_entry,
+    "add_unlinkedwikibase": add_unlinkedwikibase_worker_entry,
     "copy_svg_langs": copy_svg_langs_worker_entry,
     "create_redirects": create_redirects_worker_entry,
     "duplicate_redirect": duplicate_redirect_worker_entry,
@@ -17,6 +21,8 @@ jobs_targets_public = {
 }
 
 JOB_TYPE_TEMPLATES_PUBLIC = {
+    "add_r_column": "new_jobs_templates/add_r_column/details.html",
+    "add_unlinkedwikibase": "new_jobs_templates/add_unlinkedwikibase/details.html",
     "copy_svg_langs": "new_jobs_templates/copy_svg_langs/details.html",
     "create_redirects": "new_jobs_templates/create_redirects/details.html",
     "duplicate_redirect": "new_jobs_templates/duplicate_redirect/details.html",
@@ -27,6 +33,8 @@ JOB_TYPE_TEMPLATES_PUBLIC = {
 }
 
 JOB_TYPE_LIST_TEMPLATES_PUBLIC = {
+    "add_r_column": "new_jobs_templates/add_r_column/list.html",
+    "add_unlinkedwikibase": "new_jobs_templates/add_unlinkedwikibase/list.html",
     "copy_svg_langs": "new_jobs_templates/copy_svg_langs/list.html",
     "create_redirects": "new_jobs_templates/create_redirects/list.html",
     "duplicate_redirect": "new_jobs_templates/duplicate_redirect/list.html",
