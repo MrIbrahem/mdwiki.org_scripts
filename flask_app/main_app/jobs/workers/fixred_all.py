@@ -1,6 +1,6 @@
 """Service: fix redirects in page text on mdwiki.
 
-In-process replacement for ``python/fixred.py``. For one or more pages we:
+In-process replacement for ``python/fixred_all.py``. For one or more pages we:
 
 1. Read the page text.
 2. Enumerate the wikilinks the page contains (``prop=links``).

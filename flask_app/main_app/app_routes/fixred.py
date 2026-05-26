@@ -23,7 +23,7 @@ def index():
     title = _normalize_title(request.args.get("title", ""))
     save = int(request.args.get("save", "0")) or 0
     return render_template(
-        "jobs_templates/fixred.html",
+        "fixred_one.html",
         title="Fix redirects in page text",
         form_title=title,
         outcome=None,
@@ -39,7 +39,7 @@ def fixred_post():
 
     if not title:
         return render_template(
-            "jobs_templates/fixred.html",
+            "fixred_one.html",
             title="Fix redirects in page text",
             form_title="",
             outcome=None,
@@ -52,7 +52,7 @@ def fixred_post():
         logger.exception("work_on_title failed for %s", title)
         flash(f"Error processing {title!r}: {exc!r}", "danger")
         return render_template(
-            "jobs_templates/fixred.html",
+            "fixred_one.html",
             title="Fix redirects in page text",
             form_title=title,
             outcome=None,
@@ -60,7 +60,7 @@ def fixred_post():
         )
 
     return render_template(
-        "jobs_templates/fixred.html",
+        "fixred_one.html",
         title=f"Fix redirects in page text — {title}",
         form_title=title,
         outcome=outcome,

@@ -5,7 +5,7 @@ Tests for the pure-text helpers in services.fixred.
 from __future__ import annotations
 
 import pytest
-from flask_app.main_app.jobs.workers.fixred import fix_text
+from flask_app.main_app.jobs.workers.fixred_all import fix_text
 
 
 @pytest.mark.skip(reason="fix_text is not ready yet")
