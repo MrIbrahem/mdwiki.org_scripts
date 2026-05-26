@@ -159,7 +159,8 @@ class ImportHistoryWorker(BaseJobWorker):
             if saved.get("success"):
                 return "imported"
 
-            fallback_title = f"User:Mr._Ibrahem/{title}"
+            username = self.site.username or "Mr._Ibrahem"
+            fallback_title = f"User:{username}/{title}"
             logger.info(f"Job {self.job_id}: {title!r}: top-level save failed; writing to {fallback_title!r}")
             fallback_result = edit_page(
                 self.site, fallback_title, text, "Returns the article text after importing the history"

@@ -80,7 +80,11 @@ class FindAndReplaceWorker(BaseJobWorker):
             self.result["error"] = "`find` cannot be empty."
             return self.result
 
-        cap = int(number) if number and int(number) > 0 else None
+        try:
+            cap = int(number) if number and int(number) > 0 else None
+        except ValueError:
+            cap = None
+
         self.result["summary"]["cap"] = cap
 
         titles = self._resolve_titles(find, listtype)

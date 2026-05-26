@@ -90,7 +90,15 @@ class DuplicateRedirectWorker(BaseJobWorker):
 
             from_title = entry.get("from", "")
             intermediate = entry.get("to", "")
-            final_target = from_to.get(intermediate, "")
+            seen = {from_title, intermediate}
+            curr = intermediate
+            while curr in from_to:
+                next_target = from_to[curr]
+                if next_target in seen:
+                    break
+                seen.add(next_target)
+                curr = next_target
+            final_target = curr
 
             self.result["summary"]["scanned"] += 1
 

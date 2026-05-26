@@ -70,10 +70,10 @@ def _enwiki_redirects_for(title: str, *, timeout: int = 10) -> list[str]:
     pages = (payload.get("query") or {}).get("pages") or {}
 
     out: list[str] = []
+
     for page in pages.values():
-        if page.get("title") != title:
-            continue
         for r in page.get("redirects", []) or []:
+            # if page.get("title") != title: continue
             if r.get("ns") != 0:
                 continue
             redirect_title = r.get("title", "")

@@ -166,7 +166,10 @@ class FixrefWorker(BaseJobWorker):
             return [m for m in members if not m.startswith("Category:")][:MAX_PAGES_FIXREF]
 
         if number:
-            capped = min(int(number), MAX_PAGES_FIXREF)
+            try:
+                capped = min(int(number), MAX_PAGES_FIXREF)
+            except ValueError:
+                capped = MAX_PAGES_FIXREF
             return [p.name for p in self.site.allpages(namespace=0, limit=capped)]
 
         return []
