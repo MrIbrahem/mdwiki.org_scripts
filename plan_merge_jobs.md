@@ -175,6 +175,27 @@ Edit:
 
 ---
 
+## Progress
+
+### Done
+
+- [x] Created all 6 worker folders with `__init__.py` + `worker.py` placeholders
+- [x] Created all 6 template folders with `list.html` + `details.html`
+- [x] Registered all 6 jobs in `workers_list.py` (imports + 3 dicts)
+- [x] Updated `index.html` — all 6 `url_for` links now point to `new_jobs.jobs_list`
+- [x] Added `start_job()` to `jobs_worker.py` (delegates to `start_job_with_args` with empty args)
+- [x] Added descriptive text to `duplicate_redirect/list.html` and `fixred_all/list.html`
+- [x] Added `pages_processed` table + args JSON to `duplicate_redirect/details.html` and `fixred_all/details.html`
+- [x] Created `/new_jobs/list` endpoint + `all_jobs_list.html` template (shows 100 recent jobs across all types)
+- [x] Added "New Jobs" link to navbar in `header.html`
+
+### Remaining
+
+- [ ] Migrate actual worker logic into `process()` for each job (currently `# TODO` placeholders)
+- [ ] Workers need to append to `self.result["pages_processed"]` during processing for detail tables to populate
+
+---
+
 ## Execution Order
 
 1. `duplicate_redirect` (simplest — no args, no form)
