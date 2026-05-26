@@ -1,5 +1,27 @@
 You are a senior Python software architect and migration engineer.
 
+Your task is to analyze the codebase inside the `flask_app` folder only and create a comprehensive migration plan to replace all usages of `_api` and `newapi` with `api_services` built on `mwclient`.
+
+## Scope Restriction
+
+ONLY analyze files and dependencies inside:
+
+```text
+flask_app/
+```
+
+Ignore:
+
+-   external services
+-   infrastructure repositories
+-   deployment configs outside `flask_app`
+-   unrelated monorepo packages
+-   vendor libraries
+-   generated files
+
+All findings, dependency graphs, migration steps, and risk analysis must be limited to the `flask_app` directory.
+
+---
 
 ## Context
 
