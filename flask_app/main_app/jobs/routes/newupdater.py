@@ -21,7 +21,7 @@ def newupdater():
 
     if not title:
         return render_template(
-            "newupdater.html",
+            "jobs_templates/newupdater.html",
             title="Medical content updater",
             form_title="",
             outcome=None,
@@ -34,7 +34,7 @@ def newupdater():
         logger.exception("work_on_title failed for %s", title)
         flash(f"Error processing {title!r}: {exc!r}", "danger")
         return render_template(
-            "newupdater.html",
+            "jobs_templates/newupdater.html",
             title="Medical content updater",
             form_title=title,
             outcome=None,
@@ -42,7 +42,7 @@ def newupdater():
         )
 
     return render_template(
-        "newupdater.html",
+        "jobs_templates/newupdater.html",
         title=f"Medical content updater — {title}",
         form_title=title,
         outcome=outcome,

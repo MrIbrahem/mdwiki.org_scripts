@@ -21,7 +21,7 @@ def dup_post():
     user = current_user()
 
     if request.form.get("start") != "start":
-        return render_template("dup.html", title="Fix duplicate redirects")
+        return render_template("jobs_templates/dup.html", title="Fix duplicate redirects")
 
     # Reject duplicate concurrent runs of this same tool.
     active = get_store().find_active("dup")
@@ -43,7 +43,7 @@ def dup_post():
 
 @bp_dup.route("/", methods=["GET"])
 def dup():
-    return render_template("dup.html", title="Fix duplicate redirects")
+    return render_template("jobs_templates/dup.html", title="Fix duplicate redirects")
 
 
 __all__ = ["bp_dup"]

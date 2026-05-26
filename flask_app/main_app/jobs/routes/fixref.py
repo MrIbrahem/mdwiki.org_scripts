@@ -34,7 +34,7 @@ def _parse_int(raw: str) -> int | None:
 @oauth_required
 def fixref():
     return render_template(
-        "fixref.html",
+        "jobs_templates/fixref.html",
         title="Normalize references",
         form_titlelist="",
         form_number="",
@@ -60,7 +60,7 @@ def fixref_post():
             "warning",
         )
         return render_template(
-            "fixref.html",
+            "jobs_templates/fixref.html",
             title="Normalize references",
             form_titlelist=raw_titlelist,
             form_number=raw_number,
