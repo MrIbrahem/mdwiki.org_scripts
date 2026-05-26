@@ -103,19 +103,13 @@ class AddRColumnWorker(BaseJobWorker):
             "started_at": datetime.now().isoformat(),
             "completed_at": None,
             "cancelled_at": None,
-            "summary": {
-                "scanned": 0,
-                "updated": 0,
-                "errors": 0,
-                "total": 0,
-            },
             "steps": {
-                "load_page": {"status": "pending", "message": ""},
-                "load_text": {"status": "pending", "message": ""},
-                "add_empty_r_column": {"status": "pending", "message": ""},
-                "first_save": {"status": "pending", "message": ""},
-                "add_r_column": {"status": "pending", "message": ""},
-                "final_save": {"status": "pending", "message": ""},
+                "load_page": {"status": "pending", "title": "get page", "message": ""},
+                "load_text": {"status": "pending", "title": "Load page text", "message": ""},
+                "add_empty_r_column": {"status": "pending", "title": "Add empty R column", "message": ""},
+                "first_save": {"status": "pending", "title": "Save page", "message": ""},
+                "add_r_column": {"status": "pending", "title": "Add R column", "message": ""},
+                "final_save": {"status": "pending", "title": "Save page", "message": ""},
             },
             "new_text": "",
         }
@@ -175,7 +169,7 @@ class AddRColumnWorker(BaseJobWorker):
             self._set_status_failed("Failed to load page")
             return False
 
-        if not self._page.check_exists():
+        if not self.page.check_exists():
             self._set_step_status("load_page", "failed", "Page does not exist")
             self._set_status_failed("Page does not exist")
             return False
