@@ -55,9 +55,6 @@ flask_app/
 │   │   └── exceptions.py
 │   ├── new_jobs/
 │   │   ├── workers/
-│   │   │   ├── copy_svg_langs/
-│   │   │   │   ├── __init__.py
-│   │   │   │   └── worker.py
 │   │   │   ├── create_redirects/
 │   │   │   │   ├── __init__.py
 │   │   │   │   └── worker.py
@@ -124,7 +121,6 @@ flask_app/
 │   ├── jobs/
 │   ├── jobs_templates/
 │   └── new_jobs_templates/
-│       ├── copy_svg_langs/
 │       ├── create_redirects/
 │       ├── duplicate_redirect/
 │       ├── find_and_replace/

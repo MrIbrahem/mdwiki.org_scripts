@@ -54,8 +54,6 @@ tests/
 │   │   └── test_jobs_runner.py
 │   ├── new_jobs/
 │   │   ├── workers/
-│   │   │   ├── copy_svg_langs/
-│   │   │   │   └── test_copy_svg_langs_worker.py
 │   │   │   ├── create_redirects/
 │   │   │   │   └── test_create_redirects_worker.py
 │   │   │   ├── duplicate_redirect/
