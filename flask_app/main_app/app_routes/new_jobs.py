@@ -175,6 +175,17 @@ class JobsPublicRoutes:
 
     def __init__(self, bp_public_jobs: Blueprint) -> None:
         # ================================
+        # All Jobs List route
+        # ================================
+
+        @bp_public_jobs.get("/list")
+        def all_jobs_list() -> str:
+            jobs = list_jobs(limit=100)
+            if jobs:
+                jobs = sorted(jobs, key=lambda x: x.created_at or "", reverse=True)
+            return render_template("new_jobs_templates/all_jobs_list.html", jobs=jobs)
+
+        # ================================
         # Cancel Jobs routes
         # ================================
 

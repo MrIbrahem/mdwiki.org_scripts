@@ -17,23 +17,23 @@
                 </a> <i class="bi bi-x-lg"></i>
             </li>
             <li class="list-group-item ">
-                <a href="{{ url_for('new_jobs.jobs_list', job_type='duplicate_redirect') }}">
+                <a href="{{ url_for('duplicate_redirect.duplicate_redirect') }}">
                     Fix duplicate redirects
                 </a> <i class="bi bi-x-lg"></i>
             </li>
             <li class="list-group-item ">
                 Fix redirects: (<a href="{{ url_for('fixred.index') }}"> one page </a>, <a
-                    href="{{ url_for('new_jobs.jobs_list', job_type='fixred_all') }}">
+                    href="{{ url_for('fixred_all.index') }}">
                     all pages
                 </a>)
             </li>
             <li class="list-group-item">
-                <a href="{{ url_for('new_jobs.jobs_list', job_type='fixref') }}">
+                <a href="{{ url_for('fixref.fixref') }}">
                     Normalize references
                 </a> <i class="bi bi-check-lg"></i>
             </li>
             <li class="list-group-item ">
-                <a href="{{ url_for('new_jobs.jobs_list', job_type='create_redirects') }}">
+                <a href="{{ url_for('create_redirects.redirect') }}">
                     Create redirects
                 </a> <i class="bi bi-x-lg"></i>
             </li>
@@ -43,12 +43,12 @@
                 </a> <i class="bi bi-x-lg"></i>
             </li>
             <li class="list-group-item ">
-                <a href="{{ url_for('new_jobs.jobs_list', job_type='import_history') }}">
+                <a href="{{ url_for('import_history.import_history') }}">
                     Import page history
                 </a> <i class="bi bi-x-lg"></i>
             </li>
             <li class="list-group-item ">
-                <a href="{{ url_for('new_jobs.jobs_list', job_type='find_and_replace') }}">
+                <a href="{{ url_for('replace.replace') }}">
                     Find &amp; replace
                 </a> <i class="bi bi-x-lg"></i>
             </li>

@@ -1,0 +1,48 @@
+{% extends "new_jobs_templates/base_list2.html" %}
+
+{% set job_type = 'find_and_replace' %}
+{% set hide_start_button = '1' %}
+
+{% block list_title %}Find and Replace{% endblock %}
+{% block list_headline %}Find and Replace{% endblock %}
+
+{% block list_info %}
+<p class="text-muted">
+    Find a literal string in mdwiki pages and replace it.
+    Use the <strong>newlist</strong> mode to search only pages that contain the
+    query (recommended); <strong>oldlist</strong> walks every mainspace page and is slower.
+</p>
+<form method="post" action="{{ url_for('new_jobs.start_job_with_args', job_type=job_type) }}"
+    class="row gy-2 gx-3 align-items-center mb-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <label for="find" class="form-label">Find</label>
+            <textarea id="find" name="find" class="form-control" rows="4" required
+                placeholder="exact string to find"></textarea>
+        </div>
+        <div class="col-md-6">
+            <label for="replace" class="form-label">Replace</label>
+            <textarea id="replace" name="replace" class="form-control" rows="4"
+                placeholder="replacement (may be empty to delete)"></textarea>
+        </div>
+    </div>
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <label for="listtype" class="form-label">List type</label>
+            <select id="listtype" name="listtype" class="form-select">
+                <option value="newlist">newlist (search for `find`)</option>
+                <option value="oldlist">oldlist (all mainspace pages)</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="number" class="form-label">Max modifications (optional)</label>
+            <input id="number" name="number" type="number" min="1" class="form-control"
+                placeholder="e.g. 100">
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-outline-primary w-100">Start</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

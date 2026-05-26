@@ -1,0 +1,17 @@
+{% extends "new_jobs_templates/base_list2.html" %}
+
+{% set job_type = 'duplicate_redirect' %}
+
+{% block list_title %}Fix Duplicate Redirects{% endblock %}
+{% block list_headline %}Fix Duplicate Redirects{% endblock %}
+{% block start_confirm_message %}Start fixing duplicate redirects?{% endblock %}
+{% block start_text %}Start{% endblock %}
+
+{% block list_info %}
+<p class="text-muted">
+    Scans <code>Special:DoubleRedirects</code> on mdwiki and rewrites each
+    entry so it points directly at its final target. The job runs in the
+    background; you'll be redirected to a status page that polls for
+    progress.
+</p>
+{% endblock %}

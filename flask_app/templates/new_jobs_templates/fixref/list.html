@@ -1,0 +1,39 @@
+{% extends "new_jobs_templates/base_list2.html" %}
+
+{% set job_type = 'fixref' %}
+{% set hide_start_button = '1' %}
+
+{% block list_title %}Normalize References{% endblock %}
+{% block list_headline %}Normalize References{% endblock %}
+
+{% block list_info %}
+<p class="text-muted">
+    Normalize <code>cite</code>-template formatting on mdwiki pages.
+    Provide one of: a title list, a category to walk, or a number of
+    mainspace pages to scan.
+</p>
+<form method="post" action="{{ url_for('new_jobs.start_job_with_args', job_type=job_type) }}"
+    class="row gy-2 gx-3 align-items-center mb-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="mb-3">
+        <label for="titlelist" class="form-label">Title list (one per line)</label>
+        <textarea id="titlelist" name="titlelist" class="form-control" rows="6"
+            placeholder="Aspirin&#10;Paracetamol">User:Mr. Ibrahem/test</textarea>
+    </div>
+    <div class="row g-3 mb-3">
+        <div class="col-md-5">
+            <label for="cat" class="form-label">Category</label>
+            <input id="cat" name="cat" type="text" class="form-control"
+                placeholder="e.g. CS1_errors:_deprecated_parameters">
+        </div>
+        <div class="col-md-5">
+            <label for="number" class="form-label">Or first N mainspace pages</label>
+            <input id="number" name="number" type="number" min="1" class="form-control"
+                placeholder="e.g. 1000">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-outline-primary w-100">Start</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

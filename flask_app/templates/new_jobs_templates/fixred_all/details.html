@@ -1,0 +1,89 @@
+{% extends "new_jobs_templates/base_details2.html" %}
+{% from "_macros.html" import card_header %}
+
+{% set job_type = 'fixred_all' %}
+
+{% block detail_title %}Fix Redirects in All Pages{% endblock %}
+{% block detail_headline %}Fix Redirects in All Pages{% endblock %}
+
+{% block job_summary %}
+{% if result_data and result_data.summary %}
+<div class="table-responsive">
+    <table class="table table-striped table-sm mb-0">
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, value in result_data.summary.items() %}
+            <tr>
+                <td>{{ key }}</td>
+                <td>{{ value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block job_details %}
+{% if result_data and result_data.pages_processed %}
+<div class="card mb-3">
+    <div class="card-header">
+        {{ card_header("Pages Processed (" ~ result_data.pages_processed|length ~ ")") }}
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Page</th>
+                        <th>Status</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in result_data.pages_processed %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.title if item.title else '-' }}</td>
+                        <td>
+                            {% if item.status == 'fixed' %}
+                            <span class="badge bg-success">{{ item.status }}</span>
+                            {% elif item.status == 'error' %}
+                            <span class="badge bg-danger">{{ item.status }}</span>
+                            {% elif item.status == 'missing' %}
+                            <span class="badge bg-warning">{{ item.status }}</span>
+                            {% elif item.status == 'no-changes' %}
+                            <span class="badge bg-secondary">{{ item.status }}</span>
+                            {% elif item.status == 'would-fix' %}
+                            <span class="badge bg-info">{{ item.status }}</span>
+                            {% else %}
+                            <span class="badge bg-light text-dark">{{ item.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td><small>{{ item.msg if item.msg else '' }}</small></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if result_data and result_data.args %}
+<div class="card mb-3">
+    <div class="card-header">
+        {{ card_header("Job Arguments") }}
+    </div>
+    <div class="card-body">
+        <pre class="mb-0"><code>{{ result_data.args | tojson(indent=2) }}</code></pre>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

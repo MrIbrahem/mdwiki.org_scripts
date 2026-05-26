@@ -115,7 +115,16 @@ def start_job_with_args(
     return job.id
 
 
+def start_job(
+    user: Dict[str, Any] | None,
+    job_type: str,
+) -> int:
+    """Start a background job with no arguments."""
+    return start_job_with_args(user, job_type, args={})
+
+
 __all__ = [
+    "start_job",
     "start_job_with_args",
     "cancel_job",
 ]

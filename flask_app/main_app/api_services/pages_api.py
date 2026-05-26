@@ -180,12 +180,118 @@ def resolve_redirects(
     return result
 
 
+def get_page_text(page_title: str, site: mwclient.Site) -> str | None:
+    """Return the wikitext of *page_title*, or None if the page is missing."""
+    page = site.pages[page_title]
+    if not page.exists:
+        return None
+    return page.text()
+
+
+def search_pages(
+    query: str,
+    site: mwclient.Site,
+    namespace: int = 0,
+    limit: int = "max",
+) -> list[str]:
+    """Return page titles matching *query* via the MediaWiki search API."""
+    titles: list[str] = []
+    params = {
+        "action": "query",
+        "list": "search",
+        "srsearch": query,
+        "srnamespace": str(namespace),
+        "srlimit": str(limit),
+        "srwhat": "text",
+        "srsort": "just_match",
+    }
+    data = site.get("query", **params)
+    for item in (data.get("query", {}).get("search", []) or []):
+        titles.append(item["title"])
+    return titles
+
+
+def get_double_redirects(site: mwclient.Site) -> list[dict[str, str]]:
+    """Return resolved double-redirect pairs ``[{"from", "to"}, ...]``."""
+    params = {
+        "action": "query",
+        "prop": "info",
+        "generator": "querypage",
+        "redirects": 1,
+        "utf8": 1,
+        "gqppage": "DoubleRedirects",
+        "gqplimit": "max",
+    }
+    data = site.get("query", **params)
+    return data.get("query", {}).get("redirects", []) or []
+
+
+def import_page_from_wiki(
+    site: mwclient.Site,
+    title: str,
+    family: str = "wikipedia",
+) -> dict:
+    """Import revision history of *title* from another wiki family.
+
+    Uses the MediaWiki ``action=import`` API (interwiki import).
+    Returns the API response dict.
+    """
+    params = {
+        "action": "import",
+        "title": title,
+        "interwikisource": family,
+        "fullhistory": 1,
+    }
+    try:
+        result = site.post(**params)
+        return result or {}
+    except Exception as exc:
+        logger.exception("import_page_from_wiki failed for %s", title)
+        return {"error": str(exc)}
+
+
+def get_page_links(
+    title: str,
+    site: mwclient.Site,
+    namespace: int = 0,
+) -> dict:
+    """Return wikilinks on *title* in *namespace*.
+
+    Returns ``{"links": {title: {"ns", "title"}}, "normalized": [...], "redirects": [...]}``.
+    """
+    params = {
+        "action": "query",
+        "prop": "links",
+        "titles": title,
+        "plnamespace": str(namespace),
+        "pllimit": "max",
+        "converttitles": 1,
+    }
+    data = site.get("query", **params)
+    out: dict = {"links": {}, "normalized": [], "redirects": []}
+    if not data:
+        return out
+
+    query = data.get("query", {}) or {}
+    out["normalized"] = query.get("normalized", []) or []
+    out["redirects"] = query.get("redirects", []) or []
+    for page in (query.get("pages", {}) or {}).values():
+        for link in page.get("links", []) or []:
+            out["links"][link["title"]] = {"ns": link["ns"], "title": link["title"]}
+    return out
+
+
 __all__ = [
     "create_page",
+    "get_double_redirects",
+    "get_page_links",
+    "get_page_text",
+    "import_page_from_wiki",
     "is_page_exists",
     "is_pages_exists",
     "is_redirect",
     "move_page",
-    "update_page_text",
     "resolve_redirects",
+    "search_pages",
+    "update_page_text",
 ]

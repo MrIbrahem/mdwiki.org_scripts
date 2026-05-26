@@ -1,0 +1,33 @@
+{% extends "new_jobs_templates/base_list2.html" %}
+
+{% set job_type = 'import_history' %}
+{% set hide_start_button = '1' %}
+
+{% block list_title %}Import History from Enwiki{% endblock %}
+{% block list_headline %}Import History from Enwiki{% endblock %}
+
+{% block list_info %}
+<p class="text-muted">
+    Imports the full revision history of the given mdwiki page(s) from
+    English Wikipedia, then re-saves the current mdwiki body on top so
+    the visible content is unchanged.
+</p>
+<form method="post" action="{{ url_for('new_jobs.start_job_with_args', job_type=job_type) }}"
+    class="row gy-2 gx-3 align-items-center mb-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="row g-3 mb-3">
+        <div class="col-md-9">
+            <label for="titles" class="form-label">Titles (one per line)</label>
+            <textarea id="titles" name="titles" class="form-control" rows="6"
+                placeholder="Aspirin&#10;Paracetamol" required></textarea>
+        </div>
+        <div class="col-md-3">
+            <label for="from_lang" class="form-label">Source lang (reserved)</label>
+            <input id="from_lang" name="from_lang" type="text" class="form-control" value="en">
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-outline-primary w-100">Start</button>
+    </div>
+</form>
+{% endblock %}
