@@ -32,7 +32,7 @@ from .utils.routes_utils import load_auth_payload
 logger = logging.getLogger(__name__)
 
 
-bp_public_jobs = Blueprint("public_jobs", __name__, url_prefix="/public_jobs")
+bp_public_jobs = Blueprint("new_jobs", __name__, url_prefix="/new_jobs")
 
 
 def _can_manage_job(job: Any, user: Any) -> bool:
@@ -56,7 +56,7 @@ def _cancel_job(job_id: int, job_type: str) -> Response:
     else:
         flash(f"Job {job_id} is not running or already cancelled.", "warning")
 
-    return redirect(url_for("public_jobs.jobs_list", job_type=job_type))
+    return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
 
 
 def _delete_job(job_id: int, job_type: str) -> Response:
@@ -73,7 +73,7 @@ def _delete_job(job_id: int, job_type: str) -> Response:
         logger.exception("Failed to delete job")
         flash(f"Failed to delete job {job_id}: {str(exc)}", "danger")
 
-    return redirect(url_for("public_jobs.jobs_list", job_type=job_type))
+    return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
 
 
 def _start_job(job_type: str) -> int | None:
@@ -151,7 +151,7 @@ def _job_detail(job_id: int, job_type: str) -> Response | str:
     except LookupError as exc:
         logger.exception("Job not found")
         flash(str(exc), "warning")
-        return redirect(url_for("public_jobs.jobs_list", job_type=job_type))
+        return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
 
     # Load job result if available
     result_data = None
@@ -186,17 +186,17 @@ class JobsPublicRoutes:
             user = current_user()
             if not user:
                 flash("You must be logged in to cancel jobs.", "danger")
-                return redirect(url_for("public_jobs.jobs_list", job_type=job_type))
+                return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
 
             try:
                 job = get_job(job_id, job_type)
             except LookupError:
                 flash("Job not found.", "warning")
-                return redirect(url_for("public_jobs.jobs_list", job_type=job_type))
+                return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
 
             if not _can_manage_job(job, user):
                 flash("You don't have permission to cancel this job.", "danger")
-                return redirect(url_for("public_jobs.jobs_list", job_type=job_type))
+                return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
 
             return _cancel_job(job_id, job_type)
 
@@ -226,8 +226,8 @@ class JobsPublicRoutes:
                 abort(404)
             job_id = _start_job(job_type)
             if not job_id:
-                return redirect(url_for("public_jobs.jobs_list", job_type=job_type))
-            return redirect(url_for("public_jobs.job_detail", job_type=job_type, job_id=job_id))
+                return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
+            return redirect(url_for("new_jobs.job_detail", job_type=job_type, job_id=job_id))
 
         @bp_public_jobs.post("/<string:job_type>/start_with_args")
         def start_job_with_args(job_type: str) -> ResponseReturnValue:
@@ -237,8 +237,8 @@ class JobsPublicRoutes:
             args = request.form.to_dict()
             job_id = _start_job_with_args(job_type, args)
             if not job_id:
-                return redirect(url_for("public_jobs.jobs_list", job_type=job_type))
-            return redirect(url_for("public_jobs.job_detail", job_type=job_type, job_id=job_id))
+                return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
+            return redirect(url_for("new_jobs.job_detail", job_type=job_type, job_id=job_id))
 
         # ================================
         # Delete Job routes
