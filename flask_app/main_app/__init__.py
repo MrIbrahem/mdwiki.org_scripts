@@ -1,9 +1,11 @@
-"""Flask application factory."""
+"""
+Flask application factory.
+"""
 
 from __future__ import annotations
 
 import logging
-from typing import Tuple, Type
+from typing import Any, Tuple, Type
 
 from flask import Flask, flash, render_template
 from flask_wtf.csrf import CSRFError, CSRFProtect
@@ -108,16 +110,15 @@ def create_app(config_class: Type) -> Flask:
     csrf = CSRFProtect(app)  # noqa: F841
 
     # Initialize Flask-SQLAlchemy and Flask-Migrate
-    # if akpp.config.get("SQLALCHEMY_DATABASE_URI"):
-    _db.init_app(app)
-    migrate.init_app(app, _db)
+    if app.config.get("SQLALCHEMY_DATABASE_URI"):
+        _db.init_app(app)
+        migrate.init_app(app, _db)
 
-    # Create database tables and views if they don't exist
-    init_db(app, _db)
+        # Create database tables and views if they don't exist
+        init_db(app, _db)
 
     @app.context_processor
-    def _inject_user() -> dict:
-        """Make `current_user` available in all templates."""
+    def _inject_user() -> dict[str, Any]:
         return context_user()
 
     # app.jinja_env.filters["format_stage_timestamp"] = format_stage_timestamp
