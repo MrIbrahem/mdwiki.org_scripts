@@ -47,7 +47,13 @@ def work_on_title(
     """
 
     user = current_user()
-    site = get_user_site(user)
+    if user is None:
+        return UpdaterOutcome(kind="notext")
+    user_dict = {
+        "access_token": user.access_token,
+        "access_secret": user.access_secret,
+    }
+    site = get_user_site(user_dict)
 
     title = (title or "").strip()
     if not title:
