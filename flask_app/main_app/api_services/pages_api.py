@@ -206,7 +206,10 @@ def search_pages(
         "srsort": "just_match",
     }
     data = site.get("query", **params)
-    for item in data.get("query", {}).get("search", []) or []:
+    if not data:
+        return titles
+    query = data.get("query") or {}
+    for item in (query.get("search") or []):
         titles.append(item["title"])
     return titles
 
