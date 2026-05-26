@@ -9,6 +9,7 @@ def test_job_record_creation(app):
         job = JobRecord(job_type="test_job", username="test_user")
         db.session.add(job)
         db.session.commit()
+        db.session.refresh(job)
 
         assert job.id is not None
         assert job.job_type == "test_job"

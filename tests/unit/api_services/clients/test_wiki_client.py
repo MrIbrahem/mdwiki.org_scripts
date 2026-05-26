@@ -17,9 +17,12 @@ def test_coerce_encrypted():
     assert coerce_encrypted(123) is None
 
 
+@patch("flask_app.main_app.api_services.clients.wiki_client.settings")
 @patch("flask_app.main_app.api_services.clients.wiki_client.mwclient.Site")
 @patch("flask_app.main_app.api_services.clients.wiki_client.decrypt_value")
-def test_get_user_site(mock_decrypt, mock_site, app):
+def test_get_user_site(mock_decrypt, mock_site, mock_settings, app):
+    mock_settings.oauth = MagicMock()
+    mock_settings.other = MagicMock()
     mock_decrypt.side_effect = lambda x: x.decode() if isinstance(x, bytes) else x
 
     user = {"access_token": b"token", "access_secret": b"secret"}

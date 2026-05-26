@@ -41,17 +41,13 @@ def test_oauth_required_decorator(app):
     def protected():
         return "allowed"
 
-    with app.test_request_context():
+    with app.test_request_context("/protected"):
         # Case 1: No user
         with patch("flask_app.main_app.su_services.users_service.current_user", return_value=None):
-            client = app.test_client()
-            response = client.get("/protected")
+            response = protected()
             assert response.status_code == 302
             assert "/login" in response.location
-
         # Case 2: User exists
         with patch("flask_app.main_app.su_services.users_service.current_user", return_value=MagicMock()):
-            client = app.test_client()
-            response = client.get("/protected")
-            assert response.status_code == 200
-            assert response.data.decode() == "allowed"
+            response = protected()
+            assert response == "allowed"
