@@ -28,6 +28,50 @@ site = mwclient.Site(
 )
 ```
 
+## Example Migration Pattern
+
+Example replacement of legacy `_api` usage with `mwclient`:
+
+```diff
+- titles = _api.NewApi().Get_All_pages(
+-     start="!",
+-     namespace=_NS_MAIN,
+-     apfilterredir="nonredirects"
+- )
+
++ titles = site.allpages(
++     start="!",
++     prefix=None,
++     namespace=_NS_MAIN,
++     filterredir="all",
++     minsize=None,
++     maxsize=None,
++     prtype=None,
++     prlevel=None,
++     limit=None,
++     dir="ascending",
++     filterlanglinks="all",
++     generator=True,
++     end=None,
++     max_items=None,
++     api_chunk_size=None,
++ )
+```
+
+Analyze semantic differences including:
+
+-   `apfilterredir="nonredirects"` vs `filterredir="all"`
+-   iterator behavior
+-   pagination behavior
+-   generator semantics
+-   return type differences
+-   lazy loading implications
+-   performance implications
+-   ordering guarantees
+-   API chunking behavior
+
+Document all required behavioral adjustments when replacing legacy calls.
+
 ## Objectives
 
 Perform a deep architectural and implementation analysis of the codebase and produce a fully detailed migration strategy.
@@ -77,7 +121,9 @@ Compare `_api` / `newapi` against `api_services`:
 -   upload/edit/token workflows
 
 Create a compatibility matrix:
+
 | Legacy API | api_services Equivalent | Migration Complexity | Notes |
+| ---------- | ----------------------- | -------------------- | ----- |
 
 ### 3. Authentication Migration Analysis
 
