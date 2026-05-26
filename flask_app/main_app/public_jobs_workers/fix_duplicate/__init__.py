@@ -19,7 +19,7 @@ import logging
 from threading import Event
 from typing import Any, Callable, Optional
 
-from ...api_services.newapi import AllAPIS
+from ...newapi import AllAPIS
 from .._api import get_api
 
 logger = logging.getLogger(__name__)

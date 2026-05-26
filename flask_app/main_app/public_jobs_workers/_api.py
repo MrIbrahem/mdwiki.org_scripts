@@ -9,7 +9,7 @@ from __future__ import annotations
 import functools
 import os
 
-from ..api_services.newapi import AllAPIS
+from ..newapi import AllAPIS
 
 
 @functools.lru_cache(maxsize=8)
