@@ -226,7 +226,10 @@ def get_double_redirects(site: mwclient.Site) -> list[dict[str, str]]:
         "gqplimit": "max",
     }
     data = site.get("query", **params)
-    return data.get("query", {}).get("redirects", []) or []
+    if not data:
+        return []
+    query = data.get("query") or {}
+    return query.get("redirects") or []
 
 
 def import_page_from_wiki(
