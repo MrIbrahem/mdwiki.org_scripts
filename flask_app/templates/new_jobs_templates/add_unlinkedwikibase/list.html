@@ -1,0 +1,15 @@
+{% extends "new_jobs_templates/base_list2.html" %}
+
+{% set job_type = 'add_unlinkedwikibase' %}
+
+{% block list_title %}Add unlinkedwikibase tag{% endblock %}
+{% block list_headline %}Add unlinkedwikibase tag{% endblock %}
+{% block start_confirm_message %}Start adding unlinkedwikibase tags to all pages?{% endblock %}
+{% block start_text %}Start{% endblock %}
+
+{% block list_info %}
+<p class="text-muted">
+    Scans all pages and adds the <code>unlinkedwikibase</code> tag where appropriate.
+    (Placeholder: logic not implemented yet)
+</p>
+{% endblock %}
