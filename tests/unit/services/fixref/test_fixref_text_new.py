@@ -10,8 +10,7 @@ def mock_make_title(monkeypatch: pytest.MonkeyPatch):
             "title": title,
         }
     ]
-    # monkeypatch.setattr("flask_app.main_app.jobs.workers.fixref.fixref_text_new.make_title", lambda x: title)
-    monkeypatch.setattr("flask_app.main_app.jobs.workers.fixref.make_title_bot.get_url", lambda x: result)
+    monkeypatch.setattr("flask_app.main_app.shared.fixref_shared.make_title_bot.get_url", lambda x: result)
 
 
 def test_fix_ref_template(mock_make_title):

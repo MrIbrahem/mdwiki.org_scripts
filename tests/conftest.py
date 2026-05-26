@@ -63,17 +63,6 @@ def mock_client(app):
     return app.test_client()
 
 
-@pytest.fixture(autouse=True)
-def reset_job_store():
-    """Reset the in-memory JobStore between tests."""
-
-    from flask_app.main_app.jobs import store as store_mod
-
-    store_mod._store = None
-    yield
-    store_mod._store = None
-
-
 @pytest.fixture()
 def login(mock_client):
     """Helper to set ``session['username']`` to a given user."""
