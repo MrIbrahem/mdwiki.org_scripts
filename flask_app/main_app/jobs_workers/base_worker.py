@@ -13,6 +13,7 @@ from ..db.services import (
     is_job_cancelled,
     update_job_status,
 )
+
 from ..su_services import jobs_files_service
 from .utils import generate_result_file_name
 
