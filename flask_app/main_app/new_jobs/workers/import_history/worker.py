@@ -1,6 +1,8 @@
 """
 Worker module for import_history.
 
+Migrated from flask_app/main_app/jobs/workers/import_history.py.
+Imports revision history from English Wikipedia to mdwiki.
 """
 
 from __future__ import annotations
@@ -8,17 +10,24 @@ from __future__ import annotations
 import logging
 import threading
 from datetime import datetime
-from typing import Any, Dict, Iterable
+from typing import Any, Dict
 
 import mwclient
 
+from ....api_services.clients import get_user_site
+from ....api_services.pages_api import (
+    edit_page,
+    get_page_text,
+    import_page_from_wiki,
+    is_page_exists,
+)
 from ....new_jobs.base_worker import BaseJobWorker
 
 logger = logging.getLogger(__name__)
 
 
 class ImportHistoryWorker(BaseJobWorker):
-    """Background worker"""
+    """Import revision history from enwiki to mdwiki."""
 
     def __init__(
         self,
@@ -59,7 +68,60 @@ class ImportHistoryWorker(BaseJobWorker):
         }
 
     def process(self) -> Dict[str, Any]:
-        # TODO: migrate logic from flask_app/main_app/jobs/workers/import_history.py
+        self.site = get_user_site(self.user)
+        if not self.site:
+            logger.warning(f"Job {self.job_id}: No site authentication available")
+            self.result["status"] = "failed"
+            self.result["error"] = "No authenticated user site available. Please log in via OAuth."
+            self.result["failed_at"] = datetime.now().isoformat()
+            return self.result
+
+        titles_raw = self.args.get("titles", [])
+        from_lang = self.args.get("from_lang", "en")
+        self.result["summary"]["from_lang"] = from_lang
+
+        if isinstance(titles_raw, str):
+            titles = [t.strip() for t in titles_raw.splitlines() if t.strip()]
+        else:
+            titles = [t.replace("_", " ").strip() for t in titles_raw if t and t.strip()]
+
+        total = len(titles)
+        self.result["summary"]["total"] = total
+        per_item = self.get_priority(total) if total else 1
+
+        logger.info(f"Job {self.job_id}: Importing history for {total} titles")
+
+        for i, title in enumerate(titles, start=1):
+            if self.is_cancelled():
+                break
+
+            self.result["summary"]["scanned"] += 1
+
+            try:
+                outcome = self._process_one(title)
+            except Exception as exc:
+                logger.exception("import run failed for %s", title)
+                self.result["summary"]["errors"] += 1
+                self.result["pages_processed"].append(
+                    {
+                        "title": title,
+                        "status": "error",
+                        "msg": str(exc),
+                    }
+                )
+                continue
+
+            self.result["summary"][outcome] = self.result["summary"].get(outcome, 0) + 1
+            self.result["pages_processed"].append(
+                {
+                    "title": title,
+                    "status": outcome,
+                    "msg": "",
+                }
+            )
+
+            if i == 1 or i % per_item == 0:
+                self._save_progress()
 
         if self.result.get("status") in ("pending", "running"):
             self.result["status"] = "completed"
@@ -70,6 +132,46 @@ class ImportHistoryWorker(BaseJobWorker):
     # Internal helpers
     # ------------------------------------------------------------------
 
+    def _process_one(self, title: str) -> str:
+        """Return one of: ``missing``, ``no_revisions``, ``imported``, ``imported_fallback``, ``errors``."""
+        if not is_page_exists(title, self.site):
+            logger.info(f"Job {self.job_id}: {title!r}: missing on mdwiki")
+            return "missing"
+
+        text = get_page_text(title, self.site)
+
+        result = import_page_from_wiki(self.site, title, family="wikipedia")
+        if result.get("error"):
+            logger.warning(f"Job {self.job_id}: import_page failed for {title}: {result['error']}")
+            return "errors"
+
+        revisions = (result.get("import") or [{}])[0].get("revisions", 0)
+        if not revisions:
+            logger.info(f"Job {self.job_id}: {title!r}: import returned 0 revisions")
+            return "no_revisions"
+
+        logger.info(f"Job {self.job_id}: {title!r}: imported {revisions} revision(s)")
+
+        # Re-save the original body so the page content matches what the operator
+        # saw before the import.
+        if text is not None:
+            saved = edit_page(self.site, title, text, "")
+            if saved.get("success"):
+                return "imported"
+
+            username = self.site.username or "Mr._Ibrahem"
+            fallback_title = f"User:{username}/{title}"
+            logger.info(f"Job {self.job_id}: {title!r}: top-level save failed; writing to {fallback_title!r}")
+            fallback_result = edit_page(
+                self.site, fallback_title, text, "Returns the article text after importing the history"
+            )
+            if fallback_result.get("success"):
+                return "imported_fallback"
+            logger.warning(f"Job {self.job_id}: fallback save failed too for {fallback_title}")
+            return "errors"
+
+        return "imported"
+
 
 def import_history_worker_entry(
     job_id: int,
@@ -78,9 +180,7 @@ def import_history_worker_entry(
     cancel_event: threading.Event | None = None,
     args: Dict[str, Any] | None = None,
 ) -> None:
-    """
-    Background worker entry-point.
-    """
+    """Background worker entry-point."""
     logger.info(f"Starting job {job_id}: import_history")
     worker = ImportHistoryWorker(
         job_id=job_id,

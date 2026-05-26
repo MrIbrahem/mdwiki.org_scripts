@@ -16,7 +16,9 @@ import logging
 from dataclasses import dataclass
 from typing import Literal
 
-from ...jobs._api import get_api
+from ...api_services.clients.wiki_client import get_user_site
+from ...api_services.pages_api import edit_page, get_page_text
+from ...su_services.users_service import current_user
 from ...shared.new_updater import work_on_text
 
 logger = logging.getLogger(__name__)
@@ -52,16 +54,23 @@ def work_on_title(
     * ``changes``    — there is a diff to review/save.
     """
 
+    user = current_user()
+    if user is None:
+        return UpdaterOutcome(kind="notext")
+    user_dict = {
+        "access_token": user.access_token,
+        "access_secret": user.access_secret,
+    }
+    site = get_user_site(user_dict)
+
     title = (title or "").strip()
     if not title:
         return UpdaterOutcome(kind="notext")
 
-    api = get_api()
-    page = api.MainPage(title)
-    if not page.exists():
+    old_text = get_page_text(title, site)
+    if old_text is None:
         return UpdaterOutcome(kind="notext")
 
-    old_text = page.get_text() or ""
     if not old_text.strip():
         return UpdaterOutcome(kind="notext", old_text=old_text)
 
@@ -78,12 +87,14 @@ def work_on_title(
         return UpdaterOutcome(kind="no_changes", old_text=old_text, new_text=new_text)
 
     if save:
-        ok = page.save(newtext=new_text, summary=summary)
-
-        if ok is True:
-            return UpdaterOutcome(kind="saved", newrevid=page.get_newrevid())
+        result = edit_page(site, title, new_text, summary)
+        if result.get("success"):
+            return UpdaterOutcome(kind="saved", newrevid=result.get("newrevid", 0))
 
     return UpdaterOutcome(kind="changes", old_text=old_text, new_text=new_text)
 
 
-__all__ = ["UpdaterOutcome", "work_on_title"]
+__all__ = [
+    "UpdaterOutcome",
+    "work_on_title",
+]

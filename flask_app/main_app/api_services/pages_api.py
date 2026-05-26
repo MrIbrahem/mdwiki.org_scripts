@@ -192,12 +192,11 @@ def search_pages(
     query: str,
     site: mwclient.Site,
     namespace: int = 0,
-    limit: int = "max",
+    limit: int | str = "max",
 ) -> list[str]:
     """Return page titles matching *query* via the MediaWiki search API."""
     titles: list[str] = []
     params = {
-        "action": "query",
         "list": "search",
         "srsearch": query,
         "srnamespace": str(namespace),
@@ -206,15 +205,19 @@ def search_pages(
         "srsort": "just_match",
     }
     data = site.get("query", **params)
-    for item in (data.get("query", {}).get("search", []) or []):
+    if not data:
+        return titles
+
+    query_data = data.get("query") or {}
+    for item in query_data.get("search") or []:
         titles.append(item["title"])
+
     return titles
 
 
 def get_double_redirects(site: mwclient.Site) -> list[dict[str, str]]:
     """Return resolved double-redirect pairs ``[{"from", "to"}, ...]``."""
     params = {
-        "action": "query",
         "prop": "info",
         "generator": "querypage",
         "redirects": 1,
@@ -223,7 +226,10 @@ def get_double_redirects(site: mwclient.Site) -> list[dict[str, str]]:
         "gqplimit": "max",
     }
     data = site.get("query", **params)
-    return data.get("query", {}).get("redirects", []) or []
+    if not data:
+        return []
+    query = data.get("query") or {}
+    return query.get("redirects") or []
 
 
 def import_page_from_wiki(
@@ -260,7 +266,6 @@ def get_page_links(
     Returns ``{"links": {title: {"ns", "title"}}, "normalized": [...], "redirects": [...]}``.
     """
     params = {
-        "action": "query",
         "prop": "links",
         "titles": title,
         "plnamespace": str(namespace),

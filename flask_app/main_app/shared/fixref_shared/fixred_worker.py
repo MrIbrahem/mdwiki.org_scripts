@@ -11,12 +11,9 @@ from typing import Any, Literal
 
 import mwclient
 
-from ...api_services.pages_api import resolve_redirects
-from ...newapi import AllAPIS
+from ...api_services.pages_api import get_page_links, resolve_redirects
 
 logger = logging.getLogger(__name__)
-
-_NS_MAIN = "0"
 
 OutcomeKind = Literal["notext", "no_changes", "changes", "saved"]
 
@@ -33,37 +30,6 @@ class RunState:
 
     from_to: dict[str, str] = field(default_factory=dict)
     normalized: dict[str, str] = field(default_factory=dict)
-
-
-def _post(api: AllAPIS, params: dict) -> dict:
-    """Thin wrapper around the configured client. Returns ``{}`` on failure."""
-
-    return api.NewApi().post_params(params, method="post") or {}
-
-
-def _get_page_links(api: AllAPIS, title: str) -> dict[str, Any]:
-    """Mirror of legacy ``Get_page_links`` using the new API client."""
-
-    params = {
-        "action": "query",
-        "prop": "links",
-        "titles": title,
-        "plnamespace": _NS_MAIN,
-        "pllimit": "max",
-        "converttitles": 1,
-    }
-    data = _post(api, params)
-    out: dict[str, Any] = {"links": {}, "normalized": [], "redirects": []}
-    if not data:
-        return out
-
-    query = data.get("query", {}) or {}
-    out["normalized"] = query.get("normalized", []) or []
-    out["redirects"] = query.get("redirects", []) or []
-    for page in (query.get("pages", {}) or {}).values():
-        for link in page.get("links", []) or []:
-            out["links"][link["title"]] = {"ns": link["ns"], "title": link["title"]}
-    return out
 
 
 def _replace_links(
@@ -110,10 +76,10 @@ def replace_in_text(text, new_targets):
     return newtext
 
 
-def work_on_text(api, title, text, site: mwclient.Site, state: RunState) -> str:
-    """ """
+def work_on_text(title: str, text: str, site: mwclient.Site, state: RunState) -> str:
+    """Fix redirect links in *text* for the given *title*."""
 
-    links = _get_page_links(api, title)
+    links = get_page_links(title, site)
 
     for nor in links.get("normalized", []) or []:
         state.normalized[nor["to"]] = nor["from"]
@@ -127,13 +93,8 @@ def work_on_text(api, title, text, site: mwclient.Site, state: RunState) -> str:
     new_targets = {}
     for _, info in links["links"].items():
         oldlink = info["title"]
-        # ---
-        # oldlink2 = state.normalized.get(oldlink, oldlink)
-        # target = state.from_to.get(oldlink) or state.from_to.get(oldlink2)
-        # ---
         oldlink2 = data.get("normalized", {}).get(oldlink, oldlink)
         target = data.get("from_to", {}).get(oldlink) or data.get("from_to", {}).get(oldlink2)
-        # ---
         if target:
             new_targets[oldlink2] = target
             new_targets[oldlink] = target

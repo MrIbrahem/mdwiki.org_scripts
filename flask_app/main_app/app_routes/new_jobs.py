@@ -130,7 +130,7 @@ def _jobs_list(job_type: str) -> str:
 
     # sort jobs by created_at key
     if jobs:
-        jobs = sorted(jobs, key=lambda x: x.created_at or "", reverse=True)
+        jobs = sorted(jobs, key=lambda x: x.created_at.isoformat() if x.created_at else "", reverse=True)
 
     template = JOB_TYPE_LIST_TEMPLATES_PUBLIC.get(job_type)
     if not template:
@@ -182,7 +182,7 @@ class JobsPublicRoutes:
         def all_jobs_list() -> str:
             jobs = list_jobs(limit=100)
             if jobs:
-                jobs = sorted(jobs, key=lambda x: x.created_at or "", reverse=True)
+                jobs = sorted(jobs, key=lambda x: x.created_at.isoformat() if x.created_at else "", reverse=True)
             return render_template("new_jobs_templates/all_jobs_list.html", jobs=jobs)
 
         # ================================

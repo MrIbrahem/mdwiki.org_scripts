@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from flask_app.main_app.jobs.workers.fixred_all import _replace_links, _RunState
+# from flask_app.main_app.jobs.workers.fixred_all import _replace_links
+from flask_app.main_app.shared.fixref_shared.fixred_worker import _replace_links, RunState
 
 
 class TestReplaceLinks:
@@ -42,8 +43,8 @@ class TestReplaceLinks:
 
 class TestRunStateIsolation:
     def test_each_state_starts_empty(self):
-        a = _RunState()
-        b = _RunState()
+        a = RunState()
+        b = RunState()
         a.from_to["X"] = "Y"
         a.normalized["P"] = "p"
         # The other state must be untouched (no shared default mutable state).

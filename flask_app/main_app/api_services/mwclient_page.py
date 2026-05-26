@@ -22,8 +22,8 @@ class MwClientPage:
     def _edit_page(self, page: mwclient.page.Page, text: str, summary: str) -> dict[str, any]:
 
         try:
-            page.edit(text, summary=summary)
-            return {"success": True}
+            save = page.edit(text, summary=summary)
+            return {"success": True, **save}
 
         except mwclient.errors.ProtectedPageError as exc:
             details = {"code": exc.code, "info": exc.info}

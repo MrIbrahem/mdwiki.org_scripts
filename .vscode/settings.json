@@ -1,8 +1,8 @@
 {
-    "python.analysis.extraPaths": [
-        "./src"
+    "python.analysis.exclude": [
+        "**/flask_app_old/**"
     ],
-    "python.autoComplete.extraPaths": [
-        "./src"
+    "python.analysis.ignore": [
+        "**/flask_app_old/**"
     ],
 }
