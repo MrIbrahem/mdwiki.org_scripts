@@ -6,11 +6,10 @@ import logging
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from ...app_routes.decorators import login_required
 from ...jobs import runner
 from ...jobs.store import get_store
 from ...public_jobs_workers import imp as svc
-from ...su_services.users_service import current_user
+from ...su_services.users_service import current_user, oauth_required
 
 bp_import_history = Blueprint("import_history", __name__, url_prefix="/import-history")
 logger = logging.getLogger(__name__)
@@ -37,7 +36,7 @@ def _split_titles(raw_title: str, raw_titlelist: str) -> list[str]:
 
 
 @bp_import_history.route("/", methods=["GET"])
-@login_required
+@oauth_required
 def import_history():
     return render_template(
         "import-history.html",
@@ -49,7 +48,7 @@ def import_history():
 
 
 @bp_import_history.route("/", methods=["POST"])
-@login_required
+@oauth_required
 def import_history_post():
     user = current_user()
 

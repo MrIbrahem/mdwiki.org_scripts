@@ -6,8 +6,8 @@ import logging
 
 from flask import Blueprint, abort, flash, jsonify, redirect, render_template, url_for
 
-from ...app_routes.decorators import login_required
 from ...jobs.store import get_store
+from ...su_services.users_service import oauth_required
 
 bp_jobs = Blueprint("jobs", __name__, url_prefix="/jobs")
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ def status_json(job_id: str):
 
 
 @bp_jobs.post("/<job_id>/stop")
-@login_required
+@oauth_required
 def stop(job_id: str):
     """Cooperatively stop a running job by setting its stop_event.
 

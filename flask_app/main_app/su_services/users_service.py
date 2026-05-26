@@ -65,3 +65,10 @@ def oauth_required(func: F) -> F:  # noqa: UP047
         return func(*args, **kwargs)
 
     return cast(F, wrapper)
+
+
+__all__ = [
+    "CurrentUser",
+    "current_user",
+    "oauth_required",
+]

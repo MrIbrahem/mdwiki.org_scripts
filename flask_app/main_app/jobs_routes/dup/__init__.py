@@ -6,18 +6,17 @@ import logging
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from ...app_routes.decorators import login_required
 from ...jobs import runner
 from ...jobs.store import get_store
 from ...public_jobs_workers import fix_duplicate as svc
-from ...su_services.users_service import current_user
+from ...su_services.users_service import current_user, oauth_required
 
 bp_dup = Blueprint("dup", __name__, url_prefix="/dup")
 logger = logging.getLogger(__name__)
 
 
 @bp_dup.route("/", methods=["POST"])
-@login_required
+@oauth_required
 def dup_post():
     user = current_user()
 

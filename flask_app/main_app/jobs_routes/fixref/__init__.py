@@ -6,11 +6,10 @@ import logging
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from ...app_routes.decorators import login_required
 from ...jobs import runner
 from ...jobs.store import get_store
 from ...public_jobs_workers import fixref as svc
-from ...su_services.users_service import current_user
+from ...su_services.users_service import current_user, oauth_required
 
 bp_fixref = Blueprint("fixref", __name__, url_prefix="/fixref")
 logger = logging.getLogger(__name__)
@@ -32,7 +31,7 @@ def _parse_int(raw: str) -> int | None:
 
 
 @bp_fixref.route("/", methods=["GET"])
-@login_required
+@oauth_required
 def fixref():
     return render_template(
         "fixref.html",
@@ -44,7 +43,7 @@ def fixref():
 
 
 @bp_fixref.route("/", methods=["POST"])
-@login_required
+@oauth_required
 def fixref_post():
     user = current_user()
 

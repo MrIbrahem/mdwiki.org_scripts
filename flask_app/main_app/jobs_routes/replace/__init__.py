@@ -6,11 +6,10 @@ import logging
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from ...app_routes.decorators import login_required
 from ...jobs import runner
 from ...jobs.store import get_store
 from ...public_jobs_workers import replace as svc
-from ...su_services.users_service import current_user
+from ...su_services.users_service import current_user, oauth_required
 
 bp_replace = Blueprint("replace", __name__, url_prefix="/replace")
 logger = logging.getLogger(__name__)
@@ -28,7 +27,7 @@ def _parse_int(raw: str) -> int | None:
 
 
 @bp_replace.route("/", methods=["GET"])
-@login_required
+@oauth_required
 def replace():
     return render_template(
         "replace.html",
@@ -41,7 +40,7 @@ def replace():
 
 
 @bp_replace.route("/", methods=["POST"])
-@login_required
+@oauth_required
 def replace_post():
     user = current_user()
 

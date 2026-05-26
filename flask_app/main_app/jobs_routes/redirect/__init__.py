@@ -6,11 +6,10 @@ import logging
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from ...app_routes.decorators import login_required
 from ...jobs import runner
 from ...jobs.store import get_store
 from ...public_jobs_workers import redirect as svc
-from ...su_services.users_service import current_user
+from ...su_services.users_service import current_user, oauth_required
 
 bp_redirect = Blueprint("redirect", __name__, url_prefix="/redirect")
 logger = logging.getLogger(__name__)
@@ -39,7 +38,7 @@ def _split_titles(raw_title: str, raw_titlelist: str) -> list[str]:
 
 
 @bp_redirect.route("/", methods=["GET"], endpoint="redirect")
-@login_required
+@oauth_required
 def redirect_view():
     return render_template(
         "redirect.html",
@@ -50,7 +49,7 @@ def redirect_view():
 
 
 @bp_redirect.route("/", methods=["POST"], endpoint="redirect_post")
-@login_required
+@oauth_required
 def redirect_post():
     user = current_user()
 

@@ -6,15 +6,15 @@ import logging
 
 from flask import Blueprint, flash, render_template, request
 
-from ...app_routes.decorators import login_required
 from ...public_jobs_workers import newupdater as svc
+from ...su_services.users_service import oauth_required
 
 bp_newupdater = Blueprint("newupdater", __name__, url_prefix="/newupdater")
 logger = logging.getLogger(__name__)
 
 
 @bp_newupdater.route("/", methods=["GET"])
-@login_required
+@oauth_required
 def newupdater():
     title = (request.args.get("title") or "").replace("_", " ").strip()
     save = int(request.args.get("save", "0")) or 0
