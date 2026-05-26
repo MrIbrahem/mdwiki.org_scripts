@@ -185,18 +185,18 @@ def get_page_text(
     site: mwclient.Site | None,
 ) -> str:
     """
-    Get the wikitext of any page on Wikimedia Commons.
+    Get the wikitext of any page.
 
     Args:
-        page_name: The name of the page (e.g., "Template:OWID/Barley yields").
-        site: Authenticated mwclient.Site object for Commons.
+        page_title: The name of the page (e.g., "Barley yields").
+        site: Authenticated mwclient.Site object.
 
     Returns:
         The wikitext of the page, or an empty string if it cannot be retrieved.
     """
     missing_fields = verify_required_fields(
         {
-            "page_name": page_name,
+            "page_title": page_title,
             "site": site,
         }
     )
