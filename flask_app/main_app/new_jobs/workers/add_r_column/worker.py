@@ -70,11 +70,9 @@ class AddRColumnWorker(BaseJobWorker):
                 break
             self.result["summary"]["scanned"] += 1
             self.result["summary"]["skipped"] += 1
-            self.result["pages_processed"].append({
-                "title": title,
-                "status": "skipped",
-                "msg": "Placeholder: logic not implemented yet"
-            })
+            self.result["pages_processed"].append(
+                {"title": title, "status": "skipped", "msg": "Placeholder: logic not implemented yet"}
+            )
 
         if self.result.get("status") in ("pending", "running"):
             self.result["status"] = "completed"
