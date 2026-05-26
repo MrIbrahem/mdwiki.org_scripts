@@ -12,7 +12,7 @@ from ..db.services import cancel_job as cancel_job_db
 from ..db.services import (
     create_job,
 )
-from .workers_list import jobs_targets, jobs_targets_public
+from .workers_list import jobs_targets_public
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +73,11 @@ def cancel_job(task_id: int, job_type: str | None = None) -> bool:
     return local_cancelled or db_cancelled
 
 
-def start_job(user: Dict[str, Any] | None, job_type: str, args: Dict[str, Any] | None = None) -> int:
+def start_job_with_args(
+    user: Dict[str, Any] | None,
+    job_type: str,
+    args: Dict[str, Any],
+) -> int:
     """
     Start a background job.
     Returns the job ID.
@@ -83,7 +87,7 @@ def start_job(user: Dict[str, Any] | None, job_type: str, args: Dict[str, Any] |
         job_type: The type of job to start
         args: Optional arguments to pass to the worker
     """
-    job_func = jobs_targets.get(job_type) or jobs_targets_public.get(job_type)
+    job_func = jobs_targets_public.get(job_type)
     if not job_func:
         raise ValueError(f"Unknown job type: {job_type}")
 
@@ -111,12 +115,7 @@ def start_job(user: Dict[str, Any] | None, job_type: str, args: Dict[str, Any] |
     return job.id
 
 
-# Keep backward-compatible alias
-start_job_with_args = start_job
-
-
 __all__ = [
-    "start_job",
     "start_job_with_args",
     "cancel_job",
 ]
