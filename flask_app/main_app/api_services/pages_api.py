@@ -7,7 +7,6 @@ import logging
 import mwclient
 
 from ..utils.verify import verify_required_fields
-from ..utils.wikitext import ensure_file_prefix
 from .mwclient_page import MwClientPage
 
 logger = logging.getLogger(__name__)
@@ -90,41 +89,6 @@ def create_page(
     return edit_page(site, page_name, wikitext, summary)
 
 
-def update_file_text(
-    original_file: str,
-    updated_file_text: str,
-    site: mwclient.Site | None,
-) -> dict:
-    """
-    Update the wikitext of the original file.
-
-    Args:
-        original_file: The name of the original file on Commons.
-        updated_file_text: The new wikitext content.
-        site: Authenticated mwclient.Site object for Commons.
-
-    Returns:
-        A dictionary with 'success' (bool) and optionally 'error' (str) on failure.
-    """
-    missing_fields = verify_required_fields(
-        {
-            "original_file": original_file,
-            "updated_file_text": updated_file_text,
-            "site": site,
-        }
-    )
-    if missing_fields:
-        list_str = ", ".join(missing_fields)
-        logger.error(f"Missing required fields for update_file_text: {list_str}")
-        return {"success": False, "error": f"Missing required fields: {list_str}"}
-
-    original_file = ensure_file_prefix(original_file)
-
-    summary = "Adding/updating {{Image extracted}}"
-
-    return edit_page(site, original_file, updated_file_text, summary)
-
-
 def update_page_text(
     page_name: str,
     updated_text: str,
@@ -160,9 +124,6 @@ def is_pages_exists(
 
     for i in range(0, len(titles), 50):
         group = titles[i : i + 50]
-
-        group = [f"File:{file.removeprefix('File:')}" for file in group]
-
         json1 = site.get("query", titles="|".join(group))
 
         query = json1.get("query", {})
@@ -179,12 +140,52 @@ def is_pages_exists(
     return result
 
 
+def resolve_redirects(
+    titles: list[str],
+    site: mwclient.Site,
+) -> dict[str, bool]:
+    normalized = {}
+    from_to = {}
+
+    for i in range(0, len(titles), 50):
+        group = titles[i : i + 50]
+        params = {
+            "prop": "redirects",
+            "redirects": 1,
+            "converttitles": 1,
+            "utf8": 1,
+            "rdlimit": "max",
+        }
+        data = site.get("query", titles="|".join(group), **params)
+        query = data.get("query", {}) or {}
+
+        for nor in query.get("normalized", []) or []:
+            normalized[nor["to"]] = nor["from"]
+
+        # Top-level redirects array: page is a redirect TO some target.
+        for red in query.get("redirects", []) or []:
+            from_to[red["from"]] = red["to"]
+
+        # Per-page redirects array: pages that redirect TO this title.
+        for page in (query.get("pages", {}) or {}).values():
+            target = page.get("title", "")
+            for src in page.get("redirects", []) or []:
+                from_to[src["title"]] = target
+
+    result = {
+        "normalized": normalized,
+        "from_to": from_to,
+    }
+
+    return result
+
+
 __all__ = [
     "create_page",
     "is_page_exists",
     "is_pages_exists",
     "is_redirect",
     "move_page",
-    "update_file_text",
     "update_page_text",
+    "resolve_redirects",
 ]

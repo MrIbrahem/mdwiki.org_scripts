@@ -7,7 +7,6 @@ import logging
 import mwclient
 
 from ..utils.verify import verify_required_fields
-from ..utils.wikitext import ensure_file_prefix
 
 logger = logging.getLogger(__name__)
 
