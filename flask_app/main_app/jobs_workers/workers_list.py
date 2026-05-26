@@ -1,15 +1,15 @@
-# from ..public_jobs_workers.copy_svg_langs.worker import copy_svg_langs_worker_entry
-
-copy_svg_langs_worker_entry = None
+from .copy_svg_langs.worker import copy_svg_langs_worker_entry
 
 jobs_targets_public = {
     "copy_svg_langs": copy_svg_langs_worker_entry,
 }
 
-
 JOB_TYPE_TEMPLATES_PUBLIC = {
     "copy_svg_langs": "jobs_templates/copy_svg_langs/details.html",
-    "fix_nested_jobs": "jobs_templates/fix_nested_jobs/details.html",
+}
+
+JOB_TYPE_LIST_TEMPLATES_PUBLIC = {
+    "copy_svg_langs": "jobs_templates/copy_svg_langs/list.html",
 }
 
 __all__ = [
