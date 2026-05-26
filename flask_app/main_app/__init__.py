@@ -117,7 +117,7 @@ def create_app(config_class: Type) -> Flask:
 
     @app.context_processor
     def _inject_user() -> dict:
-        """Make `current_user` and `is_authorized` available in all templates."""
+        """Make `current_user` available in all templates."""
         return context_user()
 
     # app.jinja_env.filters["format_stage_timestamp"] = format_stage_timestamp

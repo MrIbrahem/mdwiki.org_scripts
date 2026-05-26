@@ -12,11 +12,11 @@ from typing import Any, Optional
 class OtherConfig:
     """configs not in specific sections"""
     csrf_time_limit: Optional[int]  # None means never expire
+    user_agent: str
     # Phase-1 additions (see docs/merge-plan.md §7)
     allowlist_users: tuple[str, ...]
     wiki_domain: str
     static_server: str
-    user_agent: str
 
 
 @dataclass(frozen=True)
@@ -89,11 +89,14 @@ class SecurityConfig:
 
 @dataclass(frozen=True)
 class Settings:
+    """Main settings container."""
+
+    # Nested configurations
     database_data: DbConfig
+    paths: Paths
     cookie: CookieConfig
     sessions: SessionConfig
     oauth: Optional[OAuthConfig]
-    paths: Paths
     security: SecurityConfig
     other: OtherConfig
     jobs: JobsConfig

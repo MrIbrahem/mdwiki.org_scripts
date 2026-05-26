@@ -8,10 +8,10 @@ from pathlib import Path
 from typing import Optional
 
 from .classes import (
-    JobsConfig,
     OtherConfig,
     CookieConfig,
     DbConfig,
+    JobsConfig,
     OAuthConfig,
     Paths,
     SecurityConfig,
@@ -169,16 +169,17 @@ def load_other_config() -> OtherConfig:
     wiki_domain = f"{_lang}.{_family}.org"
     static_server = os.getenv("STATIC_SERVER") or "https://tools-static.wmflabs.org/cdnjs"
 
+    user_agent = os.getenv(
+        "USER_AGENT",
+        "Copy SVG Translations/1.0 (https://copy-svg-langs.toolforge.org; tools.copy-svg-langs@toolforge.org)",
+    )
     _config = OtherConfig(
         csrf_time_limit=csrf_time_limit,
-        allowlist_users=allowlist_users,
+        user_agent=user_agent,
 
+        allowlist_users=allowlist_users,
         wiki_domain=wiki_domain,
         static_server=static_server,
-        user_agent=os.getenv(
-            "USER_AGENT",
-            "Copy SVG Translations/1.0 (https://copy-svg-langs.toolforge.org; tools.copy-svg-langs@toolforge.org)",
-        ),
     )
 
     return _config
@@ -243,7 +244,8 @@ def get_settings() -> Settings:
         raise RuntimeError(
             "MediaWiki OAuth configuration is incomplete. Set OAUTH_MWURI, OAUTH_CONSUMER_KEY, and OAUTH_CONSUMER_SECRET."
         )
-    if oauth_config.encryption_key:
+
+    if not oauth_config.encryption_key:
         raise RuntimeError("OAUTH_ENCRYPTION_KEY environment variable is required when ENABLE_OAUTH=true")
 
     cookie_config = load_cookie_config()
@@ -260,8 +262,8 @@ def get_settings() -> Settings:
         oauth=oauth_config,
         security=security_config,
         sessions=sessions,
-        other=other_config,
         jobs=jobs_config,
+        other=other_config,
     )
 
 

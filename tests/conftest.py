@@ -9,11 +9,13 @@ don't leak across tests.
 from __future__ import annotations
 
 import os
+import secrets
 import re
 import sys
 from pathlib import Path
 
 import pytest
+from cryptography.fernet import Fernet
 from pytest_socket import disable_socket
 
 # Make the flask_app/ directory importable as `main_app`. The repo's prod
@@ -21,8 +23,18 @@ from pytest_socket import disable_socket
 _REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_REPO / "flask_app"))
 
-# Settings that must be present before main_app is imported.
-os.environ.setdefault("FLASK_SECRET_KEY", "test-secret")
+# ── Set ALL env vars before any src.* import ─────────────────────────────────
+# config.py executes get_settings() at module level and raises RuntimeError
+# if FLASK_SECRET_KEY is missing, so every env var must be set here first,
+# before any import that pulls in src.main_app.
+os.environ.setdefault("FLASK_SECRET_KEY", secrets.token_hex(16))
+os.environ.setdefault("FLASK_ENV", "testing")
+os.environ.setdefault("APP_ENV", "testing")
+os.environ.setdefault("OAUTH_ENCRYPTION_KEY", Fernet.generate_key().decode("utf-8"))
+os.environ.setdefault("OAUTH_CONSUMER_KEY", "test-consumer-key")
+os.environ.setdefault("OAUTH_CONSUMER_SECRET", "test-consumer-secret")
+os.environ.setdefault("OAUTH_MWURI", "https://example.org/w/index.php")
+
 # Pin allowlist for tests so we don't depend on the prod default drifting.
 os.environ.setdefault("ALLOWLIST_USERS", "Doc James,Mr. Ibrahem")
 
