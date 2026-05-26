@@ -1,6 +1,5 @@
 You are a senior Python software architect and migration engineer.
 
-Your task is to analyze the entire codebase and create a comprehensive migration plan to replace all usages of `_api` and `newapi` with `api_services` built on `mwclient`.
 
 ## Context
 
@@ -27,6 +26,8 @@ site = mwclient.Site(
     access_secret=access_secret,
 )
 ```
+
+---
 
 ## Example Migration Pattern
 
@@ -72,38 +73,49 @@ Analyze semantic differences including:
 
 Document all required behavioral adjustments when replacing legacy calls.
 
+---
+
 ## Objectives
 
-Perform a deep architectural and implementation analysis of the codebase and produce a fully detailed migration strategy.
+Perform a deep architectural and implementation analysis of the `flask_app` codebase and produce a fully detailed migration strategy.
+
+---
 
 ## Required Analysis
 
 ### 1. Full Dependency Mapping
 
--   Identify every file importing or referencing:
+Inside `flask_app` only:
 
-    -   `_api`
-    -   `newapi`
-    -   authentication helpers
-    -   MediaWiki API wrappers
-    -   login/session logic
+Identify every file importing or referencing:
 
--   Build a dependency graph showing:
+-   `_api`
+-   `newapi`
+-   authentication helpers
+-   MediaWiki API wrappers
+-   login/session logic
+-   wiki service abstractions
 
-    -   direct imports
-    -   indirect dependencies
-    -   shared utilities
-    -   circular dependencies
+Build a dependency graph showing:
 
--   Categorize usages by:
+-   direct imports
+-   indirect dependencies
+-   shared utilities
+-   circular dependencies
 
-    -   read operations
-    -   write operations
-    -   authentication
-    -   job/background tasks
-    -   maintenance scripts
-    -   CLI tools
-    -   tests
+Categorize usages by:
+
+-   read operations
+-   write operations
+-   authentication
+-   Flask routes
+-   background jobs
+-   Celery tasks
+-   maintenance scripts
+-   CLI commands
+-   tests
+
+---
 
 ### 2. API Surface Comparison
 
@@ -125,6 +137,8 @@ Create a compatibility matrix:
 | Legacy API | api_services Equivalent | Migration Complexity | Notes |
 | ---------- | ----------------------- | -------------------- | ----- |
 
+---
+
 ### 3. Authentication Migration Analysis
 
 Analyze:
@@ -142,18 +156,20 @@ Explain:
 -   encryption/decryption flow
 -   multi-user implications
 -   service account implications
--   background worker authentication strategy
+-   worker/background-task authentication strategy
 
 Identify all places requiring auth refactoring.
 
+---
+
 ### 4. mwclient Integration Review
 
-Analyze how `mwclient.Site` should be integrated across the project:
+Analyze how `mwclient.Site` should be integrated across `flask_app`:
 
--   connection lifecycle
+-   Flask request lifecycle integration
 -   singleton vs per-request creation
 -   thread safety
--   async compatibility
+-   Celery/background worker compatibility
 -   retry handling
 -   timeout configuration
 -   logging hooks
@@ -161,6 +177,8 @@ Analyze how `mwclient.Site` should be integrated across the project:
 -   caching opportunities
 
 Recommend best practices.
+
+---
 
 ### 5. Refactor Strategy
 
@@ -182,6 +200,8 @@ For each phase include:
 -   validation steps
 -   deployment considerations
 
+---
+
 ### 6. Backward Compatibility Plan
 
 Determine whether temporary compatibility wrappers are needed.
@@ -192,6 +212,8 @@ If yes:
 -   provide example wrapper implementations
 -   explain deprecation path
 -   estimate removal timeline
+
+---
 
 ### 7. Risk Assessment
 
@@ -207,12 +229,15 @@ Identify:
 
 Provide mitigation strategies.
 
+---
+
 ### 8. Testing Strategy
 
 Create a detailed testing plan covering:
 
 -   unit tests
--   integration tests
+-   Flask integration tests
+-   Celery/background task tests
 -   authentication tests
 -   OAuth failure scenarios
 -   MediaWiki API mocking
@@ -222,6 +247,8 @@ Create a detailed testing plan covering:
 -   rollout verification
 
 Include example test structures where useful.
+
+---
 
 ### 9. Implementation Recommendations
 
@@ -235,6 +262,8 @@ Provide:
 -   logging standards
 -   retry standards
 -   type safety improvements
+
+---
 
 ### 10. Deliverables
 
@@ -251,6 +280,8 @@ Produce:
 9. Technical debt identified
 10. Estimated migration complexity by module
 
+---
+
 ## Output Requirements
 
 -   Be extremely detailed and technical.
@@ -260,7 +291,7 @@ Produce:
 -   Prioritize production-safe migration practices.
 -   Highlight hidden edge cases and operational concerns.
 -   Structure the response with clear headings and tables.
--   Assume this migration will be executed in a large production system with active users.
+-   Assume this migration will be executed in a large production Flask production system with active users.
 
 ```
 
