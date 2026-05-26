@@ -30,5 +30,5 @@ def load_auth_payload(user: Optional[UserTokenRecord] | None) -> Dict[str, Any]:
 def get_job_detail_url(job_id: int, job_type: str) -> str:
     """Returns the correct job detail URL based on job type."""
     if job_type in JOB_TYPE_TEMPLATES_PUBLIC:
-        return url_for("public_jobs.job_detail", job_type=job_type, job_id=job_id)
+        return url_for("new_jobs.job_detail", job_type=job_type, job_id=job_id)
     return url_for("admin.jobs.job_detail", job_type=job_type, job_id=job_id)

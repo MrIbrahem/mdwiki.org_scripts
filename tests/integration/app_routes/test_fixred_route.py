@@ -30,8 +30,8 @@ class TestFixred:
         assert b'name="title"' in r.data
 
     def test_post_with_title_renders_outcome(self, mock_client, login, csrf_token, monkeypatch):
-        from flask_app.main_app.jobs.workers import fixred as svc
-        from flask_app.main_app.jobs.workers.fixred import UpdaterOutcome
+        from flask_app.main_app.jobs.workers import fixred_all as svc
+        from flask_app.main_app.jobs.workers.fixred_all import UpdaterOutcome
 
         monkeypatch.setattr(
             svc,
@@ -52,8 +52,8 @@ class TestFixred:
     def test_get_with_title_query_renders_outcome(self, mock_client, login, monkeypatch):
         """Legacy bookmark URLs like /fixred/?title=Foo continue to work."""
 
-        from flask_app.main_app.jobs.workers import fixred as svc
-        from flask_app.main_app.jobs.workers.fixred import UpdaterOutcome
+        from flask_app.main_app.jobs.workers import fixred_all as svc
+        from flask_app.main_app.jobs.workers.fixred_all import UpdaterOutcome
 
         monkeypatch.setattr(
             svc,

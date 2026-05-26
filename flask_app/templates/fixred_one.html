@@ -15,13 +15,6 @@
 			redirect link to point at its canonical target (preserving the
 			original display text).
 		</p>
-		<form method="POST" action="{{ url_for('fixred.fixred_post_all') }}" class="row g-2">
-			{{ csrf() }}
-			<div class="col-md-3 d-flex align-items-end">
-				<button class="btn btn-outline-primary w-100" type="submit">Start All pages</button>
-			</div>
-		</form>
-		<br>
 		<form method="POST" action="{{ url_for('fixred.fixred_post') }}" class="row g-2">
 			{{ csrf() }}
 			<div class="col-md-4">

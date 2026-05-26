@@ -6,7 +6,7 @@ import logging
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from ...jobs.workers import fixref as svc
+from ..workers import fixref as svc
 from ...su_services.users_service import current_user, oauth_required
 from .. import runner
 from ..store import get_store
@@ -34,7 +34,7 @@ def _parse_int(raw: str) -> int | None:
 @oauth_required
 def fixref():
     return render_template(
-        "fixref.html",
+        "jobs_templates/fixref.html",
         title="Normalize references",
         form_titlelist="",
         form_number="",
@@ -60,7 +60,7 @@ def fixref_post():
             "warning",
         )
         return render_template(
-            "fixref.html",
+            "jobs_templates/fixref.html",
             title="Normalize references",
             form_titlelist=raw_titlelist,
             form_number=raw_number,

@@ -1,13 +1,5 @@
-"""Service: medical-content updater (synchronous).
-
-In-process replacement for ``python/newupdater.py``. Unlike the other tools
-this one is fast — a single page transform — so we run it inline on the
-request thread instead of through the job runner.
-
-The actual content-rewriting algorithm lives in ``python/new_updater``
-(``work_on_text``). We import it via the legacy-shim path because that
-module encodes years of medical-content domain rules; reimplementing it is
-out of scope for the merge.
+"""
+Service: fix redirects in page text on mdwiki.
 """
 
 from __future__ import annotations
@@ -16,8 +8,10 @@ import logging
 from dataclasses import dataclass
 from typing import Literal
 
-from ...shared.new_updater import work_on_text
-from ._api import get_api
+from ..api_services.clients.wiki_client import get_user_site
+from ..su_services.users_service import current_user
+from ..jobs._api import get_api
+from .fixref_shared.fixred_worker import work_on_text, RunState
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +35,9 @@ class UpdaterOutcome:
 def work_on_title(
     title: str,
     save: bool = False,
-    summary: str = "Med updater.",
+    summary: str = "Fix redirects.",
 ) -> UpdaterOutcome:
-    """Fetch the page, run the updater, and report what the diff would be.
+    """
 
     Returns one of:
 
@@ -51,6 +45,9 @@ def work_on_title(
     * ``no_changes`` — the rewriter is satisfied with the current text.
     * ``changes``    — there is a diff to review/save.
     """
+
+    user = current_user()
+    site = get_user_site(user)
 
     title = (title or "").strip()
     if not title:
@@ -65,8 +62,9 @@ def work_on_title(
     if not old_text.strip():
         return UpdaterOutcome(kind="notext", old_text=old_text)
 
+    state = RunState()
     try:
-        new_text = work_on_text(title, old_text)
+        new_text = work_on_text(api, title, old_text, site=site, state=state)
     except Exception:
         logger.exception("work_on_text failed for %s", title)
         raise
@@ -86,4 +84,6 @@ def work_on_title(
     return UpdaterOutcome(kind="changes", old_text=old_text, new_text=new_text)
 
 
-__all__ = ["UpdaterOutcome", "work_on_title"]
+__all__ = [
+    "work_on_title",
+]

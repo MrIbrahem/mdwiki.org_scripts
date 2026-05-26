@@ -22,7 +22,7 @@ import logging
 from threading import Event
 from typing import Any, Callable, Literal, Optional
 
-from ._api import get_api
+from .._api import get_api
 
 logger = logging.getLogger(__name__)
 

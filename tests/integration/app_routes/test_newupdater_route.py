@@ -16,8 +16,8 @@ class TestNewupdater:
         assert b"Save with edit summary" not in r.data
 
     def test_get_with_title_changes_renders_diff(self, mock_client, login, monkeypatch):
-        import flask_app.main_app.jobs.workers.newupdater as nu
-        from flask_app.main_app.jobs.workers.newupdater import UpdaterOutcome
+        import flask_app.main_app.app_routes.newupdater.worker as nu
+        from flask_app.main_app.app_routes.newupdater.worker import UpdaterOutcome
 
         monkeypatch.setattr(
             nu,
@@ -32,8 +32,8 @@ class TestNewupdater:
         assert b"Proposed changes" in r.data
 
     def test_get_with_title_no_changes_renders_info(self, mock_client, login, monkeypatch):
-        import flask_app.main_app.jobs.workers.newupdater as nu
-        from flask_app.main_app.jobs.workers.newupdater import UpdaterOutcome
+        import flask_app.main_app.app_routes.newupdater.worker as nu
+        from flask_app.main_app.app_routes.newupdater.worker import UpdaterOutcome
 
         monkeypatch.setattr(
             nu,
@@ -46,8 +46,8 @@ class TestNewupdater:
         assert b"no changes" in r.data
 
     def test_get_with_title_notext_renders_warning(self, mock_client, login, monkeypatch):
-        import flask_app.main_app.jobs.workers.newupdater as nu
-        from flask_app.main_app.jobs.workers.newupdater import UpdaterOutcome
+        import flask_app.main_app.app_routes.newupdater.worker as nu
+        from flask_app.main_app.app_routes.newupdater.worker import UpdaterOutcome
 
         monkeypatch.setattr(
             nu, "work_on_title", lambda title, save=0, summary="Med updater.": UpdaterOutcome(kind="notext")
@@ -58,8 +58,8 @@ class TestNewupdater:
         assert b"empty" in r.data.lower()
 
     def test_get_with_save_calls_work_on_title_with_save(self, mock_client, login, monkeypatch):
-        import flask_app.main_app.jobs.workers.newupdater as nu
-        from flask_app.main_app.jobs.workers.newupdater import UpdaterOutcome
+        import flask_app.main_app.app_routes.newupdater.worker as nu
+        from flask_app.main_app.app_routes.newupdater.worker import UpdaterOutcome
 
         calls: list[dict] = []
 
@@ -76,8 +76,8 @@ class TestNewupdater:
         assert calls[0]["save"] == 1
 
     def test_get_without_title_shows_empty_form(self, mock_client, login, monkeypatch):
-        import flask_app.main_app.jobs.workers.newupdater as nu
-        from flask_app.main_app.jobs.workers.newupdater import UpdaterOutcome
+        import flask_app.main_app.app_routes.newupdater.worker as nu
+        from flask_app.main_app.app_routes.newupdater.worker import UpdaterOutcome
 
         monkeypatch.setattr(
             nu,

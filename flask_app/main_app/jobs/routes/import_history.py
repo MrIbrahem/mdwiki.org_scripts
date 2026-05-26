@@ -9,7 +9,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from ...su_services.users_service import current_user, oauth_required
 from .. import runner
 from ..store import get_store
-from ..workers import imp as svc
+from ..workers import import_history as svc
 
 bp_import_history = Blueprint("import_history", __name__, url_prefix="/import-history")
 logger = logging.getLogger(__name__)
@@ -39,7 +39,7 @@ def _split_titles(raw_title: str, raw_titlelist: str) -> list[str]:
 @oauth_required
 def import_history():
     return render_template(
-        "import-history.html",
+        "jobs_templates/import-history.html",
         title="Import history from enwiki",
         form_title="",
         form_titlelist="",
@@ -60,7 +60,7 @@ def import_history_post():
     if not titles:
         flash("Provide at least one title.", "warning")
         return render_template(
-            "import-history.html",
+            "jobs_templates/import-history.html",
             title="Import history from enwiki",
             form_title=raw_title,
             form_titlelist=raw_titlelist,
@@ -72,7 +72,7 @@ def import_history_post():
             "warning",
         )
         return render_template(
-            "import-history.html",
+            "jobs_templates/import-history.html",
             title="Import history from enwiki",
             form_title=raw_title,
             form_titlelist=raw_titlelist,

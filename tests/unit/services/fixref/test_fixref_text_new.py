@@ -1,5 +1,5 @@
 import pytest
-from flask_app.main_app.jobs.workers.fixref.fixref_text_new import fix_ref_template
+from flask_app.main_app.shared.fixref_shared.fixref_text_new import fix_ref_template
 
 
 @pytest.fixture

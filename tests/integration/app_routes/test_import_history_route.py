@@ -34,7 +34,7 @@ class TestImportHistory:
         assert b'name="titlelist"' in r.data
 
     def test_post_submits_job_with_titles_and_from(self, mock_client, login, csrf_token, monkeypatch):
-        from flask_app.main_app.jobs.workers import imp
+        from flask_app.main_app.jobs.workers import import_history
 
         captured: dict = {}
 
@@ -42,7 +42,7 @@ class TestImportHistory:
             captured.update(kw)
             return {}
 
-        monkeypatch.setattr(imp, "run", stub)
+        monkeypatch.setattr(import_history, "run", stub)
         login("Doc James")
         r = mock_client.post(
             "/import-history/",

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pytest
-from flask_app.main_app.jobs.workers import newupdater as svc
+from flask_app.main_app.app_routes.newupdater import worker as svc
 
 
 class FakePage:

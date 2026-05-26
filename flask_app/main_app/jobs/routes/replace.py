@@ -30,7 +30,7 @@ def _parse_int(raw: str) -> int | None:
 @oauth_required
 def replace():
     return render_template(
-        "replace.html",
+        "jobs_templates/replace.html",
         title="Find and replace",
         form_find="",
         form_replace="",
@@ -54,7 +54,7 @@ def replace_post():
     if not raw_find:
         flash("`find` cannot be empty.", "warning")
         return render_template(
-            "replace.html",
+            "jobs_templates/replace.html",
             title="Find and replace",
             form_find=raw_find,
             form_replace=raw_replace,

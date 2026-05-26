@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf %}
+
+{% block content %}
+<div class="card">
+	<div class="card-header" style="font-weight:bold;">
+		<h3>{{ title or "Fix redirects in all pages" }}</h3>
+	</div>
+	<div class="card-body">
+		<p class="text-muted">
+			Walks the wikilinks on the given mdwiki page and rewrites every
+			redirect link to point at its canonical target (preserving the
+			original display text).
+		</p>
+		<form method="POST" action="{{ url_for('fixred_all.fixred_post_all') }}" class="row g-2">
+			{{ csrf() }}
+			<div class="col-md-3 d-flex align-items-end">
+				<button class="btn btn-outline-primary w-100" type="submit">Start All pages</button>
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock %}

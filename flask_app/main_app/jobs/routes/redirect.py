@@ -41,7 +41,7 @@ def _split_titles(raw_title: str, raw_titlelist: str) -> list[str]:
 @oauth_required
 def redirect_view():
     return render_template(
-        "redirect.html",
+        "jobs_templates/redirect.html",
         title="Copy redirects from enwiki",
         form_title="",
         form_titlelist="",
@@ -60,7 +60,7 @@ def redirect_post():
     if not titles:
         flash("Provide at least one title.", "warning")
         return render_template(
-            "redirect.html",
+            "jobs_templates/redirect.html",
             title="Copy redirects from enwiki",
             form_title=raw_title,
             form_titlelist=raw_titlelist,
@@ -68,7 +68,7 @@ def redirect_post():
     if len(titles) > _MAX_TITLES:
         flash(f"Too many titles ({len(titles)}); cap is {_MAX_TITLES}.", "warning")
         return render_template(
-            "redirect.html",
+            "jobs_templates/redirect.html",
             title="Copy redirects from enwiki",
             form_title=raw_title,
             form_titlelist=raw_titlelist,
