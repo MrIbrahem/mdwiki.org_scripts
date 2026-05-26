@@ -16,8 +16,8 @@ import logging
 from dataclasses import dataclass
 from typing import Literal
 
-from ...shared.new_updater import work_on_text
 from ...jobs._api import get_api
+from ...shared.new_updater import work_on_text
 
 logger = logging.getLogger(__name__)
 

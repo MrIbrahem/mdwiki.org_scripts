@@ -2,11 +2,11 @@
 
 from flask import Flask
 
+from .fixred import bp_fixred
 from .jobs import bp_jobs
 from .main import bp_main
 from .new_jobs import bp_public_jobs
 from .newupdater.route import bp_newupdater
-from .fixred import bp_fixred
 
 
 def register_blueprints(app: Flask) -> None:

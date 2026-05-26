@@ -2,13 +2,12 @@
 
 from flask import Flask
 
+from .create_redirects import bp_redirect
 from .duplicate_redirect import bp_dup
+from .find_and_replace import bp_replace
 from .fixred_all import bp_fixred_all
 from .fixref import bp_fixref
 from .import_history import bp_import_history
-from .create_redirects import bp_redirect
-from .find_and_replace import bp_replace
-
 
 
 def register_jobs_blueprints(app: Flask) -> None:
