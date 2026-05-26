@@ -21,8 +21,8 @@ import logging
 from threading import Event
 from typing import Any, Callable, Iterable, Optional
 
-from .._api import get_api
-from .fixref_text_new import fix_ref_template
+from ._api import get_api
+from ...shared.fixref_shared.fixref_text_new import fix_ref_template
 
 logger = logging.getLogger(__name__)
 

@@ -5,11 +5,11 @@ jobs_targets_public = {
 }
 
 JOB_TYPE_TEMPLATES_PUBLIC = {
-    "copy_svg_langs": "jobs_templates/copy_svg_langs/details.html",
+    "copy_svg_langs": "new_jobs_templates/copy_svg_langs/details.html",
 }
 
 JOB_TYPE_LIST_TEMPLATES_PUBLIC = {
-    "copy_svg_langs": "jobs_templates/copy_svg_langs/list.html",
+    "copy_svg_langs": "new_jobs_templates/copy_svg_langs/list.html",
 }
 
 __all__ = [
