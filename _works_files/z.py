@@ -22,7 +22,7 @@ def generate_domain_test_placeholders(src_root, test_root):
                 file_stem = Path(file).stem
 
                 if file_stem == "worker":
-                    parent_name = current_path.parent.stem
+                    parent_name = current_path.stem
                     test_filename = f"test_{parent_name}_worker.py"
                 elif "routes" in current_path.parts:
                     test_filename = f"test_{file_stem}_routes.py"
