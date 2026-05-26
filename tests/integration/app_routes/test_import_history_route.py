@@ -5,10 +5,10 @@ from __future__ import annotations
 import time
 
 
-def _wait_done(client, job_id, timeout=2.0):
+def _wait_done(mock_client, job_id, timeout=2.0):
     deadline = time.time() + timeout
     while time.time() < deadline:
-        data = client.get(f"/jobs/{job_id}.json").get_json()
+        data = mock_client.get(f"/jobs/{job_id}.json").get_json()
         if data["status"] in ("done", "error"):
             return data
         time.sleep(0.005)
@@ -21,19 +21,19 @@ def _wait_done(client, job_id, timeout=2.0):
 
 
 class TestImportHistory:
-    def test_unlisted_user_gets_403(self, client, login):
+    def test_unlisted_user_gets_403(self, mock_client, login):
         login("Plain User")
-        r = client.get("/import-history/")
+        r = mock_client.get("/import-history/")
         assert r.status_code == 403
 
-    def test_allowlisted_get_renders_form(self, client, login):
+    def test_allowlisted_get_renders_form(self, mock_client, login):
         login("Doc James")
-        r = client.get("/import-history/")
+        r = mock_client.get("/import-history/")
         assert r.status_code == 200
         assert b'name="title"' in r.data
         assert b'name="titlelist"' in r.data
 
-    def test_post_submits_job_with_titles_and_from(self, client, login, csrf_token, monkeypatch):
+    def test_post_submits_job_with_titles_and_from(self, mock_client, login, csrf_token, monkeypatch):
         from flask_app.main_app.public_jobs_workers import imp
 
         captured: dict = {}
@@ -44,7 +44,7 @@ class TestImportHistory:
 
         monkeypatch.setattr(imp, "run", stub)
         login("Doc James")
-        r = client.post(
+        r = mock_client.post(
             "/import-history/",
             data={
                 "titlelist": "A\nB",
@@ -53,13 +53,13 @@ class TestImportHistory:
             },
         )
         assert r.status_code == 302
-        _wait_done(client, r.headers["Location"].rsplit("/", 1)[-1])
+        _wait_done(mock_client, r.headers["Location"].rsplit("/", 1)[-1])
         assert captured["titles"] == ["A", "B"]
         assert captured["from_lang"] == "en"
 
-    def test_post_empty_re_renders_with_flash(self, client, login, csrf_token):
+    def test_post_empty_re_renders_with_flash(self, mock_client, login, csrf_token):
         login("Doc James")
-        r = client.post(
+        r = mock_client.post(
             "/import-history/",
             data={"csrf_token": csrf_token("/import-history/")},
         )

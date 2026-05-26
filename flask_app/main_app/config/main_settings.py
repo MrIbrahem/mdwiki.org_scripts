@@ -8,11 +8,11 @@ from pathlib import Path
 from typing import Optional
 
 from .classes import (
-    OtherConfig,
     CookieConfig,
     DbConfig,
     JobsConfig,
     OAuthConfig,
+    OtherConfig,
     Paths,
     SecurityConfig,
     SessionConfig,
@@ -176,7 +176,6 @@ def load_other_config() -> OtherConfig:
     _config = OtherConfig(
         csrf_time_limit=csrf_time_limit,
         user_agent=user_agent,
-
         allowlist_users=allowlist_users,
         wiki_domain=wiki_domain,
         static_server=static_server,

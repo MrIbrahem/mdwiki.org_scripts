@@ -11,6 +11,7 @@ from typing import Any, Optional
 @dataclass(frozen=True)
 class OtherConfig:
     """configs not in specific sections"""
+
     csrf_time_limit: Optional[int]  # None means never expire
     user_agent: str
     # Phase-1 additions (see docs/merge-plan.md §7)
@@ -22,6 +23,7 @@ class OtherConfig:
 @dataclass(frozen=True)
 class JobsConfig:
     """Configuration for jobs."""
+
     jobs_max_workers: int
     jobs_log_lines: int
 

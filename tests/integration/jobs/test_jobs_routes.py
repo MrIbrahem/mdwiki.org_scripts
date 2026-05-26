@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import time
 
-import pytest
 from flask_app.main_app.jobs import runner
 
 
@@ -29,27 +28,27 @@ def _slow(*, on_progress, stop_event):
 
 
 class TestStatusPages:
-    def test_status_page_404_when_unknown(self, client):
-        r = client.get("/jobs/zzzzzz")
+    def test_status_page_404_when_unknown(self, mock_client):
+        r = mock_client.get("/jobs/zzzzzz")
         assert r.status_code == 404
 
-    def test_status_json_404_when_unknown(self, client):
-        r = client.get("/jobs/zzzzzz.json")
+    def test_status_json_404_when_unknown(self, mock_client):
+        r = mock_client.get("/jobs/zzzzzz.json")
         assert r.status_code == 404
         assert r.get_json() == {"error": "not found"}
 
-    def test_status_page_renders_for_known_job(self, client):
+    def test_status_page_renders_for_known_job(self, mock_client):
         job = runner.submit("dup", _no_op_done)
         _wait(job, "done")
-        r = client.get(f"/jobs/{job.id}")
+        r = mock_client.get(f"/jobs/{job.id}")
         assert r.status_code == 200
         assert job.id.encode() in r.data
         assert b"badge bg-" in r.data  # status badge
 
-    def test_status_json_includes_lifecycle_fields(self, client):
+    def test_status_json_includes_lifecycle_fields(self, mock_client):
         job = runner.submit("dup", _no_op_done)
         _wait(job, "done")
-        data = client.get(f"/jobs/{job.id}.json").get_json()
+        data = mock_client.get(f"/jobs/{job.id}.json").get_json()
         assert data["id"] == job.id
         assert data["tool"] == "dup"
         assert data["status"] == "done"
@@ -60,23 +59,23 @@ class TestStatusPages:
 
 
 class TestStop:
-    def test_stop_requires_csrf(self, client, login):
+    def test_stop_requires_csrf(self, mock_client, login):
         login("Mr. Ibrahem")
-        r = client.post("/jobs/anything/stop")
+        r = mock_client.post("/jobs/anything/stop")
         assert r.status_code == 400  # CSRFProtect rejects with 400
 
-    def test_stop_unknown_returns_404(self, client, login, csrf_token):
+    def test_stop_unknown_returns_404(self, mock_client, login, csrf_token):
         login("Mr. Ibrahem")
         token = csrf_token("/dup/")
-        r = client.post("/jobs/zzzzzz/stop", data={"csrf_token": token})
+        r = mock_client.post("/jobs/zzzzzz/stop", data={"csrf_token": token})
         assert r.status_code == 404
 
-    def test_stop_sets_event_and_redirects_to_status(self, client, login, csrf_token):
+    def test_stop_sets_event_and_redirects_to_status(self, mock_client, login, csrf_token):
         login("Mr. Ibrahem")
         job = runner.submit("dup", _slow)
         time.sleep(0.05)  # let it start
         token = csrf_token(f"/jobs/{job.id}")
-        r = client.post(f"/jobs/{job.id}/stop", data={"csrf_token": token})
+        r = mock_client.post(f"/jobs/{job.id}/stop", data={"csrf_token": token})
         assert r.status_code == 302
         assert r.headers["Location"].endswith(f"/jobs/{job.id}")
         # The slow stub returns once stop_event is set.
@@ -84,13 +83,13 @@ class TestStop:
         assert job.status == "done"
         assert job.result == {"stopped": True}
 
-    def test_stop_on_finished_job_is_friendly_redirect(self, client, login, csrf_token):
+    def test_stop_on_finished_job_is_friendly_redirect(self, mock_client, login, csrf_token):
         login("Mr. Ibrahem")
         job = runner.submit("dup", _no_op_done)
         _wait(job, "done")
         # Status page no longer renders the stop form on a finished job,
         # so we scrape CSRF from any page that has a form.
         token = csrf_token("/dup/")
-        r = client.post(f"/jobs/{job.id}/stop", data={"csrf_token": token})
+        r = mock_client.post(f"/jobs/{job.id}/stop", data={"csrf_token": token})
         assert r.status_code == 302
         assert r.headers["Location"].endswith(f"/jobs/{job.id}")

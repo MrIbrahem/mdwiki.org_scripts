@@ -9,8 +9,8 @@ don't leak across tests.
 from __future__ import annotations
 
 import os
-import secrets
 import re
+import secrets
 import sys
 from pathlib import Path
 
@@ -57,7 +57,7 @@ def app():
 
 
 @pytest.fixture()
-def client(app):
+def mock_client(app):
     """Fresh test client per test."""
 
     return app.test_client()
@@ -75,24 +75,24 @@ def reset_job_store():
 
 
 @pytest.fixture()
-def login(client):
+def login(mock_client):
     """Helper to set ``session['username']`` to a given user."""
 
     def _login(username: str) -> None:
-        with client.session_transaction() as session:
+        with mock_client.session_transaction() as session:
             session["username"] = username
 
     return _login
 
 
 @pytest.fixture()
-def csrf_token(client):
+def csrf_token(mock_client):
     """Scrape a CSRF token out of any page that contains a form."""
 
     pattern = re.compile(r'name="csrf_token" value="([^"]+)"')
 
     def _csrf(path: str = "/") -> str:
-        body = client.get(path).data.decode()
+        body = mock_client.get(path).data.decode()
         match = pattern.search(body)
         if not match:
             raise AssertionError(f"no csrf_token found in body for {path!r}")

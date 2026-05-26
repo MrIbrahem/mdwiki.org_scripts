@@ -8,14 +8,14 @@ from __future__ import annotations
 
 
 class TestNewupdater:
-    def test_get_no_title_renders_form_only(self, client, login):
+    def test_get_no_title_renders_form_only(self, mock_client, login):
         login("Doc James")
-        r = client.get("/newupdater/")
+        r = mock_client.get("/newupdater/")
         assert r.status_code == 200
         assert b'name="title"' in r.data
         assert b"Save with edit summary" not in r.data
 
-    def test_get_with_title_changes_renders_diff(self, client, login, monkeypatch):
+    def test_get_with_title_changes_renders_diff(self, mock_client, login, monkeypatch):
         import flask_app.main_app.public_jobs_workers.newupdater as nu
         from flask_app.main_app.public_jobs_workers.newupdater import UpdaterOutcome
 
@@ -27,11 +27,11 @@ class TestNewupdater:
             ),
         )
         login("Doc James")
-        r = client.get("/newupdater/?title=Aspirin")
+        r = mock_client.get("/newupdater/?title=Aspirin")
         assert r.status_code == 200
         assert b"Proposed changes" in r.data
 
-    def test_get_with_title_no_changes_renders_info(self, client, login, monkeypatch):
+    def test_get_with_title_no_changes_renders_info(self, mock_client, login, monkeypatch):
         import flask_app.main_app.public_jobs_workers.newupdater as nu
         from flask_app.main_app.public_jobs_workers.newupdater import UpdaterOutcome
 
@@ -41,11 +41,11 @@ class TestNewupdater:
             lambda title, save=0, summary="Med updater.": UpdaterOutcome(kind="no_changes", old_text="x", new_text="x"),
         )
         login("Doc James")
-        r = client.get("/newupdater/?title=Aspirin")
+        r = mock_client.get("/newupdater/?title=Aspirin")
         assert r.status_code == 200
         assert b"no changes" in r.data
 
-    def test_get_with_title_notext_renders_warning(self, client, login, monkeypatch):
+    def test_get_with_title_notext_renders_warning(self, mock_client, login, monkeypatch):
         import flask_app.main_app.public_jobs_workers.newupdater as nu
         from flask_app.main_app.public_jobs_workers.newupdater import UpdaterOutcome
 
@@ -53,11 +53,11 @@ class TestNewupdater:
             nu, "work_on_title", lambda title, save=0, summary="Med updater.": UpdaterOutcome(kind="notext")
         )
         login("Doc James")
-        r = client.get("/newupdater/?title=Empty")
+        r = mock_client.get("/newupdater/?title=Empty")
         assert r.status_code == 200
         assert b"empty" in r.data.lower()
 
-    def test_get_with_save_calls_work_on_title_with_save(self, client, login, monkeypatch):
+    def test_get_with_save_calls_work_on_title_with_save(self, mock_client, login, monkeypatch):
         import flask_app.main_app.public_jobs_workers.newupdater as nu
         from flask_app.main_app.public_jobs_workers.newupdater import UpdaterOutcome
 
@@ -69,13 +69,13 @@ class TestNewupdater:
 
         monkeypatch.setattr(nu, "work_on_title", spy)
         login("Doc James")
-        r = client.get("/newupdater/?title=Aspirin&save=1")
+        r = mock_client.get("/newupdater/?title=Aspirin&save=1")
         assert r.status_code == 200
         assert len(calls) == 1
         assert calls[0]["title"] == "Aspirin"
         assert calls[0]["save"] == 1
 
-    def test_get_without_title_shows_empty_form(self, client, login, monkeypatch):
+    def test_get_without_title_shows_empty_form(self, mock_client, login, monkeypatch):
         import flask_app.main_app.public_jobs_workers.newupdater as nu
         from flask_app.main_app.public_jobs_workers.newupdater import UpdaterOutcome
 
@@ -85,6 +85,6 @@ class TestNewupdater:
             lambda title, save=0, summary="Med updater.": UpdaterOutcome(kind="changes", old_text="a", new_text="b"),
         )
         login("Doc James")
-        r = client.get("/newupdater/")
+        r = mock_client.get("/newupdater/")
         assert r.status_code == 200
         assert b'name="title"' in r.data

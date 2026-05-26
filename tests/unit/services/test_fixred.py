@@ -5,7 +5,6 @@ Tests for the pure-text helpers in services.fixred.
 from __future__ import annotations
 
 import pytest
-
 from flask_app.main_app.public_jobs_workers.fixred import fix_text
 
 

@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import time
-from threading import Event
 
-import pytest
 from flask_app.main_app.jobs import runner
 from flask_app.main_app.jobs.models import Job
 from flask_app.main_app.jobs.store import JobStore, get_store

@@ -7,10 +7,10 @@ import time
 from flask_app.main_app.jobs.store import get_store
 
 
-def _wait_done(client, job_id, timeout=2.0):
+def _wait_done(mock_client, job_id, timeout=2.0):
     deadline = time.time() + timeout
     while time.time() < deadline:
-        data = client.get(f"/jobs/{job_id}.json").get_json()
+        data = mock_client.get(f"/jobs/{job_id}.json").get_json()
         if data["status"] in ("done", "error"):
             return data
         time.sleep(0.005)
@@ -23,13 +23,13 @@ def _wait_done(client, job_id, timeout=2.0):
 
 
 class TestFixred:
-    def test_get_renders_form(self, client, login):
+    def test_get_renders_form(self, mock_client, login):
         login("Doc James")
-        r = client.get("/fixred/")
+        r = mock_client.get("/fixred/")
         assert r.status_code == 200
         assert b'name="title"' in r.data
 
-    def test_post_with_title_renders_outcome(self, client, login, csrf_token, monkeypatch):
+    def test_post_with_title_renders_outcome(self, mock_client, login, csrf_token, monkeypatch):
         from flask_app.main_app.public_jobs_workers import fixred as svc
         from flask_app.main_app.public_jobs_workers.fixred import UpdaterOutcome
 
@@ -42,14 +42,14 @@ class TestFixred:
         )
 
         login("Doc James")
-        r = client.post(
+        r = mock_client.post(
             "/fixred/",
             data={"title": "Aspirin", "csrf_token": csrf_token("/fixred/")},
         )
         assert r.status_code == 200
         assert b"Proposed changes" in r.data
 
-    def test_get_with_title_query_renders_outcome(self, client, login, monkeypatch):
+    def test_get_with_title_query_renders_outcome(self, mock_client, login, monkeypatch):
         """Legacy bookmark URLs like /fixred/?title=Foo continue to work."""
 
         from flask_app.main_app.public_jobs_workers import fixred as svc
@@ -64,12 +64,12 @@ class TestFixred:
         )
 
         login("Doc James")
-        r = client.get("/fixred/?title=Foo")
+        r = mock_client.get("/fixred/?title=Foo")
         assert r.status_code == 200
         assert b"no changes" in r.data
 
-    def test_post_without_title_re_renders_form(self, client, login, csrf_token):
+    def test_post_without_title_re_renders_form(self, mock_client, login, csrf_token):
         login("Doc James")
-        r = client.post("/fixred/", data={"csrf_token": csrf_token("/fixred/")})
+        r = mock_client.post("/fixred/", data={"csrf_token": csrf_token("/fixred/")})
         assert r.status_code == 200
         assert b'name="title"' in r.data
