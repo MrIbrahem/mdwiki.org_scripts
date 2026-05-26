@@ -1,0 +1,29 @@
+{% extends "new_jobs_templates/base_list2.html" %}
+
+{% set job_type = 'create_redirects' %}
+{% set hide_start_button = '1' %}
+
+{% block list_title %}Copy Redirects from Enwiki{% endblock %}
+{% block list_headline %}Copy Redirects from Enwiki{% endblock %}
+
+{% block list_info %}
+<p class="text-muted">
+    For each mdwiki page below, copy any redirects that target the same
+    title on English Wikipedia. Namespaced titles
+    (<code>Category:</code>, <code>File:</code>, <code>Template:</code>,
+    <code>User:</code>, <code>Wikipedia:</code>) and disambiguation pages
+    are skipped.
+</p>
+<form method="post" action="{{ url_for('new_jobs.start_job_with_args', job_type=job_type) }}"
+    class="row gy-2 gx-3 align-items-center mb-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="col-sm-12">
+        <label for="titles" class="form-label">Titles (one per line)</label>
+        <textarea class="form-control" id="titles" name="titles" rows="6"
+            placeholder="Aspirin&#10;Paracetamol&#10;Ibuprofen" required></textarea>
+    </div>
+    <div class="col-sm-12 col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-outline-primary w-100">Start</button>
+    </div>
+</form>
+{% endblock %}

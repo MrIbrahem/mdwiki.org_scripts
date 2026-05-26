@@ -5,11 +5,13 @@ Worker module for import_history.
 
 from __future__ import annotations
 
-import mwclient
 import logging
 import threading
 from datetime import datetime
 from typing import Any, Dict, Iterable
+
+import mwclient
+
 from ....new_jobs.base_worker import BaseJobWorker
 
 logger = logging.getLogger(__name__)
