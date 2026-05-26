@@ -1,9 +1,9 @@
 const WIKIMEDIA_API_URL = "https://mdwiki.org/w/api.php";
 const API_USER_AGENT = "Translation Dashboard/1.0 (https://mdwiki.toolforge.org/; tools.mdwiki@toolforge.org)";
 
-$(document).ready(function () {
+function setupWikiAutocomplete(inputSelector) {
     // attach autocomplete behavior to input field
-    $("#title").autocomplete({
+    $(inputSelector).autocomplete({
         delay: 300,
         minLength: 2,
         source: function (request, response) {
@@ -37,4 +37,4 @@ $(document).ready(function () {
             });
         }
     });
-});
+}
