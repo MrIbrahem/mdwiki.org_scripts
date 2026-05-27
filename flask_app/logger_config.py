@@ -47,7 +47,6 @@ def setup_logging(
     project_logger.propagate = False
 
     console_formatter = colorlog.ColoredFormatter(
-        # fmt="%(filename)s:%(lineno)s %(funcName)s() - %(log_color)s%(levelname)-s %(reset)s%(message)s",
         fmt="%(asctime)s - %(name)s - %(log_color)s%(levelname)-s %(reset)s%(message)s",
         log_colors={
             "DEBUG": "cyan",

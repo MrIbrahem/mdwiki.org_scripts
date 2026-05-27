@@ -58,26 +58,31 @@ globalbadtitles = r"""
 
 
 def get_url(url):
-    # ---
     json1 = {}
-    # ---
     try:
         req = requests.get(
             url,
             timeout=10,
             headers={"User-Agent": "mdwiki.org tools/1.0 (https://mdwiki.toolforge.org/; tools.mdwiki@toolforge.org)"},
         )
-        # ---
+
         if 500 <= req.status_code < 600:
             logger.info(f"received {req.status_code} status from {req.url}")
-        # ---
+
         req.raise_for_status()
-        # ---
         json1 = req.json()
-    # ---
+
+    except requests.exceptions.Timeout as e:
+        logger.error(f"Timeout Error for URL [{url}]: {e}")
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"HTTP Error for URL [{url}]: {e}")
+    except ValueError as e:
+        logger.error(f"JSON Decode Error for URL [{url}]: {e}")
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Network Request Error for URL [{url}]: {e}")
     except Exception:
-        logger.exception("Exception:", exc_info=True)
-    # ---
+        logger.exception("Unexpected Exception occurred:")
+
     return json1
 
 
