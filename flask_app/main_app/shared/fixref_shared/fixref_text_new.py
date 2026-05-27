@@ -93,8 +93,6 @@ def fix_ref_template(text, returnsummary=False):
         # ---
         for temp in templates:
             # ---
-            name = str(temp.normal_name()).strip()
-            # ---
             temp_str = temp.string
             # ---
             laysource, temp = change_lay_source(temp)

@@ -108,7 +108,7 @@ def make_title(url):
     # ---
     urlr = f"https://en.wikipedia.org/api/rest_v1/data/citation/mediawiki-basefields/{url2}"
     # ---
-    _json1_ = [
+    _json1 = [
         {
             "key": "JSJVMKE6",
             "version": 0,

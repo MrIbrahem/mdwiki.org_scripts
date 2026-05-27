@@ -6,7 +6,7 @@ import wikitextparser
 logger = logging.getLogger(__name__)
 
 
-class move_External_links_section:
+class MoveExternalLinksSection:
     def __init__(self, text):
         self.text = text
         # ---
@@ -25,7 +25,7 @@ class move_External_links_section:
 
     def run(self):
         # ---
-        logger.debug("move_External_links_section: run")
+        logger.debug("run")
         # ---
         self.get_sects()
         # ---
@@ -73,10 +73,10 @@ class move_External_links_section:
         # ---
         last = ""
         # ---
-        for n, s in enumerate(self.sections, start=-1):
+        for _, s in enumerate(self.sections, start=-1):
             # ---
             t = s.title
-            c = s.contents
+            _c = s.contents
             # ---
             if t and t.strip().lower() == "external links":
                 self.ext_sec = str(s)
@@ -96,8 +96,8 @@ class move_External_links_section:
         if self.last_sec.title.lower().strip() == "references":
             l_c = self.last_sec.contents
             # ---
-            logger.debug("get_sects", f"title: {self.last_sec.title}")
-            logger.debug("get_sects", f"contents: {l_c}")
+            logger.debug(f"title: {self.last_sec.title}")
+            logger.debug(f"contents: {l_c}")
             # ---
             mata = re.search(r"^{{reflist(?:[^{]|{[^{]|{{[^{}]+}}|)+}}", l_c, flags=re.IGNORECASE)
             # ---
@@ -108,13 +108,13 @@ class move_External_links_section:
                 # ---
                 l_c2 = l_c[index:]
                 # ---
-                # logger.debug("get_sects", f'index : {index}')
-                # logger.debug("get_sects", f'l_c2 : {l_c2}')
+                # logger.debug(f'index : {index}')
+                # logger.debug(f'l_c2 : {l_c2}')
                 # ---
                 g = mata.group()
                 g_to = f"== {self.last_sec.title.strip()} ==\n{g}\n"
                 # ---
-                logger.debug("get_sects", f"g_to: {g_to}")
+                logger.debug(f"g_to: {g_to}")
                 # ---
                 self.ext_sec = f"{g_to}\n{self.ext_sec}"
                 self.new_ext_sec = self.ext_sec

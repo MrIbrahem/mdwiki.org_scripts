@@ -9,7 +9,7 @@ from .lists.chem_params import rename_chem_params
 logger = logging.getLogger(__name__)
 
 
-class fix_Chembox:
+class FixChembox:
     def __init__(self, text):
         self.text = text
         self.new_text = text
@@ -20,7 +20,7 @@ class fix_Chembox:
 
     def run(self):
         # ---
-        logger.debug("fix_Chembox: run")
+        logger.debug("FixChembox: run")
         # ---
         self.get_params()
         # ---

@@ -3,9 +3,9 @@ import re
 
 import wikitextparser as wtp
 
-logger = logging.getLogger(__name__)
 from .lists.bot_params import all_formola_params, all_params, params_placeholders, params_to_add
 
+logger = logging.getLogger(__name__)
 # ---
 lkj = r"<!--\s*(Monoclonal antibody data|External links|Names*|Clinical data|Legal data|Legal status|Pharmacokinetic data|Chemical and physical data|Definition and medical uses|Chemical data|Chemical and physical data|index_label\s*=\s*Free Base|\w+ \w+ data|\w+ \w+ \w+ data|\w+ data|\w+ status|Identifiers)\s*-->"
 # ---
@@ -56,7 +56,7 @@ class TextProcessor:
             ]
             # ---
             if name.lower() in medical_infoboxes:
-                logger.debug("get_txt_params", f"*find temp:[{name}].")
+                logger.debug(f"*find temp:[{name}].")
                 continue
             # ---
             if name.lower() in ["drugbox", "infobox drug"]:
@@ -93,7 +93,7 @@ class TextProcessor:
     def add_section_title_to_sec_text2(self, section_title, sec_text):
         # ---
         if self.newdrugbox.strip().endswith(section_title) or self.newdrugbox.find(section_title) != -1:
-            logger.debug("add_section_title_to_sec_text2", f"({section_title}) already in self.newdrugbox \n")
+            logger.debug(f"({section_title}) already in self.newdrugbox \n")
         else:
             sec_text = f"{section_title}\n{sec_text}"
         # ---
@@ -103,7 +103,7 @@ class TextProcessor:
         # ---
         if self.newdrugbox.strip().endswith(section_title):
             # ---
-            logger.debug("add_section_title_to_sec_text", f"self.newdrugbox.endswith({section_title}) \n")
+            logger.debug(f"self.newdrugbox.endswith({section_title}) \n")
             # ---
             title_escape = re.escape(section_title)
             # ---
@@ -113,7 +113,7 @@ class TextProcessor:
         # ---
         if self.newdrugbox.find(section_title) != -1:
             # ---
-            logger.debug("add_section_title_to_sec_text", f"self.newdrugbox.find({section_title}) != -1 \n")
+            logger.debug(f"self.newdrugbox.find({section_title}) != -1 \n")
             # ---
             title_escape = re.escape(section_title)
             # ---
@@ -152,7 +152,7 @@ class TextProcessor:
         if _type:
             empty = bool(re.match(r"<!--\s*empty\s*-->", _type))
             # ---
-            logger.debug("get_combo", f"{empty=}")
+            logger.debug(f"{empty=}")
             # ---
             # remove html coments
             _type = re.sub(r"<!--.*?-->", "", _type)
@@ -169,15 +169,15 @@ class TextProcessor:
                 # ---
                 all_combo = params
             else:
-                logger.debug("get_combo", f" {_type=} not in combo_titles")
+                logger.debug(f" {_type=} not in combo_titles")
             # ---
             if empty:
                 sec_title = ""
         # ---
         sec_params = all_combo
         # ---
-        logger.debug("get_combo", f" {sec_title=}")
-        logger.debug("get_combo", f" all_combo keys: {len(all_combo)=}")
+        logger.debug(f" {sec_title=}")
+        logger.debug(f" all_combo keys: {len(all_combo)=}")
         # ---
         return sec_title, sec_params
 
