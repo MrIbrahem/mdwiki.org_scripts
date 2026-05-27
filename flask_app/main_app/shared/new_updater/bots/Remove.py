@@ -16,7 +16,7 @@ def remove_cite_web(text, resources_get_nlm, line, title):
     if vavo := re.search(ioireg, new_text, flags=re.IGNORECASE):
         vas = vavo.group(1)
         # الوسيط موجود في القالب
-        if line != "" and resources_get_nlm and resources_get_nlm == "":
+        if line != "" and resources_get_nlm == "":
             line2 = re.sub(r"(\s*NLM\s*\=\s*)", r"\g<1>{{PAGENAME}}", line, flags=re.IGNORECASE)
             new_text = new_text.replace(line, line2)
             if line != line2 and new_text.find(line2) != -1:

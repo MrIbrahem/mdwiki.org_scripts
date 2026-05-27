@@ -57,7 +57,7 @@ def rename_params(temptext):
         for old, new in to_replace.items():
             if temp.has_arg(old):
                 value = temp.get_arg(old).value
-                logger.debug("value: {value}")
+                logger.debug(f"value: {value}")
                 temp.set_arg(new, value, before=old)
                 temp.del_arg(old)
         # ---
