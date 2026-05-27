@@ -28,6 +28,7 @@ class WorkerObject:
     started_at: str = field(default_factory=lambda: datetime.now().isoformat())
     completed_at: Optional[str] = None
     cancelled_at: Optional[str] = None
+    last_update: Optional[str] = ""
     failed_at: Optional[str] = None
     error: Optional[str] = None
     error_type: Optional[str] = None
