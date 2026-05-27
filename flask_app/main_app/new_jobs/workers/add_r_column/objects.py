@@ -24,7 +24,6 @@ class Steps:
     load_page: StepDetail = field(default_factory=lambda: StepDetail(title="get page"))
     load_text: StepDetail = field(default_factory=lambda: StepDetail(title="Load page text"))
     add_empty_r_column: StepDetail = field(default_factory=lambda: StepDetail(title="Add empty R column"))
-    first_save: StepDetail = field(default_factory=lambda: StepDetail(title="Save page", newrevid=0))
     add_r_column: StepDetail = field(default_factory=lambda: StepDetail(title="Add R column"))
     final_save: StepDetail = field(default_factory=lambda: StepDetail(title="Save page", newrevid=0))
 
