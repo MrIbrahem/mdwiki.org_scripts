@@ -71,7 +71,7 @@
                             <table class="table table-sm">
                                 <tr>
                                     <th>Last update:</th>
-                                    <td>{{ job.last_update if job.last_update else '-' }}
+                                    <td>{{ result_data.last_update if result_data and result_data.last_update else '-' }}
                                     </td>
                                 </tr>
                                 <tr>
