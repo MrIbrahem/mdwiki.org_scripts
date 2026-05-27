@@ -110,7 +110,7 @@ class BaseObjectsJobWorker(ABC):
 
     Subclasses must implement:
     - get_job_type(): Return the job type string
-    - get_initial_result(): Return the initial result dictionary
+    - get_initial_result_object(): Return the initial result dictionary
     - process(): Implement the actual processing logic
 
     Optional overrides:
