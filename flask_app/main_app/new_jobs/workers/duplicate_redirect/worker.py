@@ -116,7 +116,15 @@ class DuplicateRedirectWorker(BaseObjectsJobWorker):
                 )
                 continue
 
-            setattr(self.result_object.summary, outcome, getattr(self.result_object.summary, outcome, 0) + 1)
+            if outcome == "fixed":
+                self.result_object.summary.fixed += 1
+            elif outcome == "unchanged":
+                self.result_object.summary.unchanged += 1
+            elif outcome == "missing":
+                self.result_object.summary.missing += 1
+            elif outcome == "errors":
+                self.result_object.summary.errors += 1
+
             self.result_object.pages_processed.append(
                 {
                     "from_title": from_title,

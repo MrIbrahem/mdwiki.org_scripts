@@ -97,7 +97,17 @@ class ImportHistoryWorker(BaseObjectsJobWorker):
                 )
                 continue
 
-            setattr(self.result_object.summary, outcome, getattr(self.result_object.summary, outcome, 0) + 1)
+            if outcome == "imported":
+                self.result_object.summary.imported += 1
+            elif outcome == "imported_fallback":
+                self.result_object.summary.imported_fallback += 1
+            elif outcome == "no_revisions":
+                self.result_object.summary.no_revisions += 1
+            elif outcome == "missing":
+                self.result_object.summary.missing += 1
+            elif outcome == "errors":
+                self.result_object.summary.errors += 1
+
             self.result_object.pages_processed.append(
                 {
                     "title": title,

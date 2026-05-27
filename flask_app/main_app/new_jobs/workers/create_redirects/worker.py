@@ -151,8 +151,11 @@ class CreateRedirectsWorker(BaseObjectsJobWorker):
                 )
                 continue
 
-            for key, val in counts.items():
-                setattr(self.result_object.summary, key, getattr(self.result_object.summary, key, 0) + val)
+            self.result_object.summary.target_missing += counts.get("target_missing", 0)
+            self.result_object.summary.created += counts.get("created", 0)
+            self.result_object.summary.already_exists += counts.get("already_exists", 0)
+            self.result_object.summary.skipped += counts.get("skipped", 0)
+            self.result_object.summary.errors += counts.get("errors", 0)
 
             status = "created" if counts.get("created") else "skipped"
             self.result_object.pages_processed.append(
