@@ -256,13 +256,18 @@ class AddRColumnWorker(BaseJobWorker):
         return True
 
     def _save_text(self, new_text: str, summary: str = "Add R column") -> bool:
-        try:
-            saved = self.page.edit_page(text=new_text, summary=summary, nocreate=1)
-            if not saved.get("success"):
-                raise Exception("Failed to save text")
-        except Exception as exc:
-            logger.exception(f"Failed to save text for {self.page.title}", exc_info=exc)
-            return False
+        saved = self.page.edit_page(text=new_text, summary=summary, nocreate=1)
+
+        if saved.get("success"):
+            return True
+
+        logger.error(f"Failed to save text for {self.page.title}")
+
+        error_code: str = saved.get("error", "")
+        details: str = saved.get("details")
+
+        logger.warning(f"Error code: {error_code}, details: {details}")
+        return False
 
     def _get_text_wikilinks(self, text):
 
