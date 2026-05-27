@@ -107,9 +107,9 @@ class AddRColumnWorker(BaseJobWorker):
                 "load_page": {"status": "pending", "title": "get page", "message": ""},
                 "load_text": {"status": "pending", "title": "Load page text", "message": ""},
                 "add_empty_r_column": {"status": "pending", "title": "Add empty R column", "message": ""},
-                "first_save": {"status": "pending", "title": "Save page", "message": ""},
+                "first_save": {"status": "pending", "title": "Save page", "message": "", "newrevid": 0},
                 "add_r_column": {"status": "pending", "title": "Add R column", "message": ""},
-                "final_save": {"status": "pending", "title": "Save page", "message": ""},
+                "final_save": {"status": "pending", "title": "Save page", "message": "", "newrevid": 0},
             },
             "new_text": "",
         }
@@ -206,7 +206,7 @@ class AddRColumnWorker(BaseJobWorker):
         self._set_step_status("add_empty_r_column", "completed", "")
 
         if new_text != text:
-            if not self._save_text(new_text):
+            if not self._save_text(new_text, step_name="first_save"):
                 self._set_step_status("first_save", "failed", "Failed to save text")
                 self._set_status_failed("Failed to save text")
                 return False
@@ -247,7 +247,7 @@ class AddRColumnWorker(BaseJobWorker):
         # step 6 save new texg to page
         summary = f"Added R column to {counts} titles."
 
-        if not self._save_text(newtext, summary):
+        if not self._save_text(newtext, summary, step_name="final_save"):
             self._set_step_status("final_save", "failed", "Failed to save final text")
             self._set_status_failed("failed to save final text")
             return False
@@ -255,10 +255,13 @@ class AddRColumnWorker(BaseJobWorker):
         self._set_step_status("final_save", "completed", "")
         return True
 
-    def _save_text(self, new_text: str, summary: str = "Add R column") -> bool:
+    def _save_text(self, new_text: str, summary: str = "Add R column", step_name: str="") -> bool:
         saved = self.page.edit_page(text=new_text, summary=summary, nocreate=1)
 
         if saved.get("success"):
+            newrevid = saved.get("newrevid", 0)
+            if newrevid:
+                self.result["steps"][step_name]["newrevid"] = newrevid
             return True
 
         logger.error(f"Failed to save text for {self.page.title}")
