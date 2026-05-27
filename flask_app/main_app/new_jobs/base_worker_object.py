@@ -193,6 +193,7 @@ class BaseObjectsJobWorker(ABC):
     def _save_progress(self):
         try:
             result = self.result_object.to_json()
+            result["last_update"] = datetime.now().isoformat()
             jobs_files_service.save_job_result_by_name(self.result_file, result)
         except Exception:
             logger.exception(f"Job {self.job_id}: Failed to save job result")
