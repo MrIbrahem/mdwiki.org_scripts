@@ -1,5 +1,5 @@
 {% extends "new_jobs_templates/base_details2.html" %}
-{% from "_macros.html" import card_header %}
+{% from "_macros.html" import card_header, get_status_class %}
 
 {% set job_type = 'add_unlinkedwikibase' %}
 
@@ -52,7 +52,7 @@
                         <td>{{ loop.index }}</td>
                         <td>{{ item.title }}</td>
                         <td>
-                            <span class="badge {% if item.status == 'tagged' %}bg-success{% elif item.status == 'error' %}bg-danger{% else %}bg-secondary{% endif %}">
+                            <span class="badge bg-{{ get_status_class(item.status) | trim }}">
                                 {{ item.status }}
                             </span>
                         </td>

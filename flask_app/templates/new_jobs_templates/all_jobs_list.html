@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import get_status_class %}
 
 {% block content %}
 <div class="card">
@@ -32,15 +33,9 @@
                             </a>
                         </td>
                         <td>
-                            {% if job.status == 'completed' %}
-                            <span class="badge bg-success">{{ job.status }}</span>
-                            {% elif job.status == 'failed' %}
-                            <span class="badge bg-danger">{{ job.status }}</span>
-                            {% elif job.status == 'running' %}
-                            <span class="badge bg-primary">{{ job.status }}</span>
-                            {% else %}
-                            <span class="badge bg-secondary">{{ job.status }}</span>
-                            {% endif %}
+                            <span class="badge bg-{{ get_status_class(job.status) | trim }}">
+                                {{ job.status }}
+                            </span>
                         </td>
                         <td>{{ job.username if job.username else '-' }}</td>
                         <td>{{ job.created_at.strftime('%Y-%m-%d %H:%M:%S') if job.created_at else '-' }}</td>

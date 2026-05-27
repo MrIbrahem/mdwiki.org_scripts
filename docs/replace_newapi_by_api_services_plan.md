@@ -389,9 +389,7 @@ class JobsConfig:
 ```python
 # config/main_settings.py
 def _load_jobs_config() -> JobsConfig:
-    _lang = os.getenv("WIKI_LANG") or "www"
-    _family = os.getenv("WIKI_FAMILY") or "mdwiki"
-    host = os.getenv("WIKI_HOST") or f"{_lang}.{_family}.org"
+    host = os.getenv("WIKI_DOMAIN")
 
     return JobsConfig(
         jobs_max_workers=max(1, _env_int("JOBS_MAX_WORKERS", 2)),

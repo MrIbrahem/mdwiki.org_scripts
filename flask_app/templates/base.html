@@ -1,15 +1,67 @@
-{# Shared layout. Wraps header.html / footer.html (which are fragments) and
-   closes the document. Per-tool templates extend this and fill `content`. #}
-{% include "header.html" %}
+<!DOCTYPE html>
+<HTML lang=en dir=ltr data-bs-theme="light" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="robots" content="noindex">
+    <link rel="icon" href="/favicon.svg" sizes="any">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mdwiki.org Tools</title>
+    <link rel='stylesheet' href='{{ static_server }}/ajax/libs/font-awesome/5.15.3/css/all.min.css'>
+    <link rel='stylesheet' href='{{ static_server }}/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css'>
+    <link rel='stylesheet' href='{{ static_server }}/ajax/libs/jqueryui/1.14.1/themes/base/jquery-ui.min.css'>
+    <link rel='stylesheet' href='{{ static_server }}/ajax/libs/datatables.net-bs5/1.13.1/dataTables.bootstrap5.css'>
+    <link rel='stylesheet' href='{{ static_server }}/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <style>
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+
 {%- from "_macros.html" import flash_messages -%}
-<main id="body">
-  <div id="maindiv" class="container">
-    {{ flash_messages() }}
-    {% block content %}{% endblock %}
-  </div>
-</main>
-{% include "footer.html" %}
-{% block scripts %}{% endblock %}
+
+<body>
+    {% include "_navbar.html" %}
+
+    <main id="body">
+        <div id="maindiv" class="container">
+            {{ flash_messages() }}
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <script src='{{ static_server }}/ajax/libs/jquery/3.7.0/jquery.min.js'></script>
+    <script src='{{ static_server }}/ajax/libs/jqueryui/1.14.1/jquery-ui.min.js'></script>
+    <script src='{{ static_server }}/ajax/libs/popper.js/2.11.8/umd/popper.min.js'></script>
+    <script src='{{ static_server }}/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js'></script>
+    <script src='{{ static_server }}/ajax/libs/datatables.net/2.1.1/jquery.dataTables.min.js'></script>
+    <script src='{{ static_server }}/ajax/libs/datatables.net-bs5/1.13.1/dataTables.bootstrap5.min.js'></script>
+    <script src='{{ static_server }}/ajax/libs/ace/1.42.0/ace.js'></script>
+    <!-- Autocomplete script -->
+    <script src="{{ url_for('static', filename='js/autocomplete.js') }}"></script>
+    <!-- Dark mode toggle script -->
+    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/card-tools.js') }}"></script>
+    <!-- Footer -->
+    <footer class='app-footer'>
+    </footer>
+    <script>
+        $(document).ready(function () {
+            // $('[data-toggle="tooltip"]').tooltip();
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+            const WIKIMEDIA_API_URL = "https://{{ wiki_domain }}/w/api.php";
+
+            setupWikiAutocomplete(".wiki-autocomplete", WIKIMEDIA_API_URL);
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
 </body>
 
 </html>

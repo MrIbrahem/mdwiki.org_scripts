@@ -1,5 +1,22 @@
 {# Shared Jinja macros. #}
 
+{% macro get_status_class(status) %}
+{% set status_classes = {
+    "tagged": "success",
+    "completed": "success",
+    "failed": "danger",
+    "skipped": "warning",
+    "running": "primary",
+    "pending": "secondary",
+    "cancelled": "warning",
+    "error": "danger",
+    } %}
+{% set status_lower = status | lower %}
+{# Return the matched class, or a default class if not found #}
+{{ status_classes[status_lower] if status_lower in status_classes else 'light text-dark' }}
+{% endmacro %}
+
+
 {%- macro csrf() -%}
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 {%- endmacro -%}
@@ -8,80 +25,79 @@
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
 <div class="flash-messages mt-2 mb-2">
-  {% for category, msg in messages %}
-  {% set bs = {'message':'info','warning':'warning','danger':'danger','error':'danger','success':'success','info':'info'}.get(category, 'info') %}
-  <div class="alert alert-{{ bs }} alert-dismissible fade show" role="alert">
-    {{ msg }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  {% endfor %}
+    {% for category, msg in messages %}
+    {% set bs = {'message':'info','warning':'warning','danger':'danger','error':'danger','success':'success','info':'info'}.get(category, 'info') %}
+    <div class="alert alert-{{ bs }} alert-dismissible fade show" role="alert">
+        {{ msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
 </div>
 {% endif %}
 {% endwith %}
 {%- endmacro -%}
 
-
 {%- macro edit_form(domain, title, newtext) -%}
 <div class="card mt-3">
-  <div class="card-header aligncenter" style="font-weight:bold;">
-    <h3>
-      <i class="bi bi-file-earmark-text"></i>
-      <a target="_blank" href="https://{{ domain }}/w/index.php?title={{ title }}">
-        {{ title }}
-      </a>
-    </h3>
-  </div>
-  <div class="card-body">
-    <form id="editform" name="editform" method="POST"
-      action="https://{{ domain }}/w/index.php?title={{ title }}&action=submit" target="_blank">
-      <input type="hidden" value="" name="wpEdittime">
-      <input type="hidden" value="" name="wpStarttime">
-      <input type="hidden" value="" name="wpScrolltop" id="wpScrolltop">
-      <input type="hidden" value="12" name="parentRevId">
-      <input type="hidden" value="wikitext" name="model">
-      <input type="hidden" value="text/x-wiki" name="format">
-      <input type="hidden" value="1" name="wpUltimateParam">
-      <input type="hidden" name="wpSummary" value="Fix references">
-      <input type="hidden" id="wikitext-old" value="">
-      <div class="mb-3">
-        <label for="wikitext-new" class="form-label fw-semibold">
-          New Wikitext
-        </label>
-        <textarea id="wikitext-new" class="form-control" name="wpTextbox1" rows="5">{{ newtext }}</textarea>
-      </div>
-      <div class="editOptions aligncenter">
-        <input id="wpPreview" type="submit" class="btn btn-outline-primary" tabindex="5" title="[p]" accesskey="p"
-          name="wpPreview" value="Preview changes" fdprocessedid="nudjzu">
-        <input id="wpDiff" type="submit" class="btn btn-outline-primary" tabindex="7" name="wpDiff" value="show changes"
-          accesskey="v" title="show changes." fdprocessedid="81zdl">
-        <div class="editButtons">
-        </div>
-      </div>
-    </form>
-  </div>
+    <div class="card-header aligncenter" style="font-weight:bold;">
+        <h3>
+            <i class="bi bi-file-earmark-text"></i>
+            <a target="_blank" href="https://{{ domain }}/w/index.php?title={{ title }}">
+                {{ title }}
+            </a>
+        </h3>
+    </div>
+    <div class="card-body">
+        <form id="editform" name="editform" method="POST"
+            action="https://{{ domain }}/w/index.php?title={{ title }}&action=submit" target="_blank">
+            <input type="hidden" value="" name="wpEdittime">
+            <input type="hidden" value="" name="wpStarttime">
+            <input type="hidden" value="" name="wpScrolltop" id="wpScrolltop">
+            <input type="hidden" value="12" name="parentRevId">
+            <input type="hidden" value="wikitext" name="model">
+            <input type="hidden" value="text/x-wiki" name="format">
+            <input type="hidden" value="1" name="wpUltimateParam">
+            <input type="hidden" name="wpSummary" value="Fix references">
+            <input type="hidden" id="wikitext-old" value="">
+            <div class="mb-3">
+                <label for="wikitext-new" class="form-label fw-semibold">
+                    New Wikitext
+                </label>
+                <textarea id="wikitext-new" class="form-control" name="wpTextbox1" rows="5">{{ newtext }}</textarea>
+            </div>
+            <div class="editOptions aligncenter">
+                <input id="wpPreview" type="submit" class="btn btn-outline-primary" tabindex="5" title="[p]"
+                    accesskey="p" name="wpPreview" value="Preview changes" fdprocessedid="nudjzu">
+                <input id="wpDiff" type="submit" class="btn btn-outline-primary" tabindex="7" name="wpDiff"
+                    value="show changes" accesskey="v" title="show changes." fdprocessedid="81zdl">
+                <div class="editButtons">
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 {%- endmacro -%}
 
 {%- macro saved_alert(domain, form_title, newrevid) -%}
 <div class="container-fluid">
-  <div class="row justify-content-center">
-    <div class="col-md-9 col-12">
-      <div class="alert alert-success d-flex align-items-center" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i> Changes have been published.
-        <div class="ms-auto d-flex gap-2">
-          <a href="https://{{ domain }}/w/index.php?title=Special:Diff/{{ newrevid }}" target="_blank"
-            class="btn btn-outline-primary btn-sm">
-            <i class="bi bi-file-earmark-text me-1"></i> Diff
-          </a>
-          <a href="https://{{ domain }}/w/index.php?title={{ form_title }}&action=history" target="_blank"
-            class="btn btn-outline-primary btn-sm">
-            <i class="bi bi-clock-history me-1"></i> History
-          </a>
+    <div class="row justify-content-center">
+        <div class="col-md-9 col-12">
+            <div class="alert alert-success d-flex align-items-center" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> Changes have been published.
+                <div class="ms-auto d-flex gap-2">
+                    <a href="https://{{ domain }}/w/index.php?title=Special:Diff/{{ newrevid }}" target="_blank"
+                        class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-file-earmark-text me-1"></i> Diff
+                    </a>
+                    <a href="https://{{ domain }}/w/index.php?title={{ form_title }}&action=history" target="_blank"
+                        class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-clock-history me-1"></i> History
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 {%- endmacro -%}
 {# Card header macro for collapsible cards #}

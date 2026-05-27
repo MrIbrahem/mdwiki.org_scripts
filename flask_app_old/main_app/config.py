@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .classes import (# type: ignore
+from .classes import (  # type: ignore
     CookieConfig,
     DbConfig,
     JobsConfig,
@@ -12,14 +12,14 @@ from .classes import (# type: ignore
     SessionConfig,
     Settings,
 )
-from .flask_config import (# type: ignore
+from .flask_config import (  # type: ignore
     Config,
     DevelopmentConfig,
     ProductionConfig,
     TestingConfig,
     build_sqlalchemy_uri,
 )
-from .main_settings import settings # type: ignore
+from .main_settings import settings  # type: ignore
 
 __all__ = [
     "Config",

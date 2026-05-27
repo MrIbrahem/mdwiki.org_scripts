@@ -14,7 +14,8 @@ from typing import Any, Dict
 import mwclient
 
 from ....api_services.clients import get_user_site
-from ....api_services.pages_api import edit_page, get_page_text, is_page_exists, search_pages
+from ....api_services.pages_api import edit_page, get_page_text, is_page_exists
+from ....api_services.query_api import search_pages
 from ....new_jobs.base_worker import BaseJobWorker
 
 logger = logging.getLogger(__name__)

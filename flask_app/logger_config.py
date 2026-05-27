@@ -30,7 +30,7 @@ def prepare_log_file(log_file: str | None, project_logger: logging.Logger) -> Pa
 
 def setup_logging(
     level: str = "WARNING",
-    name: str = "svg_translate_web",
+    name: str = "",
     log_file: str | None = None,
     error_log_file: str | None = None,
 ) -> None:
@@ -94,14 +94,16 @@ def configure_logging(level) -> None:
     main_dir = Path(os.path.expandvars(main_dir)).expanduser()
 
     log_dir = Path(main_dir) / "logs"
-    try:
-        log_dir.mkdir(parents=True, exist_ok=True)
-    except OSError as exc:
-        setup_logging(level=level, name="main_app")
-        logging.getLogger("main_app").warning(
-            "Falling back to console logging; could not create log directory %s: %s", log_dir, exc
-        )
-        return
+
+    if not log_dir.exists():
+        try:
+            log_dir.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            setup_logging(level=level, name="main_app")
+            logging.getLogger("main_app").warning(
+                "Falling back to console logging; could not create log directory %s: %s", log_dir, exc
+            )
+            return
 
     # Define paths
     all_log_path = log_dir / "app.log"

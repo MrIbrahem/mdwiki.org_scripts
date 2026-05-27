@@ -55,7 +55,7 @@ fi
 rm -rf "$CLONE_DIR"
 
 # toolforge-webservice python3.13 restart
-# become copy-svg-langs
+# become mdw
 # toolforge-webservice python3.13 shell
 # source "$HOME/www/python/venv/bin/activate"
 # pip install -r $HOME/www/python/src/requirements.txt

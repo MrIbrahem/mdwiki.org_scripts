@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% from "_macros.html" import card_header %}
+{% from "_macros.html" import card_header, get_status_class %}
 
-{% block title %}{% block detail_title %}{% endblock %} Job #{{ job.id }} · Copy SVG Translation{% endblock %}
+{% block title %}{% block detail_title %}{% endblock %} Job #{{ job.id }}{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -46,15 +46,9 @@
                                 <tr>
                                     <th style="width: 40%">Status:</th>
                                     <td>
-                                        {% if job.status == 'completed' %}
-                                        <span class="badge bg-success">{{ job.status }}</span>
-                                        {% elif job.status == 'failed' %}
-                                        <span class="badge bg-danger">{{ job.status }}</span>
-                                        {% elif job.status == 'running' %}
-                                        <span class="badge bg-primary">{{ job.status }}</span>
-                                        {% else %}
-                                        <span class="badge bg-secondary">{{ job.status }}</span>
-                                        {% endif %}
+                                        <span class="badge bg-{{ get_status_class(job.status) | trim }}">
+                                            {{ job.status }}
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>

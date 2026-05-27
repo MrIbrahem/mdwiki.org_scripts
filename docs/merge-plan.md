@@ -306,7 +306,7 @@ Wraps the existing `header.html` and `footer.html` and exposes Jinja blocks:
 ```jinja
 {% block title %}{% endblock %}
 {% block content %}{% endblock %}
-{% block scripts %}{% endblock %}
+{% block extra_js %}{% endblock %}
 ```
 
 ### 5.2 Macros (`_macros.html`)

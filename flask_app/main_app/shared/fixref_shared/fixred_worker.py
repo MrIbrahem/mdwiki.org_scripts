@@ -7,11 +7,11 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass, field
-from typing import Any, Literal
+from typing import Literal
 
 import mwclient
 
-from ...api_services.pages_api import get_page_links, resolve_redirects
+from ...api_services.query_api import get_page_links, resolve_redirects
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ def work_on_text(title: str, text: str, site: mwclient.Site, state: RunState) ->
     if not link_titles:
         return text
 
-    data = resolve_redirects(link_titles, site)
+    data = resolve_redirects(titles=link_titles, site=site)
 
     new_targets = {}
     for _, info in links["links"].items():

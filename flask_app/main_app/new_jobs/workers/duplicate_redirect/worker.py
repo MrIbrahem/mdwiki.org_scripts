@@ -16,10 +16,10 @@ import mwclient
 from ....api_services.clients import get_user_site
 from ....api_services.pages_api import (
     edit_page,
-    get_double_redirects,
     get_page_text,
     is_page_exists,
 )
+from ....api_services.query_api import get_double_redirects
 from ....new_jobs.base_worker import BaseJobWorker
 
 logger = logging.getLogger(__name__)

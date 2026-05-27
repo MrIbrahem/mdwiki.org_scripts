@@ -18,8 +18,8 @@ from typing import Literal
 
 from ...api_services.clients.wiki_client import get_user_site
 from ...api_services.pages_api import edit_page, get_page_text
-from ...su_services.users_service import current_user
 from ...shared.new_updater import work_on_text
+from ...su_services.users_service import current_user
 
 logger = logging.getLogger(__name__)
 

@@ -55,8 +55,8 @@ def _load_security_config() -> SecurityConfig:
     """
     Load security configuration (Flask 3.1+ features)
     """
-    # MAX_CONTENT_LENGTH: Maximum request size (default 100MB for SVG uploads)
-    max_content_length = _env_int("MAX_CONTENT_LENGTH", 100 * 1024 * 1024)
+    # MAX_CONTENT_LENGTH: Maximum request size (default 16MB)
+    max_content_length = _env_int("MAX_CONTENT_LENGTH", 16 * 1024 * 1024)
 
     # MAX_FORM_MEMORY_SIZE: Maximum form data in memory (default 16MB)
     max_form_memory_size = _env_int("MAX_FORM_MEMORY_SIZE", 16 * 1024 * 1024)
@@ -125,35 +125,28 @@ def _load_oauth_config() -> Optional[OAuthConfig]:
 
 def _get_paths() -> Paths:
     """
-    Compute the filesystem paths the application uses for SVG data, thumbnails, logs, fix data, and SVG job files and ensure those directories exist.
+    Compute the filesystem paths the application will use.
 
     The paths are rooted at the MAIN_DIR environment variable if set, otherwise at the user's ~/data directory.
 
     Returns:
         Paths: A dataclass with the following populated fields:
             - log_dir: path for log files
-            - jobs_path: path for SVG job files
-            - main_files_path: path for main files
+            - jobs_path: path for job files
     """
     main_dir = os.getenv("MAIN_DIR", "~/data")
     main_dir = Path(os.path.expandvars(main_dir)).expanduser()
-    log_dir = f"{main_dir}/logs"
-    jobs_path = f"{main_dir}/jobs"
-    new_jobs_path = f"{main_dir}/new_jobs"
-    main_files_path = f"{main_dir}/main_files"
 
+    _dirs = {
+        "log_dir": f"{main_dir}/logs",
+        "jobs_path": f"{main_dir}/jobs",
+        "new_jobs_path": f"{main_dir}/new_jobs",
+    }
     # Ensure directories exist
-    Path(log_dir).mkdir(parents=True, exist_ok=True)
-    Path(jobs_path).mkdir(parents=True, exist_ok=True)
-    Path(new_jobs_path).mkdir(parents=True, exist_ok=True)
-    Path(main_files_path).mkdir(parents=True, exist_ok=True)
+    for dir_name in _dirs.values():
+        Path(dir_name).mkdir(parents=True, exist_ok=True)
 
-    return Paths(
-        log_dir=log_dir,
-        jobs_path=jobs_path,
-        new_jobs_path=new_jobs_path,
-        main_files_path=main_files_path,
-    )
+    return Paths(**_dirs)
 
 
 def load_other_config() -> OtherConfig:
@@ -167,17 +160,12 @@ def load_other_config() -> OtherConfig:
     _allowlist_raw = os.getenv("ALLOWLIST_USERS", "Doc James,Mr. Ibrahem")
     allowlist_users = tuple(name.strip() for name in _allowlist_raw.split(",") if name.strip())
 
-    _lang = os.getenv("WIKI_LANG") or ""
-    _family = os.getenv("WIKI_FAMILY") or ""
-    if _lang and _family:
-        wiki_domain = f"{_lang}.{_family}.org"
-    else:
-        wiki_domain = "mdwiki.org"
+    wiki_domain = os.getenv("WIKI_DOMAIN") or "mdwiki.org"
     static_server = os.getenv("STATIC_SERVER") or "https://tools-static.wmflabs.org/cdnjs"
 
     user_agent = os.getenv(
         "USER_AGENT",
-        "Copy SVG Translations/1.0 (https://copy-svg-langs.toolforge.org; tools.copy-svg-langs@toolforge.org)",
+        "Translation Dashboard/1.0 (https://mdwiki.toolforge.org/; tools.mdwiki@toolforge.org)",
     )
     _config = OtherConfig(
         csrf_time_limit=csrf_time_limit,

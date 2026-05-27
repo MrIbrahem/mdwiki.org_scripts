@@ -19,10 +19,10 @@ class MwClientPage:
         self.load_page_error = ""
         self.page = None
 
-    def _edit_page(self, page: mwclient.page.Page, text: str, summary: str) -> dict[str, any]:
+    def _edit_page(self, page: mwclient.page.Page, text: str, summary: str, nocreate: int = 1) -> dict[str, any]:
 
         try:
-            save = page.edit(text, summary=summary)
+            save = page.edit(text, summary=summary, nocreate=nocreate)
             return {"success": True, **save}
 
         except mwclient.errors.ProtectedPageError as exc:
@@ -168,13 +168,13 @@ class MwClientPage:
             logger.warning(f"Could not check redirect status of '{self.title}': {exc}")
             return False
 
-    def edit_page(self, text: str, summary: str) -> dict[str, any]:
+    def edit_page(self, text: str, summary: str, nocreate: int = 1) -> dict[str, any]:
         page = self.load_page()
 
         if not page:
             return {"success": False, "error": self.load_page_error}
 
-        edit_result = self._edit_page(page, text, summary=summary)
+        edit_result = self._edit_page(page, text, summary=summary, nocreate=nocreate)
 
         if edit_result.get("error") != "ratelimited":
             return edit_result

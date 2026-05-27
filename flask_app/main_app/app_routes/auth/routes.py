@@ -1,5 +1,5 @@
 """
-Authentication helpers and OAuth routes for the SVG Translate web app.
+Authentication helpers and OAuth routes for the web app.
 """
 
 from __future__ import annotations
@@ -7,8 +7,7 @@ from __future__ import annotations
 import logging
 import secrets
 from collections.abc import Sequence
-from functools import wraps
-from typing import Any, Callable
+from typing import Any
 from urllib.parse import urlencode
 
 from flask import (

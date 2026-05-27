@@ -1,0 +1,51 @@
+<header class="mb-3 border-bottom">
+    <nav id="mainnav" class="navbar navbar-expand-lg shadow">
+        <div class="container-fluid" id="navbardiv">
+            <a class="tool_title navbar-brand mb-0 h1" href="{{ url_for('main.index') }}" style="color:#0d6efd;">
+                mdwiki.org tools (UNDER TESTING)
+            </a>
+            <div class="d-flex align-items-center order-lg-last">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm ms-2" id="darkModeToggle" type="button"
+                    aria-label="Toggle dark mode">
+                    <i class="bi bi-moon-stars-fill"></i>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav">
+                    <!--
+                        <li class="nav-item col-4 col-lg-auto">
+                            <a class="nav-link py-2 px-0 px-lg-2" href="/Translation_Dashboard/index.php"
+                                target="_blank">
+                                <span class="navtitles">Translation Dashboard</span>
+                            </a>
+                        </li>
+                        -->
+                    <li class="nav-item col-4 col-lg-auto">
+                        <a class="nav-link py-2 px-0 px-lg-2" href="{{ url_for("new_jobs.all_jobs_list")}}">
+                            <span class="navtitles">New Jobs</span>
+                        </a>
+                    </li>
+                    <li class="nav-item col-4 col-lg-auto">
+                        <span class="nav-link py-2 px-0 px-lg-2" id="load_time"></span>
+                    </li>
+                </ul>
+                <hr class="d-lg-none text-dark-subtle text-50">
+                <div class="d-flex align-items-center">
+                    {% if current_user or is_authenticated %}
+                    <span class="navbar-text me-3 text-decoration-none">
+                        {{ current_user.username }}
+                    </span>
+                    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('auth.logout') }}">Logout</a>
+                    {% else %}
+                    <a class="btn btn-outline-success btn-sm" href="{{ url_for('auth.login') }}">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>

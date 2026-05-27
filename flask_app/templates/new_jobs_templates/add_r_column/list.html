@@ -8,15 +8,13 @@
 
 {% block list_info %}
 <p class="text-muted">
-    Add R column to tables. (Placeholder: logic not implemented yet)
+    Add R column to <a href="https://mdwiki.org/wiki/WikiProjectMed:WikiProject_Medicine/Popular_pages" target="_blank">
+        WikiProjectMed:WikiProject Medicine/Popular pages
+    </a> table.
 </p>
 
 <form method="post" action="{{ url_for('new_jobs.start_job_with_args', job_type=job_type) }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-    <div class="mb-3">
-        <label for="titles" class="form-label">Titles (one per line)</label>
-        <textarea class="form-control" id="titles" name="titles" rows="10" placeholder="Enter page titles..."></textarea>
-    </div>
     <button type="submit" class="btn btn-primary">Start Job</button>
 </form>
 {% endblock %}

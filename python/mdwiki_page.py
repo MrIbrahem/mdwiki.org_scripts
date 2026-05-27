@@ -3,7 +3,7 @@
 import functools
 import os
 
-from flask_app.main_app.newapi import AllAPIS
+from flask_app_old.main_app.newapi import AllAPIS
 
 my_username = os.getenv("WIKI_USERNAME")
 mdwiki_pass = os.getenv("WIKI_PASSWORD")
