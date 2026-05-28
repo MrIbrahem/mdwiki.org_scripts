@@ -7,7 +7,6 @@ from __future__ import annotations
 import logging
 from typing import Any, Tuple, Type
 
-import pymysql
 import sqlalchemy
 from flask import Blueprint, Flask, flash, render_template
 from flask_wtf.csrf import CSRFError, CSRFProtect
@@ -96,7 +95,7 @@ def init_app_and_db(app, _db) -> bool:
             # Create database tables and views if they don't exist
             init_db(_db)
         return True
-    except (pymysql.err.OperationalError, sqlalchemy.exc.OperationalError) as exc:
+    except sqlalchemy.exc.OperationalError as exc:
         logger.error(f"Failed to create tables: {exc}")
     except Exception as e:
         logger.error("Failed to create tables: %s", e)
