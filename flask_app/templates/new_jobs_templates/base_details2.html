@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_macros.html" import card_header, get_status_class %}
+{% from "_macros.html" import card_header %}
 
 {% block title %}{% block detail_title %}{% endblock %} Job #{{ job.id }}{% endblock %}
 
@@ -46,9 +46,7 @@
                                 <tr>
                                     <th style="width: 40%">Status:</th>
                                     <td>
-                                        <span class="badge bg-{{ get_status_class(job.status) | trim }}">
-                                            {{ job.status }}
-                                        </span>
+                                        {{ job.status }}
                                     </td>
                                 </tr>
                                 <tr>

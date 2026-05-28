@@ -1,21 +1,5 @@
 {# Shared Jinja macros. #}
 
-{% macro get_status_class(status) %}
-{% set status_classes = {
-    "tagged": "success",
-    "completed": "success",
-    "failed": "danger",
-    "skipped": "warning",
-    "running": "primary",
-    "pending": "secondary",
-    "cancelled": "warning",
-    "error": "danger",
-    } %}
-{% set status_lower = status | lower %}
-{# Return the matched class, or a default class if not found #}
-{{ status_classes[status_lower] if status_lower in status_classes else 'light text-dark' }}
-{% endmacro %}
-
 
 {%- macro csrf() -%}
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -111,3 +95,30 @@
     </div>
 </div>
 {% endmacro %}
+
+
+{% macro get_status_class(status) %}
+{% set status_classes = {
+    "tagged": "success",
+    "completed": "success",
+    "failed": "danger",
+    "skipped": "warning",
+    "running": "primary",
+    "pending": "secondary",
+    "cancelled": "warning",
+    "error": "danger",
+    } %}
+{% set status_lower = status | lower %}
+{# Return the matched class, or a default class if not found #}
+{{ status_classes[status_lower] if status_lower in status_classes else 'light text-dark' }}
+{% endmacro %}
+
+{# status icon #}
+{% macro status_icon(status) %}
+
+{% set class_type = get_status_class(status) %}
+<small
+    class="d-inline-flex px-2 py-1 fw-semibold text-{{ class_type | trim }}-emphasis bg-{{ class_type | trim }}-subtle border border-{{ class_type | trim }}-subtle rounded-2">
+    {{ status | title }}
+</small>
+{%- endmacro -%}

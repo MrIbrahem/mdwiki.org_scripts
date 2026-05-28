@@ -1,5 +1,5 @@
 {% extends "new_jobs_templates/base_details2.html" %}
-{% from "_macros.html" import card_header, get_status_class %}
+{% from "_macros.html" import card_header, status_icon %}
 
 {% set job_type = 'add_r_column' %}
 
@@ -35,7 +35,7 @@
                 <td><strong>Status</strong></td>
                 {% for stage_key, stage in stages %}
                 <td>
-                    <span class="badge bg-{{ get_status_class(stage.status) | trim }}">{{ stage.status }}</span>
+                    {{ status_icon(stage.status) }}
                 </td>
                 {% endfor %}
             </tr>
