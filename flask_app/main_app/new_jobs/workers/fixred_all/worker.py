@@ -13,13 +13,11 @@ from typing import Any, Dict
 
 import mwclient
 
-from ....shared.fixref_shared.fixred_worker import work_on_text
-
-from ....shared.fixred_one import RunState
-
 from ....api_services.clients import get_user_site
 from ....api_services.pages_api import edit_page, get_page_text, is_page_exists
 from ....new_jobs.base_worker_object import BaseObjectsJobWorker
+from ....shared.fixred_one import RunState
+from ....shared.fixref_shared.fixred_worker import work_on_text
 from .objects import FixredAllWorkerObject
 
 logger = logging.getLogger(__name__)

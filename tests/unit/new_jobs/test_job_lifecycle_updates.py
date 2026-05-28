@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import threading
 from typing import Any, Dict
-from flask_app.main_app.new_jobs.base_worker_object import BaseObjectsJobWorker, WorkerObject
-from flask_app.main_app.db.services.jobs_service import create_job, cancel_job, is_job_cancelled
+
 from flask_app.main_app.db.models.jobs import JobRecord
+from flask_app.main_app.db.services.jobs_service import cancel_job, create_job, is_job_cancelled
 from flask_app.main_app.extensions import db
+from flask_app.main_app.new_jobs.base_worker_object import BaseObjectsJobWorker, WorkerObject
+
 
 class MockWorker(BaseObjectsJobWorker):
     def get_job_type(self) -> str:
@@ -17,6 +19,7 @@ class MockWorker(BaseObjectsJobWorker):
     def process(self) -> Dict[str, Any]:
         return self.result_object.to_json()
 
+
 def test_before_run_updates_status(app):
     with app.app_context():
         job = create_job("mock_job", "test_user")
@@ -26,6 +29,7 @@ def test_before_run_updates_status(app):
         worker.before_run()
         # This is expected to fail currently based on the issue description
         assert worker.result_object.status == "running"
+
 
 def test_is_job_cancelled_detects_external_change(app):
     with app.app_context():
@@ -52,12 +56,13 @@ def test_is_job_cancelled_detects_external_change(app):
         # IF it passes, it means scalar() bypasses the identity map or it's not in it.
         # But let's try to get the record again via ORM.
         job_after = db.session.query(JobRecord).get(job.id)
-        assert job_after.status == "pending" # It is stale here!
+        assert job_after.status == "pending"  # It is stale here!
 
         assert is_job_cancelled(job.id, "mock_job") is True
 
         # After is_job_cancelled calls refresh, job_after should also be updated if it's the same object
         assert job_after.status == "cancelled"
+
 
 def test_is_cancelled_sets_cancelled_at(app):
     with app.app_context():

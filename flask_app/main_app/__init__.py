@@ -7,7 +7,9 @@ from __future__ import annotations
 import logging
 from typing import Any, Tuple, Type
 
-from flask import Flask, flash, render_template
+import pymysql
+import sqlalchemy
+from flask import Blueprint, Flask, flash, render_template
 from flask_wtf.csrf import CSRFError, CSRFProtect
 
 from .app_routes import register_blueprints
@@ -26,7 +28,12 @@ def context_user() -> dict[str, any]:
     """
     used in @app.context_processor
     """
-    user = current_user()
+    try:
+        user = current_user()
+    except Exception as e:
+        logger.error("Error getting current user: %s", e)
+        user = None
+
     return {
         "current_user": user,
         "is_authenticated": user is not None,
@@ -80,6 +87,23 @@ def register_error_pages(app: Flask):
         return render_template("index.html", title="Session Expired"), 400
 
 
+def init_app_and_db(app, _db) -> bool:
+    _db.init_app(app)
+    migrate.init_app(app, _db)
+
+    try:
+        with app.app_context():
+            # Create database tables and views if they don't exist
+            init_db(_db)
+        return True
+    except (pymysql.err.OperationalError, sqlalchemy.exc.OperationalError) as exc:
+        logger.error(f"Failed to create tables: {exc}")
+    except Exception as e:
+        logger.error("Failed to create tables: %s", e)
+
+    return False
+
+
 def create_app(config_class: Type) -> Flask:
     """Instantiate and configure the Flask application.
 
@@ -108,23 +132,30 @@ def create_app(config_class: Type) -> Flask:
     # Initialize CSRF protection
     csrf = CSRFProtect(app)  # noqa: F841
 
-    # Initialize Flask-SQLAlchemy and Flask-Migrate
-    if app.config.get("SQLALCHEMY_DATABASE_URI"):
-        _db.init_app(app)
-        migrate.init_app(app, _db)
-
-        # Create database tables and views if they don't exist
-        init_db(app, _db)
-
     @app.context_processor
     def _inject_user() -> dict[str, Any]:
         return context_user()
+
+    db_is_ok = True
+    # Initialize Flask-SQLAlchemy and Flask-Migrate
+    if app.config.get("SQLALCHEMY_DATABASE_URI"):
+        db_is_ok = init_app_and_db(app, _db)
 
     # app.jinja_env.filters["format_stage_timestamp"] = format_stage_timestamp
     # app.jinja_env.filters["short_url"] = short_url
 
     register_error_pages(app)
-    register_blueprints(app)
-    app.register_blueprint(bp_auth)
+
+    if db_is_ok:
+        register_blueprints(app)
+        app.register_blueprint(bp_auth)
+    else:
+        bp_main = Blueprint("main", __name__)
+
+        @bp_main.route("/", methods=["GET"])
+        def index() -> str:
+            return render_template("index_db_error.html")
+
+        app.register_blueprint(bp_main)
 
     return app
