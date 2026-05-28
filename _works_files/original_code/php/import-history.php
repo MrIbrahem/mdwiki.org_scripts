@@ -39,7 +39,7 @@ function make_form($title, $titlelist)
     // ---
     $codeNote = (!$valid_user && !empty($GLOBALS['global_username'])) ? "<span style='font-size:12pt;color:red'> Access denied.</span>" : '';
     // ---
-    $start_icon = (empty($GLOBALS['global_username'])) ? '<a role="button" class="btn btn-primary" href="/auth/login.php">Log in</a>' : "";
+    $start_icon = (empty($GLOBALS['global_username'])) ? '<a role="button" class="btn btn-outline-primary" href="/auth/login.php">Log in</a>' : "";
     // ---
     if ($valid_user) {
         $start_icon = "<input class='btn btn-outline-primary' type='submit' value='send'>";

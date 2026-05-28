@@ -13,7 +13,7 @@
                 <form method="POST" action="{{ url_for('new_jobs.cancel_job', job_type=job_type, job_id=job.id) }}"
                     onsubmit="return confirm('Are you sure you want to cancel this job?');">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                    <button type="submit" class="btn btn-warning">
+                    <button type="submit" class="btn btn-outline-warning">
                         <i class="bi bi-x-circle"></i> Cancel Job
                     </button>
                 </form>

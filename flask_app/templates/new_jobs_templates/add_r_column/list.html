@@ -15,6 +15,6 @@
 
 <form method="post" action="{{ url_for('new_jobs.start_job_with_args', job_type=job_type) }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-    <button type="submit" class="btn btn-primary">Start Job</button>
+    <button type="submit" class="btn btn-outline-primary">Start Job</button>
 </form>
 {% endblock %}

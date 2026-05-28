@@ -64,7 +64,7 @@ function generateForm($find, $replace, $number)
         generateRadioButton('customRadio', 'listtype', 'oldlist', 'Work in all pages');
 
     // ---
-    $start_icon = (empty($username)) ? '<a role="button" class="btn btn-primary" href="/auth/login.php">Log in</a>' : "";
+    $start_icon = (empty($username)) ? '<a role="button" class="btn btn-outline-primary" href="/auth/login.php">Log in</a>' : "";
     // ---
     if ($valid_user) {
         $start_icon = "<input class='btn btn-outline-primary' type='submit' value='send'>";

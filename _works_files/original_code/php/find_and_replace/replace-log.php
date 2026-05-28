@@ -35,12 +35,12 @@ include_once __DIR__ . '/../header.php';
 //---
 $id = $_GET['id'] ?? "";
 //---
-$restart_text = "<a href='job.php?id=$id&to=restart' class='btn btn-primary' target='_blank'>Restart</a>";
+$restart_text = "<a href='job.php?id=$id&to=restart' class='btn btn-outline-primary' target='_blank'>Restart</a>";
 // ---
 $done_file = $id_dir = __DIR__ . "/find/$id/done.txt";
 // ---
 if (!is_file($done_file)) {
-    $restart_text = "<a href='job.php?id=$id&to=stop' class='btn btn-danger' target='_blank'>Stop</a>";
+    $restart_text = "<a href='job.php?id=$id&to=stop' class='btn btn-outline-danger' target='_blank'>Stop</a>";
 }
 // ---
 $strs = "Log file for id:$id $restart_text";
