@@ -40,9 +40,8 @@
                         <td>{{ job.started_at.strftime('%H:%M:%S') if job.started_at else '-' }}</td>
                         <td>{{ job.completed_at.strftime('%H:%M:%S') if job.completed_at else '-' }}</td>
                         <td class="text-center">
-                            <a href="{{ url_for('new_jobs.job_detail', job_type=job.job_type, job_id=job.id) }}"
-                                class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-eye"></i> View
+                            <a href="{{ url_for('new_jobs.job_detail', job_type=job.job_type, job_id=job.id) }}">
+                                Details
                             </a>
                         </td>
                     </tr>
