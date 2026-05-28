@@ -41,9 +41,8 @@ def init_db(_db) -> None:
             if table.name in existing_views:
                 continue
             try:
-                create_sql = table.info["create_query"]
-                conn.execute(text(create_sql))
-                conn.commit()
+                with conn.begin():
+                    create_sql = table.info["create_query"]
+                    conn.execute(text(create_sql))
             except Exception:
-                conn.rollback()
-                logger.exception(f"Failed to create view {table.name}")
+                logger.exception("Failed to create view %s", table.name)

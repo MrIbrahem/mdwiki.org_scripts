@@ -96,7 +96,7 @@ def init_app_and_db(app, _db) -> bool:
             init_db(_db)
         return True
     except sqlalchemy.exc.OperationalError as exc:
-        logger.error(f"Failed to create tables: {exc}")
+        logger.error("Failed to create tables: %s", exc)
     except Exception as e:
         logger.error("Failed to create tables: %s", e)
 
@@ -149,12 +149,11 @@ def create_app(config_class: Type) -> Flask:
         register_blueprints(app)
         app.register_blueprint(bp_auth)
     else:
-        bp_main = Blueprint("main", __name__)
-
-        @bp_main.route("/", methods=["GET"])
-        def index() -> str:
-            return render_template("index_db_error.html")
-
-        app.register_blueprint(bp_main)
+        @app.before_request
+        def db_error_fallback():
+            from flask import request
+            if request.endpoint == "static":
+                return None
+            return render_template("index_db_error.html"), 503
 
     return app
