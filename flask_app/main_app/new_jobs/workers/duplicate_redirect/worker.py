@@ -2,6 +2,10 @@
 Worker module for duplicate_redirect.
 
 Migrated from flask_app/main_app/jobs/workers/fix_duplicate.py.
+
+https://mdwiki.org/wiki/Special:DoubleRedirects:
+WPM:Wiki Project Med/Board (redirect) → WikiProjectMed:Wiki Project Med/Board (redirect) → WikiProjectMed:Board (not redirect)
+
 """
 
 from __future__ import annotations
@@ -24,6 +28,38 @@ from ....new_jobs.base_worker_object import BaseObjectsJobWorker
 from ...shared_objects import SharedworkerObject
 
 logger = logging.getLogger(__name__)
+
+def resolve_redirect_chains(redirects: list[dict]) -> list[dict]:
+    """
+    Resolves a list of redirects into a dictionary tracking the immediate
+    and final targets, excluding any intermediate or final pages from the root keys.
+    """
+    # Create a fast lookup mapping and track all pages that are pointed 'to'
+    redirect_map = {item["from"]: item["to"] for item in redirects}
+    all_targets = {item["to"] for item in redirects}
+
+    resolved_dict = []
+
+    # Process only the root starting pages
+    for start_page in redirect_map.keys():
+        if start_page in all_targets:
+            continue  # Skip intermediate or final pages
+
+        immediate_redirect = redirect_map[start_page]
+
+        # Follow the chain to the absolute final destination
+        final_target = immediate_redirect
+        while final_target in redirect_map:
+            final_target = redirect_map[final_target]
+
+        page_data = {
+            "title": start_page,
+            "redirect_to": immediate_redirect,
+            "final_target": final_target
+        }
+        resolved_dict.append(page_data)
+
+    return resolved_dict
 
 
 class DuplicateRedirectWorker(BaseObjectsJobWorker):
@@ -61,8 +97,8 @@ class DuplicateRedirectWorker(BaseObjectsJobWorker):
             return self.result_object
 
         # Get all double redirects
-        redirects = get_double_redirects(self.site)
-        from_to = {e["from"]: e["to"] for e in redirects if "from" in e and "to" in e}
+        redirects_data = get_double_redirects(self.site)
+        redirects = resolve_redirect_chains(redirects_data)
 
         total = len(redirects)
         self.result_object.summary.total = total
@@ -70,38 +106,20 @@ class DuplicateRedirectWorker(BaseObjectsJobWorker):
 
         logger.info(f"Job {self.job_id}: Loaded {len(redirects)} redirects, processing {total}")
 
+        # for nu, (from_title, data) in enumerate(results.items(), start=1):
         for i, entry in enumerate(redirects, start=1):
             if self.is_cancelled():
                 break
 
-            from_title = entry.get("from", "")
-            intermediate = entry.get("to", "")
-            seen = {from_title, intermediate}
-            curr = intermediate
-            while curr in from_to:
-                next_target = from_to[curr]
-                if next_target in seen:
-                    break
-                seen.add(next_target)
-                curr = next_target
-            final_target = curr
+            # { "title": start_page, "redirect_to": immediate_redirect, "final_target": final_target }
+            from_title   = entry["title"]
+            redirect_to  = entry["redirect_to"]
+            final_target = entry["final_target"]
 
             self.result_object.summary.scanned += 1
 
-            if not from_title or not final_target:
-                self.result_object.summary.skipped += 1
-                self.result_object.pages_processed.append(
-                    {
-                        "from_title": from_title,
-                        "to_title": final_target,
-                        "status": "skipped",
-                        "msg": "not a double redirect",
-                    }
-                )
-                continue
-
             try:
-                outcome = self._fix_one(from_title, final_target)
+                outcome = self._fix_one(from_title, redirect_to, final_target)
             except Exception as exc:
                 logger.exception("failed for %s -> %s", from_title, final_target)
                 self.result_object.summary.errors += 1
@@ -145,21 +163,27 @@ class DuplicateRedirectWorker(BaseObjectsJobWorker):
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _fix_one(self, from_title: str, final_target: str) -> str:
-        """Treat one double redirect; return a short outcome label."""
+    def _fix_one(self, from_title: str, redirect_to: str, final_target: str) -> str:
+        """
+        Treat one double redirect; return a short outcome label.
+        """
         if not is_page_exists(from_title, self.site):
             return "missing"
 
         oldtext = get_page_text(from_title, self.site) or ""
+
+        # TODO: replace only the link not the whole text, use wikitextparser to analyze the text
         newtext = f"#REDIRECT [[{final_target}]]"
 
         if oldtext == newtext:
             return "no_changes"
 
         summary = f"fix duplicate redirect to [[{final_target}]]"
+
         result = edit_page(self.site, from_title, newtext, summary)
         if result.get("success"):
             return "changed"
+
         return "errors"
 
 
