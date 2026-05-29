@@ -52,10 +52,32 @@ def format_short_date(value: str | datetime, default: str = "") -> str:
         default=default,
     )
 
+def get_status_class(status):
+    status_classes = {
+        "running": "primary",
+
+        "imported": "success",
+        "imported_fallback": "success",
+        "completed": "success",
+        "changed": "success",
+
+        "missing": "warning",
+        "skipped": "warning",
+        "cancelled": "warning",
+
+        "failed": "danger",
+        "error": "danger",
+        "errors": "danger",
+
+        "pending": "secondary",
+        "no_changes": "secondary",
+    }
+    return status_classes.get(str(status).lower(), 'secondary')
 
 filters = {
     "format_long_date": format_long_date,
     "format_short_date": format_short_date,
+    "get_status_class": get_status_class,
 }
 
 __all__ = [
