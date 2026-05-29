@@ -54,7 +54,12 @@
                     {% for item in fixed_pages %}
                     <tr>
                         <td>{{ loop.index }}</td>
-                        <td>{{ item.title if item.title else '-' }}</td>
+                        <td>
+                            <a href="https://{{ wiki_domain }}/wiki/{{ item.title | replace(' ', '_') | urlencode }}"
+                                target="_blank">
+                                {{ item.title }}
+                            </a>
+                        </td>
                         <td>
                             <a href="https://{{ wiki_domain }}/w/index.php?oldid={{ item.newrevid }}&diff=pref"
                                 target="_blank">
@@ -90,7 +95,12 @@
                     {% for item in remaining_pages %}
                     <tr>
                         <td>{{ loop.index }}</td>
-                        <td>{{ item.title if item.title else '-' }}</td>
+                        <td>
+                            <a href="https://{{ wiki_domain }}/wiki/{{ item.title | replace(' ', '_') | urlencode }}"
+                                target="_blank">
+                                {{ item.title }}
+                            </a>
+                        </td>
                         <td>
                             {{ status_icon(item.status) }}
                         </td>
