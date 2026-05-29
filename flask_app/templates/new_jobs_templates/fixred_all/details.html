@@ -13,7 +13,7 @@
         {{ stats_card('Processing', result_data.summary.scanned ~ ' / ' ~ result_data.summary.total, "primary", "") }}
     </div>
     <div class="col-md-3">
-        {{ stats_card('Fixed', result_data.summary.fixed, "success", "") }}
+        {{ stats_card('Changed', result_data.summary.fixed, "success", "") }}
     </div>
     <div class="col-md-2">
         {{ stats_card('No Changes', result_data.summary.no_changes, "secondary", "") }}
@@ -31,13 +31,13 @@
 {% block job_details %}
 {% if result_data and result_data.pages_processed %}
 
-{% set fixed_pages = result_data.pages_processed | selectattr("status", "equalto", "fixed") | list %}
+{% set changed_pages = result_data.pages_processed | selectattr("status", "equalto", "fixed") | list %}
 {% set remaining_pages = result_data.pages_processed | rejectattr("status", "equalto", "fixed") | list %}
 
-{% if fixed_pages %}
+{% if changed_pages %}
 <div class="card mb-3">
     <div class="card-header">
-        {{ card_header("Fixed Pages (" ~ fixed_pages|length ~ ")") }}
+        {{ card_header("Changed Pages (" ~ changed_pages|length ~ ")") }}
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -51,7 +51,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in fixed_pages %}
+                    {% for item in changed_pages %}
                     <tr>
                         <td>{{ loop.index }}</td>
                         <td>
@@ -61,7 +61,7 @@
                             </a>
                         </td>
                         <td>
-                            <a href="https://{{ wiki_domain }}/w/index.php?oldid={{ item.newrevid }}&diff=pref"
+                            <a href="https://{{ wiki_domain }}/w/index.php?diff={{ item.newrevid }}"
                                 target="_blank">
                                 Diff
                             </a>
@@ -86,7 +86,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Page</th>
+                        <th>Title</th>
                         <th>Status</th>
                         <th>Message</th>
                     </tr>
@@ -110,18 +110,6 @@
                 </tbody>
             </table>
         </div>
-    </div>
-</div>
-
-{% endif %}
-
-{% if result_data and result_data.args %}
-<div class="card mb-3">
-    <div class="card-header">
-        {{ card_header("Job Arguments") }}
-    </div>
-    <div class="card-body">
-        <pre class="mb-0"><code>{{ result_data.args | tojson(indent=2) }}</code></pre>
     </div>
 </div>
 {% endif %}

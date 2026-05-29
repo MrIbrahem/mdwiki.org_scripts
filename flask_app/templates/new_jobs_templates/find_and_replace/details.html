@@ -62,7 +62,7 @@
                             </a>
                         </td>
                         <td>
-                            <a href="https://{{ wiki_domain }}/w/index.php?oldid={{ item.newrevid }}&diff=pref"
+                            <a href="https://{{ wiki_domain }}/w/index.php?diff={{ item.newrevid }}"
                                 target="_blank">
                                 Diff
                             </a>
@@ -105,7 +105,7 @@
                         <td>
                             {{ status_icon(item.status) }}
                         </td>
-                        <td><small>{{ item.msg }}</small></td>
+                        <td><small>{{ item.msg if item.msg else '' }}</small></td>
                     </tr>
                     {% endfor %}
                 </tbody>
