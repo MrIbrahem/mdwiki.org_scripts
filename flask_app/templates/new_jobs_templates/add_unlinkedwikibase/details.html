@@ -50,7 +50,12 @@
                     {% for item in result_data.pages_processed %}
                     <tr>
                         <td>{{ loop.index }}</td>
-                        <td>{{ item.title }}</td>
+                        <td>
+                            <a href="https://{{ wiki_domain }}/wiki/{{ item.title | replace(' ', '_') | urlencode }}"
+                                target="_blank">
+                                {{ item.title }}
+                            </a>
+                        </td>
                         <td>
                             {{ status_icon(item.status) }}
                         </td>
