@@ -57,12 +57,12 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
             self.result_object.failed_at = datetime.now().isoformat()
             return self.result_object
 
-        find = self.args.get("find", "")
+        str_find = self.args.get("find", "")
         replace = self.args.get("replace", "")
         listtype = self.args.get("listtype", "newlist")
         number = self.args.get("number")
 
-        if not find:
+        if not str_find:
             self.result_object.status = "failed"
             self.result_object.error = "`find` cannot be empty."
             return self.result_object
@@ -74,7 +74,7 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
 
         self.result_object.summary.cap = cap
 
-        titles = self._resolve_titles(find, listtype)
+        titles = self._resolve_titles(str_find, listtype)
         total = len(titles)
         self.result_object.summary.total = total
         per_item = self.get_priority(total) if total else 1
@@ -92,7 +92,7 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
             self.result_object.summary.scanned += 1
 
             try:
-                outcome = self._process_one(title, find, replace)
+                outcome = self._process_one(title, str_find, replace)
             except Exception as exc:
                 logger.exception("replace failed for %s", title)
                 self.result_object.summary.errors += 1
@@ -134,14 +134,17 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _resolve_titles(self, find: str, listtype: str) -> list[str]:
+    def _resolve_titles(self, str_find: str, listtype: str) -> list[str]:
         """Pick the page list to walk based on *listtype*."""
         if listtype == "newlist":
-            return search_pages(find, self.site, namespace=0, limit="max")
+            # return search_pages(str_find, self.site, namespace=0, limit="max")
+            return self.site.search(str_find, namespace=None, what=None, redirects=False,
+            max_items=None, api_chunk_size=None)
+
         # oldlist: walk every mainspace page.
         return [p.name for p in self.site.allpages(namespace=0)]
 
-    def _process_one(self, title: str, find: str, replace: str) -> str:
+    def _process_one(self, title: str, str_find: str, replace: str) -> str:
         """Return one of: ``missing``, ``no-changes``, ``changed``, ``error``."""
         if not is_page_exists(title, self.site):
             return "missing"
@@ -150,7 +153,7 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
         if not text or not text.strip():
             return "no-changes"
 
-        new_text = text.replace(find, replace)
+        new_text = text.replace(str_find, replace)
         if new_text == text:
             return "no-changes"
 
