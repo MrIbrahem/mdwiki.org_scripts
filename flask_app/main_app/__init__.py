@@ -8,13 +8,16 @@ import logging
 from typing import Any, Tuple, Type
 
 import sqlalchemy
-from flask import Blueprint, Flask, flash, render_template
+from flask import Flask, flash, render_template
 from flask_wtf.csrf import CSRFError, CSRFProtect
+
+from .db.services import active_coordinators
 
 from .app_routes import register_blueprints
 from .app_routes.auth.routes import bp_auth
 from .config import settings
 from .core.cookies import CookieHeaderClient
+from .core.jinja_filters import filters
 from .db import init_db
 from .extensions import db as _db
 from .extensions import migrate
@@ -33,10 +36,12 @@ def context_user() -> dict[str, any]:
         logger.error("Error getting current user: %s", e)
         user = None
 
+    username = user.username if user else None
     return {
         "current_user": user,
         "is_authenticated": user is not None,
-        "username": user.username if user else None,
+        "username": username,
+        "is_admin": bool(user and user.username in active_coordinators()),
         "wiki_domain": settings.other.wiki_domain,
         "static_server": settings.other.static_server,
     }
@@ -140,8 +145,7 @@ def create_app(config_class: Type) -> Flask:
     if app.config.get("SQLALCHEMY_DATABASE_URI"):
         db_is_ok = init_app_and_db(app, _db)
 
-    # app.jinja_env.filters["format_stage_timestamp"] = format_stage_timestamp
-    # app.jinja_env.filters["short_url"] = short_url
+    app.jinja_env.filters.update(filters)
 
     register_error_pages(app)
 
