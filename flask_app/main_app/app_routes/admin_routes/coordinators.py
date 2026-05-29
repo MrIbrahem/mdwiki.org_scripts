@@ -49,12 +49,19 @@ def _add_coordinator() -> ResponseReturnValue:
 
     try:
         record = admin_service.add_coordinator(username)
+    except IntegrityError as exc:  # pragma: no cover - defensive guard
+        if "a foreign key constraint fails" in str(exc):
+            logger.error("IntegrityError: %s", exc)
+            flash(f"Can't add coordinator. User: {username} does not exist.", "warning")
+        else:
+            logger.error("Unable to add coordinator.")
+            flash("Unable to add coordinator.", "danger")
     except (LookupError, ValueError) as exc:
         logger.exception("Unable to Add coordinator.")
         flash(str(exc), "warning")
     except Exception:  # pragma: no cover - defensive guard
         logger.exception("Unable to add coordinator.")
-        flash("Unable to add coordinator. Please try again.", "danger")
+        flash("Unable to add coordinator.", "danger")
     else:
         flash(f"Coordinator '{record.username}' added.", "success")
 
