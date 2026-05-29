@@ -58,39 +58,6 @@
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
-        <div class="card border-warning h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title mb-0">Pending</h6>
-                        <h2 class="mb-0">{{ stats.pending }}</h2>
-                    </div>
-                    <i class="bi bi-hourglass-split fs-1 opacity-50"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{% if stats.running > 0 or stats.cancelled > 0 %}
-<div class="row g-3 mb-4">
-    {% if stats.running > 0 %}
-    <div class="col-lg-3 col-md-6">
-        <div class="card border-info h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title mb-0">Running</h6>
-                        <h2 class="mb-0">{{ stats.running }}</h2>
-                    </div>
-                    <i class="bi bi-play-circle fs-1 opacity-50"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-    {% if stats.cancelled > 0 %}
-    <div class="col-lg-3 col-md-6">
         <div class="card border-secondary h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -103,9 +70,7 @@
             </div>
         </div>
     </div>
-    {% endif %}
 </div>
-{% endif %}
 
 <div class="card">
     <div class="card-header fw-bold d-flex justify-content-between align-items-center">
@@ -123,7 +88,7 @@
                         <th>Status</th>
                         <th>Started</th>
                         <th>Completed</th>
-                        <th></th>
+                        <th>Details</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -139,23 +104,14 @@
                             {{ status_icon(job.status) }}
                         </td>
                         <td>
-                            {% if job.started_at %}
-                            <small>{{ job.started_at.strftime('%Y-%m-%d %H:%M') }}</small>
-                            {% else %}
-                            <small class="text-muted">---</small>
-                            {% endif %}
+                            {{ job.started_at | format_long_date("-") }}
                         </td>
                         <td>
-                            {% if job.completed_at %}
-                            <small>{{ job.completed_at.strftime('%Y-%m-%d %H:%M') }}</small>
-                            {% else %}
-                            <small class="text-muted">---</small>
-                            {% endif %}
+                            {{ job.completed_at | format_long_date("-") }}
                         </td>
                         <td>
-                            <a href="{{ url_for('new_jobs.job_detail', job_type=job.job_type, job_id=job.id) }}"
-                                class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-eye"></i>
+                            <a href="{{ url_for('new_jobs.job_detail', job_type=job.job_type, job_id=job.id) }}">
+                                Details
                             </a>
                         </td>
                     </tr>

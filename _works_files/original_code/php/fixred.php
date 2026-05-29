@@ -22,7 +22,7 @@ HTML;
 //---
 $start_icon = "<input class='btn btn-outline-primary' type='submit' value='send'>";
 // ---
-if (empty($GLOBALS['global_username'])) $start_icon = '<a role="button" class="btn btn-primary" href="/auth/login.php">Log in</a>';
+if (empty($GLOBALS['global_username'])) $start_icon = '<a role="button" class="btn btn-outline-primary" href="/auth/login.php">Log in</a>';
 // ---
 echo <<<HTML
 	<form action='fixred.php' method='GET'>

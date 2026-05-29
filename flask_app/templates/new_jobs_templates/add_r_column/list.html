@@ -1,4 +1,5 @@
 {% extends "new_jobs_templates/base_list2.html" %}
+{% from "_macros.html" import csrf %}
 
 {% set job_type = 'add_r_column' %}
 {% set hide_start_button = '1' %}
@@ -13,8 +14,16 @@
     </a> table.
 </p>
 
-<form method="post" action="{{ url_for('new_jobs.start_job_with_args', job_type=job_type) }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-    <button type="submit" class="btn btn-primary">Start Job</button>
+{% endblock %}
+
+{% block header_actions %}
+<form method="post" action="{{ url_for('new_jobs.start_job_with_args', job_type=job_type) }}" class="d-inline">
+    {{ csrf() }}
+    <button type="submit" class="btn btn-outline-primary"
+        data-confirm-message="Run background job to update add R column to WikiProjectMed:WikiProject Medicine/Popular page?"
+        onclick="return confirm(this.dataset.confirmMessage);">
+        <i class="bi bi-play-circle"></i>
+        Start New Job
+    </button>
 </form>
 {% endblock %}

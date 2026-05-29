@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_macros.html" import status_icon%}
+{% from "_macros.html" import status_icon, csrf %}
 
 {% block title %}{% block list_title %}{% endblock %}{% endblock %}
 
@@ -12,13 +12,12 @@
                 {% block header_actions %}{% endblock %}
                 {% if not hide_start_button %}
                 <form method="post" action="{{ url_for('new_jobs.start_job', job_type=job_type) }}" class="d-inline">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    {{ csrf() }}
                     <button type="submit" class="btn btn-outline-primary"
                         data-confirm-message="{% block start_confirm_message %}{% endblock %}"
                         onclick="return confirm(this.dataset.confirmMessage);">
                         <i class="bi {% block start_icon %}bi-play-circle{% endblock %}"></i>
-                        {% block start_text %}Start
-                        New Job{% endblock %}
+                        {% block start_text %}Start New Job{% endblock %}
                     </button>
                 </form>
                 {% endif %}
@@ -46,26 +45,27 @@
                             <td>{{ loop.index }}</td>
                             <td>{{ job.id }}</td>
                             <td>
-                                {{ status_icon(job.status) }}
+                                {{ job.status }}
+                                {# status_icon(job.status) #}
                             </td>
                             <td>{{ job.username if job.username else '-' }}</td>
-                            <td>{{ job.created_at.strftime('%Y-%m-%d %H:%M:%S') if job.created_at else '-' }}</td>
-                            <td>{{ job.started_at.strftime('%H:%M:%S') if job.started_at else '-' }}</td>
-                            <td>{{ job.completed_at.strftime('%H:%M:%S') if job.completed_at else '-' }}</td>
+                            <td>{{ job.created_at | format_long_date("-") }}</td>
+                            <td>{{ job.started_at | format_short_date("-") }}</td>
+                            <td>{{ job.completed_at | format_short_date("-") }}</td>
                             <td class="text-center">
-                                <div class="btn-group">
+                                <div class="d-flex gap-2 btn-group">
                                     <a href="{{ url_for('new_jobs.job_detail', job_type=job_type, job_id=job.id) }}"
                                         class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-eye"></i> View
+                                        Details
                                     </a>
                                     {% if (current_user.username == job.username) and (job.status == 'running' or job.status == 'pending') %}
                                     <form method="POST"
                                         action="{{ url_for('new_jobs.cancel_job', job_type=job_type, job_id=job.id) }}"
                                         class="d-inline">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                                        <button type="submit" class="btn btn-outline-warning btn-sm"
+                                        {{ csrf() }}
+                                        <button type="submit" class="btn btn-outline-warning btn-sm text-muted"
                                             onclick="return confirm('Are you sure you want to cancel this job?');">
-                                            <i class="bi bi-x-circle"></i> Cancel
+                                            Cancel
                                         </button>
                                     </form>
                                     {% endif %}
@@ -73,7 +73,7 @@
                                     <form method="POST"
                                         action="{{ url_for('new_jobs.delete_job', job_type=job_type, job_id=job.id) }}"
                                         class="d-inline">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                        {{ csrf() }}
                                         <button type="submit" class="btn btn-outline-danger btn-sm"
                                             onclick="return confirm('Are you sure you want to delete this job?');">
                                             <i class="bi bi-trash"></i> Delete

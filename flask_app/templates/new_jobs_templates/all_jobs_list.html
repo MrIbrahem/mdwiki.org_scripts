@@ -35,14 +35,27 @@
                         <td>
                             {{ status_icon(job.status) }}
                         </td>
-                        <td>{{ job.username if job.username else '-' }}</td>
-                        <td>{{ job.created_at.strftime('%Y-%m-%d %H:%M:%S') if job.created_at else '-' }}</td>
-                        <td>{{ job.started_at.strftime('%H:%M:%S') if job.started_at else '-' }}</td>
-                        <td>{{ job.completed_at.strftime('%H:%M:%S') if job.completed_at else '-' }}</td>
+                        <td>
+                            {% if job.username %}
+                            <a href="{{ url_for('profile.user_dashboard', user_name=job.username) }}">
+                                <span class="">{{ job.username }}</span>
+                            </a>
+                            {% else %}
+                            {{ job.username if job.username else '-' }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ job.created_at | format_long_date("-") }}
+                        </td>
+                        <td>
+                            {{ job.started_at | format_short_date("-") }}
+                        </td>
+                        <td>
+                            {{ job.completed_at | format_short_date("-") }}
+                        </td>
                         <td class="text-center">
-                            <a href="{{ url_for('new_jobs.job_detail', job_type=job.job_type, job_id=job.id) }}"
-                                class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-eye"></i> View
+                            <a href="{{ url_for('new_jobs.job_detail', job_type=job.job_type, job_id=job.id) }}">
+                                Details
                             </a>
                         </td>
                     </tr>

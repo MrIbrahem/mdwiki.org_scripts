@@ -8,14 +8,15 @@ import logging
 from typing import Any, Tuple, Type
 
 import sqlalchemy
-from flask import Blueprint, Flask, flash, render_template
+from flask import Flask, flash, render_template
 from flask_wtf.csrf import CSRFError, CSRFProtect
 
 from .app_routes import register_blueprints
-from .app_routes.auth.routes import bp_auth
 from .config import settings
 from .core.cookies import CookieHeaderClient
+from .core.jinja_filters import filters
 from .db import init_db
+from .db.services import active_coordinators
 from .extensions import db as _db
 from .extensions import migrate
 from .su_services.users_service import current_user
@@ -33,10 +34,12 @@ def context_user() -> dict[str, any]:
         logger.error("Error getting current user: %s", e)
         user = None
 
+    username = user.username if user else None
     return {
         "current_user": user,
         "is_authenticated": user is not None,
-        "username": user.username if user else None,
+        "username": username,
+        "is_admin": bool(user and user.username in active_coordinators()),
         "wiki_domain": settings.other.wiki_domain,
         "static_server": settings.other.static_server,
     }
@@ -135,23 +138,33 @@ def create_app(config_class: Type) -> Flask:
     def _inject_user() -> dict[str, Any]:
         return context_user()
 
+    app.jinja_env.filters.update(filters)
+
+    @app.teardown_appcontext
+    def _cleanup_connections(exception: Exception | None) -> None:  # pragma: no cover - teardown
+        # Idempotent teardown - safe for Flask 3.1.2+ stream_with_context regression
+        # See: https://github.com/pallets/flask/issues/5804
+        # try:
+        #     close_cached_db()
+        # except Exception:
+        #     logger.debug("Failed to close cached DB during teardown", exc_info=True)
+        pass
+
     db_is_ok = True
     # Initialize Flask-SQLAlchemy and Flask-Migrate
     if app.config.get("SQLALCHEMY_DATABASE_URI"):
         db_is_ok = init_app_and_db(app, _db)
 
-    # app.jinja_env.filters["format_stage_timestamp"] = format_stage_timestamp
-    # app.jinja_env.filters["short_url"] = short_url
-
     register_error_pages(app)
 
     if db_is_ok:
         register_blueprints(app)
-        app.register_blueprint(bp_auth)
     else:
+
         @app.before_request
         def db_error_fallback():
             from flask import request
+
             if request.endpoint == "static":
                 return None
             return render_template("index_db_error.html"), 503

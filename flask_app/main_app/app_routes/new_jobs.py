@@ -18,7 +18,8 @@ from flask import (
 from flask.typing import ResponseReturnValue
 from werkzeug.wrappers.response import Response
 
-from ..db.services import (  # active_coordinators,
+from ..db.services import (
+    active_coordinators,
     delete_job,
     get_job,
     list_jobs,
@@ -43,7 +44,8 @@ def _can_manage_job(job: Any, user: Any) -> bool:
     """
     if not user:
         return False
-    # if user.username in active_coordinators(): return True
+    if user.username in active_coordinators():
+        return True
     if job.username and job.username == user.username:
         return True
     return False

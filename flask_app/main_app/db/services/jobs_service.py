@@ -3,9 +3,10 @@ from __future__ import annotations
 import logging
 from datetime import UTC, datetime
 
+from sqlalchemy import func
+
 from ...extensions import db
 from ..models.jobs import JobRecord
-from sqlalchemy import func
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +15,8 @@ logger = logging.getLogger(__name__)
 # private API
 # ------------------
 
-def _update_status(job_id: int, status: str, result_file: str, job_type: str) -> JobRecord:
+
+def _update_status(job_id: int, status: str, result_file: str | None, job_type: str) -> JobRecord:
     """
     Update job status and result file.
     """
@@ -54,9 +56,11 @@ def _update_running_status(job_id: int, result_file: str | None = None, *, job_t
     db.session.refresh(job)
     return job
 
+
 # ------------------
 # public API
 # ------------------
+
 
 def create_job(job_type: str, username: str | None = None) -> JobRecord:
     """
@@ -71,6 +75,7 @@ def create_job(job_type: str, username: str | None = None) -> JobRecord:
     db.session.commit()
     db.session.refresh(job)
     return job
+
 
 def get_job(job_id: int, job_type: str) -> JobRecord:
     """
@@ -96,6 +101,7 @@ def get_job(job_id: int, job_type: str) -> JobRecord:
     if not job:
         raise LookupError(f"Job id {job_id} was not found")
     return job
+
 
 def update_job_status(job_id: int, status: str, result_file: str | None = None, *, job_type: str) -> JobRecord:
     """
@@ -196,7 +202,7 @@ def is_job_cancelled(job_id: int, job_type: str) -> bool:
     return False
 
 
-def get_user_jobs_stats(username: str) -> list[JobRecord]:
+def get_user_jobs_stats(username: str) -> dict[str, dict[str, int] | list[JobRecord]]:
     """
     Get user jobs
     """
@@ -210,21 +216,17 @@ def get_user_jobs_stats(username: str) -> list[JobRecord]:
         .all()
     )
 
-    recent_jobs = (
-        base_query.order_by(JobRecord.created_at.desc())
-        .limit(50)
-        .all()
-    )
+    recent_jobs = base_query.order_by(JobRecord.created_at.desc()).limit(50).all()
 
-    total_jobs = base_query.count()
+    total_jobs = sum(status_counts.values())
 
     stats = {
         "total": total_jobs,
         "completed": status_counts.get("completed", 0),
         "failed": status_counts.get("failed", 0),
-        "running": status_counts.get("running", 0),
-        "pending": status_counts.get("pending", 0),
         "cancelled": status_counts.get("cancelled", 0),
+        # "running": status_counts.get("running", 0),
+        # "pending": status_counts.get("pending", 0),
     }
 
     data = {
@@ -233,6 +235,7 @@ def get_user_jobs_stats(username: str) -> list[JobRecord]:
     }
 
     return data
+
 
 __all__ = [
     "create_job",

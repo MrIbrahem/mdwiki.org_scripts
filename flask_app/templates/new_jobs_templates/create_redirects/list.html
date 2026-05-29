@@ -16,7 +16,7 @@
 </p>
 <form method="post" action="{{ url_for('new_jobs.start_job_with_args', job_type=job_type) }}"
     class="row gy-2 gx-3 align-items-center mb-4">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    {{ csrf() }}
     <div class="col-sm-12">
         <label for="titles" class="form-label">Titles (one per line)</label>
         <textarea class="form-control" id="titles" name="titles" rows="6"
