@@ -157,18 +157,49 @@ def search_pages(
 
 
 def get_double_redirects(site: mwclient.Site) -> list[dict[str, str]]:
-    """Return resolved double-redirect pairs ``[{"from", "to"}, ...]``."""
+    """
+    Return resolved double-redirect pairs ``[{"from", "to"}, ...]``.
+
+    site API return example: {
+        "batchcomplete": true,
+        "limits": { "querypage": 5000 },
+        "query": {
+            "redirects": [
+                { "from": "WPM:Wiki Project Med/Board", "to": "WikiProjectMed:Wiki Project Med/Board" },
+                { "from": "WikiProjectMed:Wiki Project Med/Board", "to": "WikiProjectMed:Board" }
+            ],
+            "pages": [{
+                "pageid": 4669,
+                "ns": 4,
+                "title": "WikiProjectMed:Board",
+                "redirects": [
+                    {
+                        "pageid": 4846,
+                        "ns": 4,
+                        "title": "WikiProjectMed:Wiki Project Med/Board"
+                    }
+                ]
+            }]
+        }
+    }
+    """
     params = {
-        "prop": "info",
+        # "action": "query",
+        "format": "json",
+        "prop": "redirects",
         "generator": "querypage",
         "redirects": 1,
         "utf8": 1,
+        "formatversion": "2",
         "gqppage": "DoubleRedirects",
         "gqplimit": "max",
+        # "gqpoffset": "",
     }
     data = site.get("query", **params)
+
     if not data:
         return []
+
     query = data.get("query") or {}
     return query.get("redirects") or []
 
