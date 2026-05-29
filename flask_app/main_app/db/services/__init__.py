@@ -16,6 +16,7 @@ from .user_token_service import (
     get_user_token,
     get_user_token_by_username,
     upsert_user_token,
+    list_users,
 )
 
 __all__ = [
@@ -24,6 +25,7 @@ __all__ = [
     "get_user_token",
     "delete_user_token",
     "get_user_token_by_username",
+    "list_users",
     # jobs_service
     "delete_job",
     "create_job",

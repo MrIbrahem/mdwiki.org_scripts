@@ -10,6 +10,8 @@ from flask import (
     request,
 )
 
+from ...db.services import list_users
+
 from ..admin_routes import (  # bp_jobs,; bp_owidcharts,; bp_settings,; bp_templates,
     bp_coordinators,
 )
@@ -34,6 +36,22 @@ def inject_sidebar():
 @admin_required
 def admin_dashboard():
     return render_template("admins.html")
+
+
+@bp_admin.get("/users")
+@admin_required
+def users_dashboard() -> str:
+    """Render the coordinator management dashboard."""
+
+    users = list_users()
+    total = len(users)
+
+    return render_template(
+        "admins/users.html",
+        users=users,
+        total_users=total,
+    )
+
 
 
 def register_blueprints(bp_admin) -> None:
