@@ -1,5 +1,5 @@
 {% extends "new_jobs_templates/base_details2.html" %}
-{% from "_macros.html" import card_header %}
+{% from "_macros.html" import card_header, status_icon %}
 
 {% set job_type = 'duplicate_redirect' %}
 
@@ -54,19 +54,7 @@
                         <td>{{ item.from_title if item.from_title else '-' }}</td>
                         <td>{{ item.to_title if item.to_title else '-' }}</td>
                         <td>
-                            {% if item.status == 'fixed' %}
-                            <span class="badge bg-success">{{ item.status }}</span>
-                            {% elif item.status == 'error' %}
-                            <span class="badge bg-danger">{{ item.status }}</span>
-                            {% elif item.status == 'missing' %}
-                            <span class="badge bg-warning">{{ item.status }}</span>
-                            {% elif item.status == 'unchanged' %}
-                            <span class="badge bg-secondary">{{ item.status }}</span>
-                            {% elif item.status == 'skipped' %}
-                            <span class="badge bg-light text-dark">{{ item.status }}</span>
-                            {% else %}
-                            <span class="badge bg-info">{{ item.status }}</span>
-                            {% endif %}
+                            {{ status_icon(item.status) }}
                         </td>
                         <td><small>{{ item.msg if item.msg else '' }}</small></td>
                     </tr>

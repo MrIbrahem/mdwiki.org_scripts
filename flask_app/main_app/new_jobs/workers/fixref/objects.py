@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class Summary:
     scanned: int = 0
-    fixed: int = 0
+    changed: int = 0
     no_changes: int = 0
     missing: int = 0
     errors: int = 0

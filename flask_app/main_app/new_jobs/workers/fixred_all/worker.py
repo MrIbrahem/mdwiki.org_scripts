@@ -27,12 +27,12 @@ logger = logging.getLogger(__name__)
 class UpdaterOutcome:
     """Result of running the updater on one page."""
 
-    kind: Literal["missing", "no-changes", "fixed", "error"]
+    kind: Literal["missing", "no-changes", "changed", "error"]
     newrevid: int = 0
 
     @property
     def has_changes(self) -> bool:
-        return self.kind == "fixed"
+        return self.kind == "changed"
 
     def to_json(self) -> Dict[str, Any]:
         return asdict(self)
@@ -116,8 +116,8 @@ class FixredAllWorker(BaseObjectsJobWorker):
                 "msg": "",
                 "newrevid": "",
             }
-            if outcome.kind == "fixed":
-                self.result_object.summary.fixed += 1
+            if outcome.kind == "changed":
+                self.result_object.summary.changed += 1
                 page_record["newrevid"] = outcome.newrevid
             elif outcome.kind == "no-changes":
                 self.result_object.summary.no_changes += 1
@@ -138,7 +138,7 @@ class FixredAllWorker(BaseObjectsJobWorker):
     # ------------------------------------------------------------------
 
     def _treat_page(self, title: str, state: RunState) -> UpdaterOutcome:
-        """Return one of: ``missing``, ``no-changes``, ``fixed``, ``error``."""
+        """Return one of: ``missing``, ``no-changes``, ``changed``, ``error``."""
         if not is_page_exists(title, self.site):
             return UpdaterOutcome(kind="missing")
 
@@ -153,7 +153,7 @@ class FixredAllWorker(BaseObjectsJobWorker):
 
         result = edit_page(self.site, title, newtext, "Fix redirects")
         if result.get("success"):
-            return UpdaterOutcome(kind="fixed", newrevid=result.get("newrevid", 0))
+            return UpdaterOutcome(kind="changed", newrevid=result.get("newrevid", 0))
         return UpdaterOutcome(kind="error")
 
 

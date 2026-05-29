@@ -31,12 +31,12 @@ MAX_PAGES_FIXREF = 20000
 class UpdaterOutcome:
     """Result of running the updater on one page."""
 
-    kind: Literal["missing", "no-changes", "fixed", "error"]
+    kind: Literal["missing", "no-changes", "changed", "error"]
     newrevid: int = 0
 
     @property
     def has_changes(self) -> bool:
-        return self.kind == "fixed"
+        return self.kind == "changed"
 
     def to_json(self) -> Dict[str, Any]:
         return asdict(self)
@@ -120,8 +120,8 @@ class FixrefWorker(BaseObjectsJobWorker):
                 "msg": "",
                 "newrevid": "",
             }
-            if outcome.kind == "fixed":
-                self.result_object.summary.fixed += 1
+            if outcome.kind == "changed":
+                self.result_object.summary.changed += 1
                 page_record["newrevid"] = outcome.newrevid
 
             elif outcome.kind == "no-changes":
@@ -209,7 +209,7 @@ class FixrefWorker(BaseObjectsJobWorker):
 
         result = edit_page(self.site, title, new_text, summary)
         if result.get("success"):
-            return UpdaterOutcome(kind="fixed", newrevid=result.get("newrevid", 0))
+            return UpdaterOutcome(kind="changed", newrevid=result.get("newrevid", 0))
 
         return UpdaterOutcome(kind="error")
 
