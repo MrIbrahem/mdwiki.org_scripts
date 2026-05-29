@@ -10,11 +10,17 @@ from flask_app.main_app.new_jobs.base_worker_object import BaseObjectsJobWorker,
 
 
 class MockWorker(BaseObjectsJobWorker):
+    def __init__(self, job_id: int) -> None:
+        self.job_id = job_id
+        self.args = {}
+        self.site = None
+
+        super().__init__(job_id, None, None)
+
+        self.result_object: WorkerObject = WorkerObject()
+
     def get_job_type(self) -> str:
         return "mock_job"
-
-    def get_initial_result_object(self) -> WorkerObject:
-        return WorkerObject()
 
     def process(self) -> Dict[str, Any]:
         return self.result_object.to_json()

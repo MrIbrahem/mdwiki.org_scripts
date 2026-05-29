@@ -7,15 +7,12 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass, field
-from typing import Literal
 
 import mwclient
 
 from ...api_services.query_api import get_page_links, resolve_redirects
 
 logger = logging.getLogger(__name__)
-
-OutcomeKind = Literal["notext", "no_changes", "changes", "saved"]
 
 
 @dataclass

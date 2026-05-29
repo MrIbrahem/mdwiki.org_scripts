@@ -97,8 +97,10 @@ class CreateRedirectsWorker(BaseObjectsJobWorker):
         self.job_id = job_id
         self.args = args
         self.site: mwclient.Site | None = None
-        self.result_object: CreateRedirectsWorkerObject = self.get_initial_result_object()
+
         super().__init__(job_id, user, cancel_event)
+
+        self.result_object: CreateRedirectsWorkerObject = CreateRedirectsWorkerObject()
 
     # ------------------------------------------------------------------
     # BaseObjectsJobWorker hooks
@@ -106,9 +108,6 @@ class CreateRedirectsWorker(BaseObjectsJobWorker):
 
     def get_job_type(self) -> str:
         return "create_redirects"
-
-    def get_initial_result_object(self) -> CreateRedirectsWorkerObject:
-        return CreateRedirectsWorkerObject()
 
     def process(self) -> Dict[str, Any]:
         self.site = get_user_site(self.user)

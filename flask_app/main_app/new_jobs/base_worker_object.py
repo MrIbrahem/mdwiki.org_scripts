@@ -111,7 +111,6 @@ class BaseObjectsJobWorker(ABC):
 
     Subclasses must implement:
     - get_job_type(): Return the job type string
-    - get_initial_result_object(): Return the initial result dictionary
     - process(): Implement the actual processing logic
 
     Optional overrides:
@@ -131,7 +130,7 @@ class BaseObjectsJobWorker(ABC):
         self.job_type: str = self.get_job_type()
         self.result_file: str = generate_result_file_name(job_id, self.job_type)
         self._status: str = "pending"
-        self.result_object: WorkerObject = self.get_initial_result_object()
+        self.result_object: WorkerObject = None
 
     @abstractmethod
     def get_job_type(self) -> str:
@@ -140,11 +139,6 @@ class BaseObjectsJobWorker(ABC):
         Returns:
             The job type string (e.g., 'crop_main_files', 'collect_main_files')
         """
-        ...
-
-    @abstractmethod
-    def get_initial_result_object(self):
-        """ """
         ...
 
     @abstractmethod

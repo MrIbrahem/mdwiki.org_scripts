@@ -92,17 +92,13 @@ class AddRColumnWorker(BaseObjectsJobWorker):
         self.job_id = job_id
         self.args = args or {}
         self.page = None
-        self.result_object: AddRColumnWorkerObject = self.get_initial_result_object()
+
         super().__init__(job_id, user, cancel_event)
+
+        self.result_object: AddRColumnWorkerObject = AddRColumnWorkerObject()
 
     def get_job_type(self) -> str:
         return "add_r_column"
-
-    def get_initial_result_object(self) -> AddRColumnWorkerObject:
-        """
-        self.result_object: WorkerObject = self.get_initial_result_object()
-        """
-        return AddRColumnWorkerObject()
 
     def _set_step_status(self, step: str, status: str, message: str) -> None:
         self.result_object.set_step_status(step, status, message)

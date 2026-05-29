@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_macros.html" import status_icon %}
+{% from "_macros.html" import status_icon, stats_card %}
 
 {% block content %}
 <div class="row">
@@ -19,56 +19,16 @@
 {% else %}
 <div class="row g-3 mb-4">
     <div class="col-lg-3 col-md-6">
-        <div class="card border-primary h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title mb-0">Total Jobs</h6>
-                        <h2 class="mb-0">{{ stats.total }}</h2>
-                    </div>
-                    <i class="bi bi-collection fs-1 opacity-50"></i>
-                </div>
-            </div>
-        </div>
+        {{ stats_card('Total Jobs', stats.total, "primary", "bi bi-collection fs-1 opacity-50") }}
     </div>
     <div class="col-lg-3 col-md-6">
-        <div class="card border-success h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title mb-0">Completed</h6>
-                        <h2 class="mb-0">{{ stats.completed }}</h2>
-                    </div>
-                    <i class="bi bi-check-circle fs-1 opacity-50"></i>
-                </div>
-            </div>
-        </div>
+        {{ stats_card('Completed', stats.completed, "success", "bi bi-check-circle fs-1 opacity-50") }}
     </div>
     <div class="col-lg-3 col-md-6">
-        <div class="card border-danger h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title mb-0">Failed</h6>
-                        <h2 class="mb-0">{{ stats.failed }}</h2>
-                    </div>
-                    <i class="bi bi-x-circle fs-1 opacity-50"></i>
-                </div>
-            </div>
-        </div>
+        {{ stats_card('Failed', stats.failed, "danger", "bi bi-x-circle fs-1 opacity-50") }}
     </div>
     <div class="col-lg-3 col-md-6">
-        <div class="card border-secondary h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title mb-0">Cancelled</h6>
-                        <h2 class="mb-0">{{ stats.cancelled }}</h2>
-                    </div>
-                    <i class="bi bi-stop-circle fs-1 opacity-50"></i>
-                </div>
-            </div>
-        </div>
+        {{ stats_card('Cancelled', stats.cancelled, "secondary", "bi bi-stop-circle fs-1 opacity-50") }}
     </div>
 </div>
 
