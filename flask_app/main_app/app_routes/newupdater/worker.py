@@ -23,14 +23,12 @@ from ...su_services.users_service import current_user
 
 logger = logging.getLogger(__name__)
 
-OutcomeKind = Literal["notext", "no_changes", "changes", "saved"]
-
 
 @dataclass(frozen=True)
 class UpdaterOutcome:
     """Result of running the updater on one page."""
 
-    kind: OutcomeKind
+    kind: Literal["notext", "no_changes", "changes", "saved"]
     old_text: str = ""
     new_text: str = ""
     newrevid: int = 0

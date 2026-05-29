@@ -30,6 +30,7 @@ class FindAndReplaceWorkerObject(WorkerObject):
     text_find: str = ""
     text_replace: str = ""
 
+
 __all__ = [
     "FindAndReplaceWorkerObject",
 ]
