@@ -3,7 +3,7 @@
 Full ``run()`` is exercised against a fake AllAPIS to verify:
 
 * listtype routing (newlist → search, oldlist → all-pages),
-* per-page outcomes (changed / no-changes / missing / error),
+* per-page outcomes (changed / no_changes / missing / error),
 * the ``number`` cap on successful modifications,
 * cooperative ``stop_event``.
 """

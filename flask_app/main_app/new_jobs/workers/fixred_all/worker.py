@@ -123,7 +123,7 @@ class FixredAllWorker(BaseObjectsJobWorker):
     # ------------------------------------------------------------------
 
     def _treat_page(self, title: str, state: RunState) -> UpdaterOutcome:
-        """Return one of: ``missing``, ``no-changes``, ``changed``, ``error``."""
+        """Return one of: ``missing``, ``no_changes``, ``changed``, ``error``."""
         if not is_page_exists(title, self.site):
             return UpdaterOutcome(kind="missing")
 
