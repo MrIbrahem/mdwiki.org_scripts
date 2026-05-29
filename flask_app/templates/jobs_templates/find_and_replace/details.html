@@ -1,5 +1,5 @@
 {% extends "jobs_templates/base_details2.html" %}
-{% from "_macros.html" import card_header, status_icon, stats_card %}
+{% from "_macros.html" import card_header, status_icon, stats_card, diff_link, wiki_domain_link %}
 
 {% set job_type = 'find_and_replace' %}
 
@@ -56,17 +56,12 @@
                 <tbody>
                     {% for item in changed_pages %}
                     <tr>
-                        <td>{{ loop.index }}</td>
+                        <td> {{ loop.index }} </td>
                         <td>
-                            <a href="https://{{ wiki_domain }}/wiki/{{ item.title | replace(' ', '_') | urlencode }}"
-                                target="_blank">
-                                {{ item.title }}
-                            </a>
+                            {{ wiki_domain_link(item.title) }}
                         </td>
                         <td>
-                            <a href="https://{{ wiki_domain }}/w/index.php?diff={{ item.newrevid }}" target="_blank">
-                                Diff
-                            </a>
+                            {{ diff_link(item.newrevid) }}
                         </td>
                         <td><small>{{ item.msg if item.msg else '' }}</small></td>
                     </tr>
@@ -96,12 +91,9 @@
                 <tbody>
                     {% for item in remaining_pages %}
                     <tr>
-                        <td>{{ loop.index }}</td>
+                        <td> {{ loop.index }} </td>
                         <td>
-                            <a href="https://{{ wiki_domain }}/wiki/{{ item.title | replace(' ', '_') | urlencode }}"
-                                target="_blank">
-                                {{ item.title }}
-                            </a>
+                            {{ wiki_domain_link(item.title) }}
                         </td>
                         <td>
                             {{ status_icon(item.status) }}

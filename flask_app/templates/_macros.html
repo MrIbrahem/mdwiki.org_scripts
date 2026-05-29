@@ -116,32 +116,15 @@
 </div>
 {%- endmacro -%}
 
-{% macro get_status_class(status) %}
-{% set status_classes = {
-    "completed": "success",
-    "changed": "success",
-    "failed": "danger",
-    "skipped": "warning",
-    "running": "primary",
-    "pending": "secondary",
-    "cancelled": "warning",
-    "error": "danger",
-    } %}
-
-{% set status_lower = status | lower %}
-{# Return the matched class, or a default class if not found #}
-{{ status_classes[status_lower] if status_lower in status_classes else 'secondary' }}
-{% endmacro %}
 
 {# status icon #}
 {% macro status_icon(status) %}
-
-{% set class_type = get_status_class(status) %}
 <small
-    class="d-inline-flex px-2 py-1 fw-semibold text-{{ class_type | trim }}-emphasis bg-{{ class_type | trim }}-subtle border border-{{ class_type | trim }}-subtle rounded-2">
+    class="d-inline-flex px-2 py-1 fw-semibold text-{{ status | get_status_class }}-emphasis bg-{{ status | get_status_class }}-subtle border border-{{ status | get_status_class }}-subtle rounded-2">
     {{ status | title }}
 </small>
 {%- endmacro -%}
+
 
 {# status card #}
 {% macro stats_card(title, value, border_type, icon="") %}
@@ -159,4 +142,18 @@
         </div>
     </div>
 </div>
+{%- endmacro -%}
+
+{# Diff link #}
+{% macro diff_link(newrevid) %}
+<a href="https://{{ wiki_domain }}/w/index.php?diff={{ newrevid }}" target="_blank">
+    Diff
+</a>
+{%- endmacro -%}
+
+{# wiki domain link #}
+{% macro wiki_domain_link(title) %}
+<a href="https://{{ wiki_domain }}/wiki/{{ title | replace(' ', '_') | urlencode }}" target="_blank">
+    {{ title }}
+</a>
 {%- endmacro -%}

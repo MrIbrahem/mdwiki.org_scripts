@@ -1,5 +1,5 @@
 {% extends "jobs_templates/base_details2.html" %}
-{% from "_macros.html" import card_header, status_icon, stats_card %}
+{% from "_macros.html" import card_header, status_icon, stats_card, wiki_domain_link %}
 
 {% set job_type = 'add_unlinkedwikibase' %}
 
@@ -69,12 +69,9 @@
                 <tbody>
                     {% for item in result_data.pages_processed %}
                     <tr>
-                        <td>{{ loop.index }}</td>
+                        <td> {{ loop.index }} </td>
                         <td>
-                            <a href="https://{{ wiki_domain }}/wiki/{{ item.title | replace(' ', '_') | urlencode }}"
-                                target="_blank">
-                                {{ item.title }}
-                            </a>
+                            {{ wiki_domain_link(item.title) }}
                         </td>
                         <td>
                             {{ status_icon(item.status) }}
