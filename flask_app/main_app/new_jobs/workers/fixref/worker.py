@@ -9,8 +9,9 @@ from __future__ import annotations
 
 import logging
 import threading
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, Literal
 
 import mwclient
 
@@ -24,6 +25,21 @@ from .objects import FixrefWorkerObject
 logger = logging.getLogger(__name__)
 
 MAX_PAGES_FIXREF = 20000
+
+
+@dataclass(frozen=True)
+class UpdaterOutcome:
+    """Result of running the updater on one page."""
+
+    kind: Literal["missing", "no-changes", "fixed", "error"]
+    newrevid: int = 0
+
+    @property
+    def has_changes(self) -> bool:
+        return self.kind == "changes"
+
+    def to_json(self) -> Dict[str, Any]:
+        return asdict(self)
 
 
 class FixrefWorker(BaseObjectsJobWorker):
@@ -65,6 +81,8 @@ class FixrefWorker(BaseObjectsJobWorker):
         category = self.args.get("category") or self.args.get("cat")
         number = self.args.get("number")
 
+        self._save_progress()
+
         pages = self._resolve_targets(titles_raw, category, number)
         if not pages:
             self.result_object.status = "failed"
@@ -97,22 +115,24 @@ class FixrefWorker(BaseObjectsJobWorker):
                 )
                 continue
 
-            if outcome == "fixed":
+            page_record = {
+                "title": title,
+                "status": outcome.kind,
+                "msg": "",
+                "newrevid": "",
+            }
+            if outcome.kind == "fixed":
                 self.result_object.summary.fixed += 1
-            elif outcome == "no-changes":
+                page_record["newrevid"] = outcome.newrevid
+
+            elif outcome.kind == "no-changes":
                 self.result_object.summary.no_changes += 1
-            elif outcome == "missing":
+            elif outcome.kind == "missing":
                 self.result_object.summary.missing += 1
-            elif outcome == "error":
+            elif outcome.kind == "error":
                 self.result_object.summary.errors += 1
 
-            self.result_object.pages_processed.append(
-                {
-                    "title": title,
-                    "status": outcome,
-                    "msg": "",
-                }
-            )
+            self.result_object.pages_processed.append(page_record)
 
             if i == 1 or i % per_item == 0:
                 self._save_progress()
@@ -162,26 +182,26 @@ class FixrefWorker(BaseObjectsJobWorker):
 
         return []
 
-    def _process_one(self, title: str) -> str:
-        """Return one of: ``missing``, ``no-changes``, ``fixed``, ``error``."""
+    def _process_one(self, title: str) -> UpdaterOutcome:
         if not is_page_exists(title, self.site):
-            return "missing"
+            return UpdaterOutcome(kind="missing")
 
         text = get_page_text(title, self.site)
-        if text is None:
-            return "missing"
+        if not text or not text.strip():
+            return UpdaterOutcome(kind="missing")
 
         new_text, summary = fix_ref_template(text, returnsummary=True)
         if not summary:
             summary = "Normalize references"
 
         if new_text == text:
-            return "no-changes"
+            return UpdaterOutcome(kind="no-changes")
 
         result = edit_page(self.site, title, new_text, summary)
         if result.get("success"):
-            return "fixed"
-        return "error"
+            return UpdaterOutcome(kind="fixed", newrevid=result.get("newrevid", 0))
+
+        return UpdaterOutcome(kind="error")
 
 
 def fixref_worker_entry(
