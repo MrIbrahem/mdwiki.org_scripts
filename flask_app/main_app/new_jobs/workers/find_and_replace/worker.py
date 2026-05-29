@@ -181,8 +181,17 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
             logger.info(f"Found {len(results)} pages matching '{str_find}'")
             return results
 
+        titles = list(
+            self.site.allpages(
+                start="!",
+                namespace=0,
+                filterredir="nonredirects",
+                dir="ascending",
+                generator=True,
+            )
+        )
         # oldlist: walk every mainspace page.
-        return [p.name for p in self.site.allpages(namespace=0)]
+        return [p.name for p in titles]
 
     def _process_one(self, title: str, str_find: str, replace: str) -> UpdaterOutcome:
         if not is_page_exists(title, self.site):

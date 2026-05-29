@@ -177,7 +177,18 @@ class FixrefWorker(BaseObjectsJobWorker):
                 capped = min(int(number), MAX_PAGES_FIXREF)
             except ValueError:
                 capped = MAX_PAGES_FIXREF
-            return [p.name for p in self.site.allpages(namespace=0, limit=capped)]
+
+            titles = list(
+                self.site.allpages(
+                    start="!",
+                    namespace=0,
+                    filterredir="nonredirects",
+                    dir="ascending",
+                    generator=True,
+                    limit=capped,
+                )
+            )
+            return [p.name for p in titles]
 
         return []
 
