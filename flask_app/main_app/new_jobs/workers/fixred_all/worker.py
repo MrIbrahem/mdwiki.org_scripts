@@ -8,8 +8,9 @@ from __future__ import annotations
 
 import logging
 import threading
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, Literal
 
 import mwclient
 
@@ -21,6 +22,20 @@ from ....shared.fixref_shared.fixred_worker import work_on_text
 from .objects import FixredAllWorkerObject
 
 logger = logging.getLogger(__name__)
+
+@dataclass(frozen=True)
+class UpdaterOutcome:
+    """Result of running the updater on one page."""
+
+    kind: Literal["missing", "no-changes", "fixed", "error"]
+    newrevid: int = 0
+
+    @property
+    def has_changes(self) -> bool:
+        return self.kind == "fixed"
+
+    def to_json(self) -> Dict[str, Any]:
+        return asdict(self)
 
 
 class FixredAllWorker(BaseObjectsJobWorker):
@@ -95,20 +110,23 @@ class FixredAllWorker(BaseObjectsJobWorker):
                 )
                 continue
 
-            if outcome == "fixed":
+            page_record = {
+                "title": title,
+                "status": outcome.kind,
+                "msg": "",
+                "newrevid": "",
+            }
+            if outcome.kind == "fixed":
                 self.result_object.summary.fixed += 1
-            elif outcome == "no-changes":
+                page_record["newrevid"] = outcome.newrevid
+            elif outcome.kind == "no-changes":
                 self.result_object.summary.no_changes += 1
-            elif outcome == "missing":
+            elif outcome.kind == "missing":
                 self.result_object.summary.missing += 1
 
-            self.result_object.pages_processed.append(
-                {
-                    "title": title,
-                    "status": outcome,
-                    "msg": "",
-                }
-            )
+            self.result_object.pages_processed.append(page_record)
+                
+            
 
             if i == 1 or i % per_item == 0:
                 self._save_progress()
@@ -122,24 +140,24 @@ class FixredAllWorker(BaseObjectsJobWorker):
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _treat_page(self, title: str, state: RunState) -> str:
+    def _treat_page(self, title: str, state: RunState) -> UpdaterOutcome:
         """Return one of: ``missing``, ``no-changes``, ``fixed``, ``error``."""
         if not is_page_exists(title, self.site):
-            return "missing"
+            return UpdaterOutcome(kind="missing")
 
         text = get_page_text(title, self.site)
         if text is None:
-            return "missing"
+            return UpdaterOutcome(kind="missing")
 
         newtext = work_on_text(title, text, self.site, state)
 
         if newtext == text:
-            return "no-changes"
+            return UpdaterOutcome(kind="no-changes")
 
         result = edit_page(self.site, title, newtext, "Fix redirects")
         if result.get("success"):
-            return "fixed"
-        return "error"
+            return UpdaterOutcome(kind="fixed", newrevid=result.get("newrevid", 0))
+        return UpdaterOutcome(kind="error")
 
 
 def fixred_all_worker_entry(
