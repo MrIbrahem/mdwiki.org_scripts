@@ -58,7 +58,7 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
             return self.result_object
 
         str_find = self.args.get("find", "")
-        replace = self.args.get("replace", "")
+        str_replace = self.args.get("replace", "")
         listtype = self.args.get("listtype", "newlist")
         number = self.args.get("number")
 
@@ -67,12 +67,18 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
             self.result_object.error = "`find` cannot be empty."
             return self.result_object
 
+        self.result_object.text_find = str_find
+        self.result_object.text_replace = str_replace
+
         try:
             cap = int(number) if number and int(number) > 0 else None
         except ValueError:
             cap = None
 
         self.result_object.summary.cap = cap
+
+        # save json file before start search
+        self._save_progress()
 
         titles = self._resolve_titles(str_find, listtype)
         total = len(titles)
@@ -82,6 +88,7 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
         logger.info(f"Job {self.job_id}: Processing {total} pages (listtype={listtype})")
 
         for i, title in enumerate(titles, start=1):
+            logger.debug(f"i: {i}/{total}, page: {title}.")
             if self.is_cancelled():
                 self.result_object.summary.stopped = True
                 break
@@ -92,7 +99,7 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
             self.result_object.summary.scanned += 1
 
             try:
-                outcome = self._process_one(title, str_find, replace)
+                outcome = self._process_one(title, str_find, str_replace)
             except Exception as exc:
                 logger.exception("replace failed for %s", title)
                 self.result_object.summary.errors += 1
@@ -146,7 +153,7 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
             "srwhat": "text",
             "srsort": "just_match",
             """
-            return self.site.search(
+            search_data = self.site.search(
                 str_find,
                 namespace="0",
                 what="text",
@@ -154,6 +161,10 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
                 max_items=None,
                 api_chunk_size=None,
             )
+            logger.debug(search_data)
+            results = [r.title for r in search_data]
+            logger.info(f"Found {len(results)} pages matching '{str_find}'")
+            return results
 
         # oldlist: walk every mainspace page.
         return [p.name for p in self.site.allpages(namespace=0)]

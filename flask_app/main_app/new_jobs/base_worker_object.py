@@ -131,7 +131,8 @@ class BaseObjectsJobWorker(ABC):
         self.job_type: str = self.get_job_type()
         self.result_file: str = generate_result_file_name(job_id, self.job_type)
         self._status: str = "pending"
-        self.result_object: WorkerObject = self.get_initial_result_object()
+        # if not self.result_object:
+        # self.result_object: WorkerObject = self.get_initial_result_object()
 
     @abstractmethod
     def get_job_type(self) -> str:
