@@ -23,7 +23,7 @@ class AdminUserRecord(db.Model):
         PRIMARY KEY (`id`),
         UNIQUE KEY `username` (`username`),
         CONSTRAINT `admin_users_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user_tokens` (`username`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     """
 
     __tablename__ = "admin_users"

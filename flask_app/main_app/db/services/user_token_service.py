@@ -17,7 +17,6 @@ from ..models import UserTokenRecord
 logger = logging.getLogger(__name__)
 
 
-
 def list_users() -> list[UserTokenRecord]:
     """Return all users."""
     records = (
