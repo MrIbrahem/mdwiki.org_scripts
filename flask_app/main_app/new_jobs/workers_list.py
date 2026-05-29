@@ -19,7 +19,7 @@ jobs_targets_public = {
 }
 
 JOB_TYPE_TEMPLATES_PUBLIC = {
-    "add_r_column": "new_jobs_templates/add_r_column/details.html",
+    "add_r_column": "one_page_templates/add_r_column/details.html",
     "add_unlinkedwikibase": "new_jobs_templates/add_unlinkedwikibase/details.html",
     "create_redirects": "new_jobs_templates/create_redirects/details.html",
     "duplicate_redirect": "new_jobs_templates/duplicate_redirect/details.html",
@@ -30,7 +30,7 @@ JOB_TYPE_TEMPLATES_PUBLIC = {
 }
 
 JOB_TYPE_LIST_TEMPLATES_PUBLIC = {
-    "add_r_column": "new_jobs_templates/add_r_column/list.html",
+    "add_r_column": "one_page_templates/add_r_column/list.html",
     "add_unlinkedwikibase": "new_jobs_templates/add_unlinkedwikibase/list.html",
     "create_redirects": "new_jobs_templates/create_redirects/list.html",
     "duplicate_redirect": "new_jobs_templates/duplicate_redirect/list.html",

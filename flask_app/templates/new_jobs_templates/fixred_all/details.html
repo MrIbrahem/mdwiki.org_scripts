@@ -9,19 +9,22 @@
 {% block job_summary %}
 {% if result_data and result_data.summary %}
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
+    <div class="col-md-2 col-sm-6">
         {{ stats_card('Processing', result_data.summary.scanned ~ ' / ' ~ result_data.summary.total, "primary", "") }}
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2 col-sm-6">
         {{ stats_card('Changed', result_data.summary.changed, "success", "") }}
     </div>
-    <div class="col-md-2">
+    <div class="col-md-2 col-sm-6">
+        {{ stats_card('skipped', result_data.summary.skipped, "success", "") }}
+    </div>
+    <div class="col-md-2 col-sm-6">
         {{ stats_card('No Changes', result_data.summary.no_changes, "secondary", "") }}
     </div>
-    <div class="col-md-2">
+    <div class="col-md-2 col-sm-6">
         {{ stats_card('missing', result_data.summary.missing, "secondary", "") }}
     </div>
-    <div class="col-md-2">
+    <div class="col-md-2 col-sm-6">
         {{ stats_card('Errors', result_data.summary.errors, "danger", "") }}
     </div>
 </div>
