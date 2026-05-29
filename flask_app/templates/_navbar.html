@@ -1,3 +1,5 @@
+{% from "_macros.html" import nav_link %}
+{% from "_macros.html" import nav_link_with_args %}
 {% set nav_item_class = "nav-item col-lg-auto col-md-4 col-sm-6 col-6" %}
 
 <header class="mb-3 border-bottom">
@@ -27,6 +29,17 @@
                     <li class="{{ nav_item_class }}">
                         <span class="nav-link" id="load_time"></span>
                     </li>
+                    {% if is_admin %}
+                    <li class="{{ nav_item_class }}">
+                        {{ nav_link('admin.', 'bi-people-fill', 'Admins', url_for('admin.admin_dashboard')) }}
+                    </li>
+                    {% endif %}
+                    <li class="{{ nav_item_class }}">
+                        <a class="nav-link" href="https://github.com/MrIbrahem/mdwiki.org_scripts" target="_blank"
+                            rel="noopener noreferrer">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    </li>
                 </ul>
                 <hr class="d-lg-none text-dark-subtle text-50">
                 <div class="d-flex align-items-center">
@@ -34,7 +47,9 @@
                     <a class="nav-link d-inline-block me-3"
                         href="{{ url_for('profile.user_dashboard', user_name=current_user.username) }}">
                         <i class="bi bi-person-circle me-1"></i>
-                        <span class="navbar-text">{{ current_user.username }}</span>
+                        <span class="navbar-text">
+                            {{ current_user.username }}
+                        </span>
                     </a>
                     <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('auth.logout') }}">Logout</a>
                     {% else %}

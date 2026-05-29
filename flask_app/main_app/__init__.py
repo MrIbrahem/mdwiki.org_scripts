@@ -11,17 +11,15 @@ import sqlalchemy
 from flask import Flask, flash, render_template
 from flask_wtf.csrf import CSRFError, CSRFProtect
 
-from .db.services import active_coordinators
-
 from .app_routes import register_blueprints
-from .app_routes.auth.routes import bp_auth
 from .config import settings
 from .core.cookies import CookieHeaderClient
+from .core.jinja_filters import filters
 from .db import init_db
+from .db.services import active_coordinators
 from .extensions import db as _db
 from .extensions import migrate
 from .su_services.users_service import current_user
-from .core.jinja_filters import filters
 
 logger = logging.getLogger(__name__)
 
@@ -157,16 +155,16 @@ def create_app(config_class: Type) -> Flask:
     if app.config.get("SQLALCHEMY_DATABASE_URI"):
         db_is_ok = init_app_and_db(app, _db)
 
-
     register_error_pages(app)
 
     if db_is_ok:
         register_blueprints(app)
-        app.register_blueprint(bp_auth)
     else:
+
         @app.before_request
         def db_error_fallback():
             from flask import request
+
             if request.endpoint == "static":
                 return None
             return render_template("index_db_error.html"), 503

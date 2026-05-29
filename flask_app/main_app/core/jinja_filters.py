@@ -6,7 +6,9 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
+
 logger = logging.getLogger(__name__)
+
 
 def _format_timestamp(
     value: str | datetime,
@@ -49,6 +51,7 @@ def format_short_date(value: str | datetime, default: str = "") -> str:
         format_str="%H:%M:%S",
         default=default,
     )
+
 
 filters = {
     "format_long_date": format_long_date,
