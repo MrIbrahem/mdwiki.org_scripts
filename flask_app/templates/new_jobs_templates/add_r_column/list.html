@@ -15,10 +15,6 @@
 </p>
 
 {% endblock %}
-<form method="post" action="{{ url_for('new_jobs.start_job_with_args', job_type=job_type) }}">
-    {{ csrf() }}
-    <button type="submit" class="btn btn-outline-primary">Start New Job</button>
-</form>
 
 {% block header_actions %}
 <form method="post" action="{{ url_for('new_jobs.start_job_with_args', job_type=job_type) }}" class="d-inline">
