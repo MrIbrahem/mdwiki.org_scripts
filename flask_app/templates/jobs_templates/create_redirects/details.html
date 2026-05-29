@@ -1,5 +1,5 @@
 {% extends "jobs_templates/base_details2.html" %}
-{% from "_macros.html" import card_header %}
+{% from "_macros.html" import card_header, stats_card %}
 
 {% set job_type = 'create_redirects' %}
 
@@ -8,6 +8,26 @@
 
 {% block job_summary %}
 {% if result_data and result_data.summary %}
+<div class="row g-3 mb-4">
+    <div class="col-md-2 col-sm-6">
+        {{ stats_card('Processing', result_data.summary.scanned ~ ' / ' ~ result_data.summary.total, "primary", "") }}
+    </div>
+    <div class="col-md-2 col-sm-6">
+        {{ stats_card('Changed', result_data.summary.changed, "success", "") }}
+    </div>
+    <div class="col-md-2 col-sm-6">
+        {{ stats_card('skipped', result_data.summary.skipped, "success", "") }}
+    </div>
+    <div class="col-md-2 col-sm-6">
+        {{ stats_card('No Changes', result_data.summary.no_changes, "secondary", "") }}
+    </div>
+    <div class="col-md-2 col-sm-6">
+        {{ stats_card('missing', result_data.summary.missing, "secondary", "") }}
+    </div>
+    <div class="col-md-2 col-sm-6">
+        {{ stats_card('Errors', result_data.summary.errors, "danger", "") }}
+    </div>
+</div>
 <div class="table-responsive">
     <table class="table table-striped table-sm mb-0">
         <thead>
