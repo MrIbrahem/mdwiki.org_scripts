@@ -119,18 +119,7 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
                 "msg": "",
                 "newrevid": "",
             }
-            if outcome.kind == "changed":
-                self.result_object.summary.changed += 1
-                page_record["newrevid"] = outcome.newrevid
-
-            elif outcome.kind == "no_changes":
-                self.result_object.summary.no_changes += 1
-            elif outcome.kind == "missing":
-                self.result_object.summary.missing += 1
-            elif outcome.kind == "error":
-                self.result_object.summary.errors += 1
-
-            self.result_object.pages_processed.append(page_record)
+            self.record_page_outcome(outcome, page_record)
 
             if i == 1 or i % per_item == 0:
                 self._save_progress()
@@ -139,6 +128,20 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
             self.result_object.status = "completed"
 
         return self.result_object
+
+    def record_page_outcome(self, outcome, page_record):
+        if outcome.kind == "changed":
+            self.result_object.summary.changed += 1
+            page_record["newrevid"] = outcome.newrevid
+
+        elif outcome.kind == "no_changes":
+            self.result_object.summary.no_changes += 1
+        elif outcome.kind == "missing":
+            self.result_object.summary.missing += 1
+        elif outcome.kind == "error":
+            self.result_object.summary.errors += 1
+
+        self.result_object.pages_processed.append(page_record)
 
     # ------------------------------------------------------------------
     # Internal helpers
