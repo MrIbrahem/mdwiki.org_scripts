@@ -22,9 +22,6 @@ from .objects import FixredAllWorkerObject
 
 logger = logging.getLogger(__name__)
 
-_NS_MAIN = 0
-
-
 class FixredAllWorker(BaseObjectsJobWorker):
     """Fix redirect links in all mdwiki pages."""
 
@@ -64,7 +61,7 @@ class FixredAllWorker(BaseObjectsJobWorker):
         titles = list(
             self.site.allpages(
                 start="!",
-                namespace=_NS_MAIN,
+                namespace=0,
                 filterredir="all",
                 dir="ascending",
                 generator=True,
