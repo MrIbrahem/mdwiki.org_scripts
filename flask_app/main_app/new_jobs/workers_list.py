@@ -20,24 +20,24 @@ jobs_targets_public = {
 
 JOB_TYPE_TEMPLATES_PUBLIC = {
     "add_r_column": "one_page_templates/add_r_column/details.html",
-    "add_unlinkedwikibase": "new_jobs_templates/add_unlinkedwikibase/details.html",
-    "create_redirects": "new_jobs_templates/create_redirects/details.html",
-    "duplicate_redirect": "new_jobs_templates/duplicate_redirect/details.html",
-    "find_and_replace": "new_jobs_templates/find_and_replace/details.html",
-    "fixred_all": "new_jobs_templates/fixred_all/details.html",
-    "fixref": "new_jobs_templates/fixref/details.html",
-    "import_history": "new_jobs_templates/import_history/details.html",
+    "add_unlinkedwikibase": "jobs_templates/add_unlinkedwikibase/details.html",
+    "create_redirects": "jobs_templates/create_redirects/details.html",
+    "duplicate_redirect": "jobs_templates/duplicate_redirect/details.html",
+    "find_and_replace": "jobs_templates/find_and_replace/details.html",
+    "fixred_all": "jobs_templates/fixred_all/details.html",
+    "fixref": "jobs_templates/fixref/details.html",
+    "import_history": "jobs_templates/import_history/details.html",
 }
 
 JOB_TYPE_LIST_TEMPLATES_PUBLIC = {
     "add_r_column": "one_page_templates/add_r_column/list.html",
-    "add_unlinkedwikibase": "new_jobs_templates/add_unlinkedwikibase/list.html",
-    "create_redirects": "new_jobs_templates/create_redirects/list.html",
-    "duplicate_redirect": "new_jobs_templates/duplicate_redirect/list.html",
-    "find_and_replace": "new_jobs_templates/find_and_replace/list.html",
-    "fixred_all": "new_jobs_templates/fixred_all/list.html",
-    "fixref": "new_jobs_templates/fixref/list.html",
-    "import_history": "new_jobs_templates/import_history/list.html",
+    "add_unlinkedwikibase": "jobs_templates/add_unlinkedwikibase/list.html",
+    "create_redirects": "jobs_templates/create_redirects/list.html",
+    "duplicate_redirect": "jobs_templates/duplicate_redirect/list.html",
+    "find_and_replace": "jobs_templates/find_and_replace/list.html",
+    "fixred_all": "jobs_templates/fixred_all/list.html",
+    "fixref": "jobs_templates/fixref/list.html",
+    "import_history": "jobs_templates/import_history/list.html",
 }
 
 __all__ = [

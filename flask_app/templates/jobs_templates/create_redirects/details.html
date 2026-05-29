@@ -1,10 +1,10 @@
-{% extends "new_jobs_templates/base_details2.html" %}
+{% extends "jobs_templates/base_details2.html" %}
 {% from "_macros.html" import card_header %}
 
-{% set job_type = 'import_history' %}
+{% set job_type = 'create_redirects' %}
 
-{% block detail_title %}Import History from Enwiki{% endblock %}
-{% block detail_headline %}Import History from Enwiki{% endblock %}
+{% block detail_title %}Copy Redirects from Enwiki{% endblock %}
+{% block detail_headline %}Copy Redirects from Enwiki{% endblock %}
 
 {% block job_summary %}
 {% if result_data and result_data.summary %}

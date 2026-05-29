@@ -185,7 +185,7 @@ class JobsPublicRoutes:
             jobs = list_jobs(limit=100)
             if jobs:
                 jobs = sorted(jobs, key=lambda x: x.created_at.isoformat() if x.created_at else "", reverse=True)
-            return render_template("new_jobs_templates/all_jobs_list.html", jobs=jobs)
+            return render_template("jobs_templates/all_jobs_list.html", jobs=jobs)
 
         # ================================
         # Cancel Jobs routes

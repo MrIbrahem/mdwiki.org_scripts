@@ -1,10 +1,10 @@
-{% extends "new_jobs_templates/base_details2.html" %}
+{% extends "jobs_templates/base_details2.html" %}
 {% from "_macros.html" import card_header, status_icon, stats_card %}
 
-{% set job_type = 'find_and_replace' %}
+{% set job_type = 'fixred_all' %}
 
-{% block detail_title %}Find and Replace{% endblock %}
-{% block detail_headline %}Find and Replace{% endblock %}
+{% block detail_title %}Fix Redirects in All Pages{% endblock %}
+{% block detail_headline %}Fix Redirects in All Pages{% endblock %}
 
 {% block job_summary %}
 {% if result_data and result_data.summary %}
