@@ -179,23 +179,23 @@ Edit:
 
 ### Done
 
-- [x] Created all 6 worker folders with `__init__.py` + `worker.py`
-- [x] Created all 6 template folders with `list.html` + `details.html`
-- [x] Registered all 6 jobs in `workers_list.py` (imports + 3 dicts)
-- [x] Updated `index.html` — all 6 `url_for` links now point to `new_jobs.jobs_list`
-- [x] Added `start_job()` to `jobs_worker.py` (delegates to `start_job_with_args` with empty args)
-- [x] Added descriptive text to `duplicate_redirect/list.html` and `fixred_all/list.html`
-- [x] Added `pages_processed` table + args JSON to `duplicate_redirect/details.html` and `fixred_all/details.html`
-- [x] Created `/new_jobs/list` endpoint + `all_jobs_list.html` template (shows 100 recent jobs across all types)
-- [x] Added "New Jobs" link to navbar in `header.html`
-- [x] Added missing `api_services` functions: `get_page_text`, `search_pages`, `get_double_redirects`, `import_page_from_wiki`, `get_page_links`
-- [x] Refactored `fixred_worker.py` to use `api_services` instead of `newapi`
-- [x] Migrated all 6 workers to use `api_services` (no `_api`/`newapi` imports)
-- [x] All workers append to `self.result["pages_processed"]` for detail tables
+-   [x] Created all 6 worker folders with `__init__.py` + `worker.py`
+-   [x] Created all 6 template folders with `list.html` + `details.html`
+-   [x] Registered all 6 jobs in `workers_list.py` (imports + 3 dicts)
+-   [x] Updated `index.html` — all 6 `url_for` links now point to `new_jobs.jobs_list`
+-   [x] Added `start_job()` to `jobs_worker.py` (delegates to `start_job_with_args` with empty args)
+-   [x] Added descriptive text to `duplicate_redirect/list.html` and `fixred_all/list.html`
+-   [x] Added `pages_processed` table + args JSON to `duplicate_redirect/details.html` and `fixred_all/details.html`
+-   [x] Created `/new_jobs/list` endpoint + `all_jobs_list.html` template (shows 100 recent jobs across all types)
+-   [x] Added "New Jobs" link to navbar in `header.html`
+-   [x] Added missing `api_services` functions: `get_page_text`, `search_pages`, `get_double_redirects`, `import_page_from_wiki`, `get_page_links`
+-   [x] Refactored `fixred_worker.py` to use `api_services` instead of `newapi`
+-   [x] Migrated all 6 workers to use `api_services` (no `_api`/`newapi` imports)
+-   [x] All workers append to `self.result["pages_processed"]` for detail tables
 
 ### Remaining
 
-- [ ] Test the workers end-to-end
+-   [ ] Test the workers end-to-end
 
 ---
 
