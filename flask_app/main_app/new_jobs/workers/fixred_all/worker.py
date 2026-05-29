@@ -18,10 +18,10 @@ from ....api_services.pages_api import edit_page, get_page_text, is_page_exists
 from ....new_jobs.base_worker_object import BaseObjectsJobWorker
 from ....shared.fixred_one import RunState
 from ....shared.fixref_shared.fixred_worker import work_on_text
-from ...shared_objects import SharedworkerObject
-from ...shared_objects import UpdaterOutcome
+from ...shared_objects import SharedworkerObject, UpdaterOutcome
 
 logger = logging.getLogger(__name__)
+
 
 class FixredAllWorker(BaseObjectsJobWorker):
     """Fix redirect links in all mdwiki pages."""

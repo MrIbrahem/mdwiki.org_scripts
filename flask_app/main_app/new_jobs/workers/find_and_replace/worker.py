@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import logging
 import threading
-
 from datetime import datetime
 from typing import Any, Dict
 
@@ -19,10 +18,11 @@ from ....api_services.pages_api import edit_page, get_page_text, is_page_exists
 
 # from ....api_services.query_api import search_pages
 from ....new_jobs.base_worker_object import BaseObjectsJobWorker
-from .objects import FindAndReplaceWorkerObject
 from ...shared_objects import UpdaterOutcome
+from .objects import FindAndReplaceWorkerObject
 
 logger = logging.getLogger(__name__)
+
 
 class FindAndReplaceWorker(BaseObjectsJobWorker):
     """Find-and-replace bot for mdwiki pages."""

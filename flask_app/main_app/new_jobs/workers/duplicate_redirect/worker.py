@@ -25,10 +25,10 @@ from ....api_services.pages_api import (
 )
 from ....api_services.query_api import get_double_redirects
 from ....new_jobs.base_worker_object import BaseObjectsJobWorker
-from ...shared_objects import SharedworkerObject
-from ...shared_objects import UpdaterOutcome
+from ...shared_objects import SharedworkerObject, UpdaterOutcome
 
 logger = logging.getLogger(__name__)
+
 
 def resolve_redirect_chains(redirects: list[dict]) -> list[dict]:
     """
@@ -56,7 +56,7 @@ def resolve_redirect_chains(redirects: list[dict]) -> list[dict]:
         page_data = {
             "title": start_page,
             "redirect_to": immediate_redirect,
-            "final_target": final_target
+            "final_target": final_target,
         }
         resolved_dict.append(page_data)
 
@@ -113,8 +113,8 @@ class DuplicateRedirectWorker(BaseObjectsJobWorker):
                 break
 
             # { "title": start_page, "redirect_to": immediate_redirect, "final_target": final_target }
-            from_title   = entry["title"]
-            redirect_to  = entry["redirect_to"]
+            from_title = entry["title"]
+            redirect_to = entry["redirect_to"]
             final_target = entry["final_target"]
 
             self.result_object.summary.scanned += 1

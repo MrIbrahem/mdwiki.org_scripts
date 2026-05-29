@@ -7,9 +7,9 @@ Imports revision history from English Wikipedia to mdwiki.
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
 import logging
 import threading
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from typing import Any, Dict, Literal
 
@@ -28,7 +28,6 @@ from .objects import ImportHistoryWorkerObject
 logger = logging.getLogger(__name__)
 
 
-
 @dataclass(frozen=True)
 class UpdaterOutcome:
     """Result of running the updater on one page."""
@@ -42,6 +41,7 @@ class UpdaterOutcome:
 
     def to_json(self) -> dict[str, Any]:
         return asdict(self)
+
 
 class ImportHistoryWorker(BaseObjectsJobWorker):
     """Import revision history from enwiki to mdwiki."""

@@ -25,6 +25,7 @@ class UpdaterOutcome:
     def to_json(self) -> dict[str, Any]:
         return asdict(self)
 
+
 @dataclass
 class Summary:
     scanned: int = 0
@@ -34,6 +35,7 @@ class Summary:
     errors: int = 0
     total: int = 0
     skipped: Optional[int] = 0
+
 
 @dataclass
 class SharedworkerObject(WorkerObject):

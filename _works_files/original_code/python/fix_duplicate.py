@@ -24,6 +24,7 @@ for arg in sys.argv:
     if arg.lower() in ["offset", "-offset"] and value.isdigit():
         offset[1] = int(value)
 
+
 @functools.lru_cache(maxsize=1)
 def load_main_api() -> AllAPIS:
     username = os.getenv("WIKI_USERNAME")
@@ -95,6 +96,7 @@ def _fix_one(from_title, redirect_to, to_title):
     # ---
     return page.save(newtext=newtext, summary=sus)
 
+
 def resolve_redirect_chains(redirects: list[dict]) -> list[dict]:
     """
     Resolves a list of redirects into a dictionary tracking the immediate
@@ -121,11 +123,12 @@ def resolve_redirect_chains(redirects: list[dict]) -> list[dict]:
         page_data = {
             "title": start_page,
             "redirect_to": immediate_redirect,
-            "final_target": final_target
+            "final_target": final_target,
         }
         resolved_dict.append(page_data)
 
     return resolved_dict
+
 
 def main():
     logger.info("*<<red>> > :")
@@ -144,8 +147,8 @@ def main():
     # ---
     for nu, entry in enumerate(results, start=1):
         # { "title": start_page, "redirect_to": immediate_redirect, "final_target": final_target }
-        from_title   = entry["title"]
-        redirect_to  = entry["redirect_to"]
+        from_title = entry["title"]
+        redirect_to = entry["redirect_to"]
         final_target = entry["final_target"]
 
         logger.info(f'-------\n*<<yellow>> >{nu}/{len(redirects_data)} from_title:"{from_title}".')
