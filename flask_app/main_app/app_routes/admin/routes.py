@@ -11,7 +11,6 @@ from flask import (
 )
 
 from ...db.services import list_users
-
 from ..admin_routes import (  # bp_jobs,; bp_owidcharts,; bp_settings,; bp_templates,
     bp_coordinators,
 )
@@ -51,7 +50,6 @@ def users_dashboard() -> str:
         users=users,
         total_users=total,
     )
-
 
 
 def register_blueprints(bp_admin) -> None:

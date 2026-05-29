@@ -15,8 +15,8 @@ from .user_token_service import (
     delete_user_token,
     get_user_token,
     get_user_token_by_username,
-    upsert_user_token,
     list_users,
+    upsert_user_token,
 )
 
 __all__ = [

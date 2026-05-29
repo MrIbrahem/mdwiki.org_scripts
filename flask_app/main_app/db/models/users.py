@@ -29,7 +29,7 @@ class AdminUserRecord(db.Model):
     __tablename__ = "admin_users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String(255), db.ForeignKey('user_tokens.username'), unique=True, nullable=False)
+    username = Column(String(255), db.ForeignKey("user_tokens.username"), unique=True, nullable=False)
     is_active = Column(Boolean, nullable=False, default=True, server_default="1")
 
     created_at = Column(DateTime, nullable=False, server_default=func.current_timestamp())

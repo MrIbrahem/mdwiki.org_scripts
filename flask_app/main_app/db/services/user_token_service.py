@@ -21,13 +21,11 @@ def list_users() -> list[UserTokenRecord]:
     """Return all users."""
     records = (
         db.session.query(UserTokenRecord)
-        .options(
-            defer(UserTokenRecord.access_token),
-            defer(UserTokenRecord.access_secret)
-        )
+        .options(defer(UserTokenRecord.access_token), defer(UserTokenRecord.access_secret))
         .all()
     )
     return records
+
 
 def upsert_user_token(*, user_id: int, username: str, access_key: str, access_secret: str) -> None:
     """Insert or update the encrypted OAuth credentials for a user."""
