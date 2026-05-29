@@ -33,7 +33,7 @@ class UpdaterOutcome:
 
     @property
     def has_changes(self) -> bool:
-        return self.kind == "changes"
+        return self.kind == "changed"
 
     def to_json(self) -> Dict[str, Any]:
         return asdict(self)
@@ -138,11 +138,11 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
                 self.result_object.summary.changed += 1
                 page_record["newrevid"] = outcome.newrevid
 
-            elif outcome.outcome == "no-changes":
+            elif outcome.kind == "no-changes":
                 self.result_object.summary.no_changes += 1
-            elif outcome.outcome == "missing":
+            elif outcome.kind == "missing":
                 self.result_object.summary.missing += 1
-            elif outcome.outcome == "error":
+            elif outcome.kind == "error":
                 self.result_object.summary.errors += 1
 
             self.result_object.pages_processed.append(page_record)

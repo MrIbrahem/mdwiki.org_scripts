@@ -36,7 +36,7 @@ class UpdaterOutcome:
 
     @property
     def has_changes(self) -> bool:
-        return self.kind == "changes"
+        return self.kind == "fixed"
 
     def to_json(self) -> Dict[str, Any]:
         return asdict(self)
