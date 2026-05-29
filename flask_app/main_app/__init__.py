@@ -17,11 +17,11 @@ from .app_routes import register_blueprints
 from .app_routes.auth.routes import bp_auth
 from .config import settings
 from .core.cookies import CookieHeaderClient
-from .core.jinja_filters import filters
 from .db import init_db
 from .extensions import db as _db
 from .extensions import migrate
 from .su_services.users_service import current_user
+from .core.jinja_filters import filters
 
 logger = logging.getLogger(__name__)
 
@@ -140,12 +140,23 @@ def create_app(config_class: Type) -> Flask:
     def _inject_user() -> dict[str, Any]:
         return context_user()
 
+    app.jinja_env.filters.update(filters)
+
+    @app.teardown_appcontext
+    def _cleanup_connections(exception: Exception | None) -> None:  # pragma: no cover - teardown
+        # Idempotent teardown - safe for Flask 3.1.2+ stream_with_context regression
+        # See: https://github.com/pallets/flask/issues/5804
+        # try:
+        #     close_cached_db()
+        # except Exception:
+        #     logger.debug("Failed to close cached DB during teardown", exc_info=True)
+        pass
+
     db_is_ok = True
     # Initialize Flask-SQLAlchemy and Flask-Migrate
     if app.config.get("SQLALCHEMY_DATABASE_URI"):
         db_is_ok = init_app_and_db(app, _db)
 
-    app.jinja_env.filters.update(filters)
 
     register_error_pages(app)
 

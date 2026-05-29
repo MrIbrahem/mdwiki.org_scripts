@@ -15,7 +15,7 @@ from .user_token_service import (
     upsert_user_token,
 )
 
-from .coordinator_service import (
+from .admin_service import (
     active_coordinators,
 )
 
