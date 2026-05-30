@@ -21,12 +21,6 @@ def generate_domain_test_placeholders(src_root, test_root):
             target_dir = test_base_unit / rel_path
             if file.endswith(".py"):
 
-                if file == "__init__.py":
-                    file_path = current_path / file
-                    file_content = file_path.read_text(encoding="utf-8")
-                    if "def " not in file_content:
-                        continue
-
                 file_stem = Path(file).stem
                 if "routes" in current_path.parts or file_stem == "routes":
                     target_dir = test_base_integration / rel_path
@@ -43,6 +37,14 @@ def generate_domain_test_placeholders(src_root, test_root):
 
                 else:
                     test_filename = f"test_{file_stem}.py"
+
+                if file == "__init__.py":
+                    file_path = current_path / file
+                    file_content = file_path.read_text(encoding="utf-8")
+                    if "def " not in file_content:
+                        continue
+                    else:
+                        test_filename = f"test_{parent_name}_init.py"
 
                 # إنشاء المجلد إذا لم يكن موجوداً
                 target_dir.mkdir(parents=True, exist_ok=True)
