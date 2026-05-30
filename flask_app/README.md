@@ -178,7 +178,7 @@ Service functions call `db.session.commit()` without try/except rollback blocks.
 -   [ ] Add `requirements.txt` with pinned dependencies
 -   [ ] Add `.gitignore` for `__pycache__`, `*.pyc`, `.env`
 -   [ ] Add pytest test suite (at minimum for config, crypto, and auth flows)
--   [ ] Fix the broken `get_template_pages_newapi()` function
+-   [x] Remove the broken `get_template_pages_newapi()` function
 -   [ ] Uncomment the thread-safety lock in `crypto.py`
 -   [ ] Add path sanitization for job result file serving
 -   [ ] Restore `@admin_required` on the delete job endpoint
@@ -188,7 +188,7 @@ Service functions call `db.session.commit()` without try/except rollback blocks.
 
 ## Improvement Plan
 
-### Quick Wins (1-2 days)
+### Quick Wins
 
 1. Add `requirements.txt` with all dependencies pinned
 2. Add `.gitignore` for Python artifacts
@@ -197,7 +197,7 @@ Service functions call `db.session.commit()` without try/except rollback blocks.
 5. Add `@admin_required` back to the delete job route
 6. Add path validation in `load_job_result()`
 
-### Medium-Term (1-2 weeks)
+### Medium-Term
 
 1. Add pytest test suite with SQLite in-memory database
 2. Consolidate remaining worker Summary dataclasses into `shared_objects.py`

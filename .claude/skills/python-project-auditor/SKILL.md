@@ -136,11 +136,11 @@ If a README already exists, improve and extend it — do not blindly overwrite.
 
 ## Improvement Plan
 
-### Quick Wins (< 1 day each)
+### Quick Wins
 
 1. ...
 
-### Medium-Term (1–2 weeks)
+### Medium-Term
 
 1. ...
 

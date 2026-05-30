@@ -106,7 +106,7 @@ results = api.NewApi().post_continue(...)  # AttributeError!
 
 ## Areas That Need Attention
 
--   [ ] Fix or remove `get_template_pages_newapi()`
+-   [x] Remove `get_template_pages_newapi()`
 -   [ ] Remove empty `utils/` package
 -   [ ] Add caching for repeated queries
 -   [ ] Make `get_page_text` raise on error instead of returning empty string

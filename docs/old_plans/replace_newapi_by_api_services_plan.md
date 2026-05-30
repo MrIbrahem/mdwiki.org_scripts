@@ -784,13 +784,12 @@ Already uses `api_services` for `resolve_redirects` and `get_user_site`. Remaini
 ### 7.2 Deprecation Path
 
 ```
-Phase 0: Fix bugs, expand api_services         (1 week)
-Phase 1: Add missing operations to api_services (1-2 weeks)
-Phase 2: Migrate workers one-by-one             (2-3 weeks)
-Phase 3: Remove _api.py and newapi imports      (1 day)
-Phase 4: Deprecate newapi                       (1 day)
-Phase 5: Cleanup and hardening                  (1 week)
-                                         Total: ~5-7 weeks
+Phase 0: Fix bugs, expand api_services
+Phase 1: Add missing operations to api_services
+Phase 2: Migrate workers one-by-one
+Phase 3: Remove _api.py and newapi imports
+Phase 4: Deprecate newapi
+Phase 5: Cleanup and hardening
 ```
 
 ### 7.3 Rollback Strategy
