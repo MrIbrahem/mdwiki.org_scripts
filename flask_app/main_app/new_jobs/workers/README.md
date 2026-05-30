@@ -163,7 +163,7 @@ pytest tests/unit/new_jobs/workers --cov=flask_app/main_app/new_jobs/workers
 
 ```python
 # shared_objects.py:18
-kind: Literal["missing", "no_changes", "changed", "error"]
+kind: Literal["missing", "skipped", "changed", "error"]
 ```
 
 Multiple workers handle `"skipped"` outcomes via `record_page_outcome()`, but the shared `UpdaterOutcome` type doesn't include it. The type annotation is inaccurate.

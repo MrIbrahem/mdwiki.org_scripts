@@ -44,7 +44,7 @@ shared/
 ```python
 @dataclass(frozen=True)
 class UpdaterTextOutcome:
-    kind: Literal["notext", "no_changes", "changes", "saved"]
+    kind: Literal["notext", "skipped", "changes", "saved"]
     old_text: str = ""
     new_text: str = ""
     newrevid: int = 0
@@ -58,7 +58,7 @@ Used by single-page operations (`fixred_one.py`, `newupdater/worker.py`) where t
 ```python
 def work_on_title(title, save=False, summary="Fix redirects.") -> UpdaterTextOutcome:
     # Fetch page → run redirect fixer → optionally save
-    # Returns: UpdaterTextOutcome(kind="notext"|"no_changes"|"changes"|"saved")
+    # Returns: UpdaterTextOutcome(kind="notext"|"skipped"|"changes"|"saved")
 ```
 
 ### fixref_shared/fixred_worker.py — Redirect Algorithm
