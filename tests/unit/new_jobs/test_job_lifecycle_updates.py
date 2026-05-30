@@ -80,6 +80,7 @@ def test_is_cancelled_sets_cancelled_at(app):
             conn.commit()
 
         assert worker.result_object.cancelled_at is None
-        assert worker.is_cancelled() is True
+        assert worker.is_cancelled() is False
+        assert worker.is_cancelled(check_db=True) is True
         assert worker.result_object.status == "cancelled"
         assert worker.result_object.cancelled_at is not None
