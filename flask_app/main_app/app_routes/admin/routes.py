@@ -6,9 +6,9 @@ import logging
 
 from flask import (
     Blueprint,
+    flash,
     render_template,
     request,
-    flash,
 )
 
 from ...db.services import list_users

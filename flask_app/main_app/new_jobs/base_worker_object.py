@@ -18,6 +18,7 @@ from .utils import generate_result_file_name
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class WorkerObject:
     status: str = "pending"
@@ -35,6 +36,7 @@ class WorkerObject:
         """
 
         return asdict(self)
+
 
 class BaseObjectsJobWorker(ABC):
     """Abstract base class for job workers with standardized lifecycle.

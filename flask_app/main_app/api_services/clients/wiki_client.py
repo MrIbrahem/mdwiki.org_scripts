@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import requests
 import logging
 from typing import Any, Dict
 
 import mwclient
+import requests
 
 from ...config import settings
 from ...core.crypto import decrypt_value

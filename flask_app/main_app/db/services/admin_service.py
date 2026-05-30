@@ -16,11 +16,13 @@ from .utils import db_guard
 
 logger = logging.getLogger(__name__)
 
+
 @db_guard(default_return=[], msg="Failed to active coordinators")
 def active_coordinators() -> list[str]:
     """Get a list of active coordinator usernames from the database."""
     records = db.session.query(AdminUserRecord).filter(AdminUserRecord.is_active).all()
     return [u.username for u in records]
+
 
 def list_coordinators() -> List[AdminUserRecord]:
     """
@@ -29,6 +31,7 @@ def list_coordinators() -> List[AdminUserRecord]:
     Returns a list of records, or an empty list on failure.
     """
     return db.session.query(AdminUserRecord).all()
+
 
 def get_coordinator_by_id(coordinator_id: int) -> AdminUserRecord:
     """
@@ -76,9 +79,7 @@ def delete_coordinator(coordinator_id: int) -> bool:
     Returns True if rows were affected, False otherwise (or on failure).
     """
     affected_rows = (
-        db.session.query(AdminUserRecord)
-        .filter(AdminUserRecord.id == coordinator_id)
-        .delete(synchronize_session=False)
+        db.session.query(AdminUserRecord).filter(AdminUserRecord.id == coordinator_id).delete(synchronize_session=False)
     )
     return affected_rows > 0
 

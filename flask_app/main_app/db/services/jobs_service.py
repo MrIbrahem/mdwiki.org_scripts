@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from datetime import UTC, datetime
+
 from sqlalchemy import func
 
 from ...extensions import db
@@ -138,6 +139,7 @@ def list_jobs(limit: int = 100, job_type: str | None = None) -> list[JobRecord]:
         query = query.filter(JobRecord.job_type == job_type)
     return query.order_by(JobRecord.created_at.desc()).limit(limit).all()
 
+
 def delete_job(job_id: int, job_type: str) -> bool:
     """Delete a job by ID and job type efficiently."""
     affected_rows = (
@@ -173,6 +175,7 @@ def cancel_job(job_id: int, job_type: str | None = None) -> bool:
         db.session.refresh(job)
         return True
     return False
+
 
 @db_guard(default_return=False)
 def is_job_cancelled(job_id: int, job_type: str) -> bool:

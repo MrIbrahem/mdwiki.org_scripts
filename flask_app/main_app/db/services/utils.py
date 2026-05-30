@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import functools
 import logging
-import sqlalchemy
+from typing import Any, Callable, ParamSpec, TypeVar
 
-from typing import Callable, ParamSpec, TypeVar, Any
+import sqlalchemy
 
 from ...extensions import db
 
@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 P = ParamSpec("P")
 R = TypeVar("R")
 
+
 def db_guard(default_return: Any = False, msg: str = "") -> Callable[..., Callable[P, R]]:
     """Decorator factory to wrap a DB service function.
 
@@ -22,6 +23,7 @@ def db_guard(default_return: Any = False, msg: str = "") -> Callable[..., Callab
     On *any* exception, the session is rolled back, the error is logged,
     and the specified `default_return` value is returned.
     """
+
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
@@ -37,5 +39,7 @@ def db_guard(default_return: Any = False, msg: str = "") -> Callable[..., Callab
                 logger.exception(f"{msg}: %s", exc)
                 db.session.rollback()
                 return default_return
+
         return wrapper
+
     return decorator
