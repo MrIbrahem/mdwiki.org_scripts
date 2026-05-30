@@ -16,16 +16,16 @@ class TestCookieHeaderClient:
         """Calling open with no headers should not crash."""
         with app.test_client() as client:
             resp = client.get("/")
-            assert resp.status_code in (200, 302, 401, 404)
+            assert resp.status_code == 200
 
     def test_open_with_dict_headers_no_cookie(self, app):
         """Dict headers without Cookie key should pass through."""
         with app.test_client() as client:
             resp = client.get("/", headers={"X-Custom": "value"})
-            assert resp.status_code in (200, 302, 401, 404)
+            assert resp.status_code == 200
 
     def test_open_with_list_headers_no_cookie(self, app):
         """List-of-tuple headers without cookie should pass through."""
         with app.test_client() as client:
             resp = client.get("/", headers=[("X-Custom", "value")])
-            assert resp.status_code in (200, 302, 401, 404)
+            assert resp.status_code == 200
