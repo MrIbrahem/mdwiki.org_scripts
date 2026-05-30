@@ -8,5 +8,5 @@ import pytest
 @pytest.mark.usefixtures("app")
 class TestCoordinatorRoutes:
     def test_dashboard_requires_auth(self, mock_client):
-        resp = mock_client.get("/coordinators/")
-        assert resp.status_code in (302, 401, 403)
+        resp = mock_client.get("/admin/coordinators/")
+        assert resp.status_code == 302
