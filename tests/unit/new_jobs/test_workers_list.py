@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from flask_app.main_app.new_jobs.workers_list import (
-    JOB_TYPE_TEMPLATES_PUBLIC,
+    jobs_data,
     jobs_targets_public,
 )
 
@@ -9,7 +9,7 @@ from flask_app.main_app.new_jobs.workers_list import (
 def test_workers_list_integrity():
     # Check that public jobs have both a target worker and a template
     for job_type in jobs_targets_public:
-        assert job_type in JOB_TYPE_TEMPLATES_PUBLIC
+        assert job_type in jobs_data
         assert callable(jobs_targets_public[job_type])
 
 
