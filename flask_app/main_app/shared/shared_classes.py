@@ -6,7 +6,6 @@ import logging
 from dataclasses import asdict, dataclass
 from typing import Any, Literal
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -22,6 +21,7 @@ class UpdaterTextOutcome:
 
     def to_json(self) -> dict[str, Any]:
         return asdict(self)
+
 
 __all__ = [
     "UpdaterTextOutcome",

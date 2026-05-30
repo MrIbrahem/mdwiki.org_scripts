@@ -5,13 +5,15 @@ Service: fix redirects in page text on mdwiki.
 from __future__ import annotations
 
 import logging
-from .shared_classes import UpdaterTextOutcome
+
 from ..api_services.clients.wiki_client import get_user_site
 from ..api_services.pages_api import edit_page, get_page_text
 from ..su_services.users_service import current_user
 from .fixref_shared.fixred_worker import RunState, work_on_text
+from .shared_classes import UpdaterTextOutcome
 
 logger = logging.getLogger(__name__)
+
 
 def work_on_title(
     title: str,

@@ -11,6 +11,7 @@ from ...shared_objects import Summary
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class FindAndReplaceWorkerObject(WorkerObject):
     text_find: str = ""

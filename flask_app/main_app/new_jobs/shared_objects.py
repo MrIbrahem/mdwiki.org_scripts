@@ -10,6 +10,7 @@ from ..new_jobs.base_worker_object import WorkerObject
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass(frozen=True)
 class UpdaterOutcome:
     """Result of running the updater on one page."""
@@ -26,6 +27,7 @@ class UpdaterOutcome:
 class Summary:
     scanned: int = 0
     total: int = 0
+
 
 @dataclass
 class SharedworkerObject(WorkerObject):

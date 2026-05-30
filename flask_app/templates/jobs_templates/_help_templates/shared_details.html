@@ -1,10 +1,6 @@
-<!-- jobs_templates/_help_templates/_shared_details.html -->
+<!-- jobs_templates/_help_templates/shared_details.html -->
 {% extends "jobs_templates/base_details2.html" %}
 {%- from "jobs_templates/_help_templates/_jobs_macros.html" import template_pages_changed, template_pages_processed, template_pages_errors -%}
-
-{# {% set job_type = 'add_unlinkedwikibase' %} #}
-{% block detail_title %}{{ self.title_value() }}{% endblock %}
-{% block detail_headline %}{{ self.headline_value() }}{% endblock %}
 
 {% block job_summary %}
 
