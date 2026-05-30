@@ -1,5 +1,30 @@
 import os
+import ast
 from pathlib import Path
+
+def extract_classes_and_functions(file_path):
+    """تحليل الملف واستخراج أسماء الكلاسات والدوال منه."""
+    classes = []
+    functions = []
+    try:
+        file_content = file_path.read_text(encoding="utf-8")
+        tree = ast.parse(file_content)
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                classes.append(node.name)
+            # إضافة الدوال العادية والدوال غير المتزامنة (async)
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                # إذا لم تكن الدالة تابعة لكلاس (تجنب تكرار توثيق التوابع داخل الكلاسات إذا أردت)
+                functions.append(node.name)
+
+    except SyntaxError:
+        # تجاهل الملفات التي تحتوي على أخطاء في الصياغة (Syntax Errors)
+        pass
+    except Exception as e:
+        print(f"Error parsing {file_path}: {e}")
+
+    return classes, functions
 
 
 def generate_domain_test_placeholders(src_root, test_root):
@@ -58,23 +83,46 @@ def generate_domain_test_placeholders(src_root, test_root):
                 except ValueError:
                     internal_path = "/".join(parts)
 
+                # extract functions and classes
+                classes, functions = extract_classes_and_functions(file_path)
+
+                #
+                classes_str = ", ".join(classes) if classes else "None"
+                functions_str = ", ".join(functions) if functions else "None"
+
                 _new = [
+                    '"""',
+                    f'Unit tests for {internal_path}/{file} module.',
+                    '',
+                    f'Classes to test: {classes_str}',
+                    f'Functions to test: {functions_str}',
+                    '',
+                    'TODO: write tests',
+                    '"""',
+                    '\n',
+                ]
+                # ------------------------------------------------
+                _old = [
                     '"""',
                     f'Unit tests for {internal_path}/{file} module.',
                     'TODO: write tests',
                     '"""',
                     '\n',
                 ]
+                content_old = "\n".join(_old)
                 # ------------------------------------------------
-
                 content_new = "\n".join(_new)
 
                 if test_file_path.exists():
-                    continue
+                    test_text = test_file_path.read_text(encoding="utf-8")
+                    if test_text != content_old:
+                        # continue to skip goto next part
+                        continue
 
                 # save content_new to the file
                 with open(test_file_path, "w", encoding="utf-8") as f:
                     f.write(content_new)
+
 
 if __name__ == "__main__":
     main_path = Path(__file__).parent.parent
