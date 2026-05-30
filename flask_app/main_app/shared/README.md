@@ -102,6 +102,12 @@ def work_on_text(title, text):
 
 `move_resources()` extracts drug identifiers from infobox into `{{drug resources}}` template.
 
+## Testing
+
+```bash
+pytest tests/unit/shared --cov=flask_app/main_app/shared
+```
+
 ## Strengths
 
 -   **Rich domain knowledge** encoded in parameter mappings and section definitions
