@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from flask_app.main_app.app_routes.fixred import _normalize_title
 
 

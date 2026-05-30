@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from flask_app.main_app.core.crypto import decrypt_value, encrypt_value
 
 

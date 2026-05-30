@@ -13,8 +13,8 @@ class TestNewupdaterRoute:
 
     def test_get_with_login(self, mock_client, login, monkeypatch):
         login("TestUser")
-        from flask_app.main_app.su_services.users_service import CurrentUser
         import flask_app.main_app.su_services.users_service as users_mod
+        from flask_app.main_app.su_services.users_service import CurrentUser
 
         monkeypatch.setattr(
             users_mod,

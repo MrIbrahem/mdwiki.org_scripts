@@ -6,7 +6,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import sqlalchemy.exc
-
 from flask_app.main_app.db.services.utils import db_guard
 
 
@@ -20,6 +19,7 @@ class TestDbGuard:
 
     def test_returns_default_on_exception_with_mock_db(self):
         with patch("flask_app.main_app.db.services.utils.db") as mock_db:
+
             @db_guard(default_return=None)
             def my_func():
                 raise RuntimeError("boom")
@@ -62,6 +62,7 @@ class TestDbGuard:
 
     def test_default_return_type_can_be_anything(self):
         with patch("flask_app.main_app.db.services.utils.db"):
+
             @db_guard(default_return={"error": True})
             def my_func():
                 raise RuntimeError("fail")

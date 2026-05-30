@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import pytest
-
 from flask_app.main_app.core.cookies import CookieHeaderClient
 
 
 class TestCookieHeaderClient:
     def test_class_is_subclass_of_flask_client(self):
         from flask.testing import FlaskClient
+
         assert issubclass(CookieHeaderClient, FlaskClient)
 
     def test_open_with_no_headers(self, app):

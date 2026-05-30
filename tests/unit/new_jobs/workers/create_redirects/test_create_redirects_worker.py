@@ -16,5 +16,6 @@ class TestCreateRedirectsWorker:
 
     def test_result_object_type(self):
         from flask_app.main_app.new_jobs.workers.create_redirects.objects import CreateRedirectsWorkerObject
+
         worker = CreateRedirectsWorker(job_id=1, args={}, user=None)
         assert isinstance(worker.result_object, CreateRedirectsWorkerObject)

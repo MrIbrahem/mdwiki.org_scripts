@@ -7,7 +7,6 @@ the Flask test client with a real SQLite database (via TestingConfig).
 from __future__ import annotations
 
 import pytest
-
 from flask_app.main_app.db.services import (
     active_coordinators,
     upsert_user_token,
@@ -19,8 +18,9 @@ from flask_app.main_app.db.services.admin_service import (
     set_coordinator_active,
 )
 
+
 @pytest.fixture(autouse=True)
-def _seed_admin(app, user_id=1, username= "AdminUser"):
+def _seed_admin(app, user_id=1, username="AdminUser"):
     """Create a user token + active coordinator record for testing admin routes."""
     with app.app_context():
         upsert_user_token(
@@ -35,6 +35,7 @@ def _seed_admin(app, user_id=1, username= "AdminUser"):
             pass
         except Exception:
             raise
+
 
 def _login_admin(mock_client, user_id=1, username="AdminUser"):
     """Set session to an admin user (DB record must already exist)."""

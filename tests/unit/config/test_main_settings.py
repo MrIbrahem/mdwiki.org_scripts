@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 
 import pytest
-
+from flask_app.main_app.config.classes import CookieConfig, OtherConfig
 from flask_app.main_app.config.main_settings import (
     _env_bool,
     _env_int,
@@ -14,7 +14,6 @@ from flask_app.main_app.config.main_settings import (
     resolve_path,
     settings,
 )
-from flask_app.main_app.config.classes import OtherConfig, CookieConfig
 
 
 class TestEnvBool:
@@ -65,6 +64,7 @@ class TestResolvePath:
 
     def test_returns_path_object(self):
         from pathlib import Path
+
         result = resolve_path("/tmp/test")
         assert isinstance(result, Path)
 
@@ -105,6 +105,7 @@ class TestLoadCookieConfig:
 class TestSettingsSingleton:
     def test_settings_is_settings_instance(self):
         from flask_app.main_app.config.classes import Settings
+
         assert isinstance(settings, Settings)
 
     def test_settings_has_security(self):

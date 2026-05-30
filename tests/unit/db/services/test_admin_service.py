@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
+
 import pytest
 from flask_app.main_app.db.services.admin_service import (
     add_coordinator,

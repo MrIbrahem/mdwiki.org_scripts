@@ -10,7 +10,6 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from flask_app.main_app.config import settings
 from flask_app.main_app.db.services import upsert_user_token
 
@@ -38,9 +37,7 @@ class TestLoginRoute:
 
     def test_login_redirects_to_oauth(self, mock_client):
         """Login should redirect (302) after initiating OAuth flow."""
-        with patch(
-            "flask_app.main_app.app_routes.auth.routes.start_login"
-        ) as mock_start:
+        with patch("flask_app.main_app.app_routes.auth.routes.start_login") as mock_start:
             mock_start.return_value = (
                 "https://example.org/oauth/authorize",
                 MagicMock(key="req_key", secret="req_secret"),
@@ -51,9 +48,7 @@ class TestLoginRoute:
 
     def test_login_stores_request_token_in_session(self, mock_client):
         """After login, the session should contain the OAuth request token."""
-        with patch(
-            "flask_app.main_app.app_routes.auth.routes.start_login"
-        ) as mock_start:
+        with patch("flask_app.main_app.app_routes.auth.routes.start_login") as mock_start:
             token = MagicMock(key="req_key", secret="req_secret")
             mock_start.return_value = (
                 "https://example.org/oauth/authorize",
@@ -329,9 +324,7 @@ class TestAuthRouteIntegration:
     def test_login_then_callback_full_flow(self, app, mock_client):
         """Full round-trip: login -> callback -> user in database."""
         # Step 1: Login
-        with patch(
-            "flask_app.main_app.app_routes.auth.routes.start_login"
-        ) as mock_start:
+        with patch("flask_app.main_app.app_routes.auth.routes.start_login") as mock_start:
             mock_start.return_value = (
                 "https://example.org/oauth/authorize",
                 MagicMock(key="rk", secret="rs"),

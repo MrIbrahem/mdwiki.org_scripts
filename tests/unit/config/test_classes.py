@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from flask_app.main_app.config.classes import (
     CookieConfig,
     DbConfig,
@@ -112,12 +111,20 @@ class TestSettings:
         paths = Paths(log_dir="/l", jobs_path="/j", new_jobs_path="/n")
         cookie = CookieConfig(name="c", max_age=1, secure=False, httponly=False, samesite="Lax")
         sessions = SessionConfig(state_key="sk", request_token_key="rtk")
-        security = SecurityConfig(secret_key="s", max_content_length=1, max_form_memory_size=1, max_form_parts=1, secret_key_fallbacks=())
+        security = SecurityConfig(
+            secret_key="s", max_content_length=1, max_form_memory_size=1, max_form_parts=1, secret_key_fallbacks=()
+        )
         other = OtherConfig(csrf_time_limit=1, user_agent="t", allowlist_users=(), wiki_domain="w", static_server="s")
         jobs = JobsConfig(jobs_max_workers=1, jobs_log_lines=1)
         s = Settings(
-            database_data=db, paths=paths, cookie=cookie, sessions=sessions,
-            oauth=None, security=security, other=other, jobs=jobs,
+            database_data=db,
+            paths=paths,
+            cookie=cookie,
+            sessions=sessions,
+            oauth=None,
+            security=security,
+            other=other,
+            jobs=jobs,
         )
         assert s.database_data == db
         assert s.oauth is None

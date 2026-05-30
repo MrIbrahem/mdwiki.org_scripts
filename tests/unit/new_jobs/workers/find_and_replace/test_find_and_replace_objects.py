@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+from flask_app.main_app.new_jobs.base_worker_object import WorkerObject
 from flask_app.main_app.new_jobs.workers.find_and_replace.objects import (
     FindAndReplaceWorkerObject,
 )
-from flask_app.main_app.new_jobs.base_worker_object import WorkerObject
 
 
 class TestFindAndReplaceWorkerObject:

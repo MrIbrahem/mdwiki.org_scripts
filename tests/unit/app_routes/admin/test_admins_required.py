@@ -5,7 +5,6 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from flask_app.main_app.app_routes.admin.admins_required import admin_required
 
 
@@ -30,7 +29,9 @@ class TestAdminRequired:
             user = MagicMock()
             user.username = "regular_user"
             with patch("flask_app.main_app.app_routes.admin.admins_required.current_user", return_value=user):
-                with patch("flask_app.main_app.app_routes.admin.admins_required.active_coordinators", return_value=["admin"]):
+                with patch(
+                    "flask_app.main_app.app_routes.admin.admins_required.active_coordinators", return_value=["admin"]
+                ):
                     with pytest.raises(Exception):
                         view()
 
@@ -43,7 +44,10 @@ class TestAdminRequired:
             user = MagicMock()
             user.username = "admin_user"
             with patch("flask_app.main_app.app_routes.admin.admins_required.current_user", return_value=user):
-                with patch("flask_app.main_app.app_routes.admin.admins_required.active_coordinators", return_value=["admin_user"]):
+                with patch(
+                    "flask_app.main_app.app_routes.admin.admins_required.active_coordinators",
+                    return_value=["admin_user"],
+                ):
                     result = view()
                     assert result == "ok"
 

@@ -10,7 +10,6 @@ from __future__ import annotations
 from unittest.mock import patch
 
 import pytest
-
 from flask_app.main_app.db.services import (
     create_job,
     get_job,
@@ -152,12 +151,15 @@ class TestStartJob:
         _seed_user(app)
         _login_user(mock_client)
 
-        with patch(
-            "flask_app.main_app.app_routes.new_jobs.load_auth_payload",
-            return_value={"id": 1, "username": "JobUser"},
-        ), patch(
-            "flask_app.main_app.app_routes.new_jobs.jobs_worker.start_job",
-            return_value=1,
+        with (
+            patch(
+                "flask_app.main_app.app_routes.new_jobs.load_auth_payload",
+                return_value={"id": 1, "username": "JobUser"},
+            ),
+            patch(
+                "flask_app.main_app.app_routes.new_jobs.jobs_worker.start_job",
+                return_value=1,
+            ),
         ):
             resp = mock_client.post(
                 f"/new_jobs/{VALID_JOB_TYPE}/start",
@@ -171,12 +173,15 @@ class TestStartJob:
         _seed_user(app)
         _login_user(mock_client)
 
-        with patch(
-            "flask_app.main_app.app_routes.new_jobs.load_auth_payload",
-            return_value={"id": 1, "username": "JobUser"},
-        ), patch(
-            "flask_app.main_app.app_routes.new_jobs.jobs_worker.start_job_with_args",
-            return_value=1,
+        with (
+            patch(
+                "flask_app.main_app.app_routes.new_jobs.load_auth_payload",
+                return_value={"id": 1, "username": "JobUser"},
+            ),
+            patch(
+                "flask_app.main_app.app_routes.new_jobs.jobs_worker.start_job_with_args",
+                return_value=1,
+            ),
         ):
             resp = mock_client.post(
                 f"/new_jobs/{VALID_JOB_TYPE}/start_with_args",
