@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from .workers.add_r_column.worker import add_r_column_worker_entry
 from .workers.add_unlinkedwikibase.worker import add_unlinkedwikibase_worker_entry
 from .workers.create_redirects.worker import create_redirects_worker_entry
@@ -7,6 +8,21 @@ from .workers.fixred_all.worker import fixred_all_worker_entry
 from .workers.fixref.worker import fixref_worker_entry
 from .workers.import_history.worker import import_history_worker_entry
 
+@dataclass
+class JobData:
+    job_type: str
+    job_name: str
+    job_details_template: str
+    job_list_template: str
+
+jobs_data = {
+    "add_r_column" : JobData(
+        job_type="add_r_column",
+        job_name="Add R column",
+        job_details_template="one_page_templates/add_r_column/details.html",
+        job_list_template="one_page_templates/add_r_column/list.html",
+    )
+}
 jobs_targets_public = {
     "add_r_column": add_r_column_worker_entry,
     "add_unlinkedwikibase": add_unlinkedwikibase_worker_entry,
@@ -41,6 +57,7 @@ JOB_TYPE_LIST_TEMPLATES_PUBLIC = {
 }
 
 __all__ = [
+    "jobs_data",
     "jobs_targets_public",
     "JOB_TYPE_TEMPLATES_PUBLIC",
 ]
