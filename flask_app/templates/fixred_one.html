@@ -43,10 +43,6 @@
 		<h5>Proposed changes for <code>{{ form_title }}</code></h5>
 		{{ edit_form(wiki_domain, form_title, outcome.new_text) }}
 
-        {% elif outcome.kind == "notitle" %}
-        <div class="alert alert-danger">
-            <code>{{ form_title }}</code>: the page title is invalid.
-        </div>
 		{% elif outcome.kind == "skipped" %}
 		<div class="alert alert-info">
 			<code>{{ form_title }}</code>: page skipped, reason: {{ outcome.msg }}

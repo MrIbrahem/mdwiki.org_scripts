@@ -19,9 +19,11 @@ class TestWorkOnTitle:
     def test_empty_title_returns_notitle(self):
         with patch("flask_app.main_app.shared.fixred_one.current_user", return_value=MagicMock()):
             result = work_on_title("", False)
-            assert result.kind == "notitle"
+            assert result.kind == "skipped"
+            assert result.msg == "Invalid title"
 
     def test_whitespace_title_returns_notext(self):
         with patch("flask_app.main_app.shared.fixred_one.current_user", return_value=MagicMock()):
             result = work_on_title("   ", False)
-            assert result.kind == "notitle"
+            assert result.kind == "skipped"
+            assert result.msg == "Invalid title"

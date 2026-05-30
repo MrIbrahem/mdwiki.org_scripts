@@ -36,7 +36,7 @@ def work_on_title(
 
     title = (title or "").strip()
     if not title:
-        return UpdaterTextOutcome(kind="notitle")
+        return UpdaterTextOutcome(kind="skipped", msg="Invalid title")
 
     old_text = get_page_text(title, site)
 

@@ -36,6 +36,6 @@ class TestUpdaterTextOutcome:
         assert "new_text" in d
 
     def test_all_kind_values(self):
-        for kind in ("notitle", "notext", "changes", "saved"):
+        for kind in ("notext", "changes", "saved"):
             o = UpdaterTextOutcome(kind=kind)
             assert o.kind == kind
