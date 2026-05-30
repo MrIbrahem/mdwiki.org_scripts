@@ -12,19 +12,19 @@
         {{ stats_card('Processing', result_data.summary.scanned ~ ' / ' ~ result_data.summary.total, "primary", "") }}
     </div>
     <div class="col-md-2 col-sm-6">
-        {{ stats_card('Changed', result_data.summary.changed, "success", "") }}
+        {{ stats_card('Changed', result_data.pages_changed|length, "success", "") }}
     </div>
     <div class="col-md-2 col-sm-6">
-        {{ stats_card('skipped', result_data.summary.skipped, "success", "") }}
+        {{ stats_card('skipped', result_data.pages_skipped|length, "success", "") }}
     </div>
     <div class="col-md-2 col-sm-6">
-        {{ stats_card('No Changes', result_data.summary.no_changes, "secondary", "") }}
+        {{ stats_card('No Changes', result_data.pages_no_changes|length, "secondary", "") }}
     </div>
     <div class="col-md-2 col-sm-6">
-        {{ stats_card('missing', result_data.summary.missing, "secondary", "") }}
+        {{ stats_card('missing', result_data.pages_missing|length, "secondary", "") }}
     </div>
     <div class="col-md-2 col-sm-6">
-        {{ stats_card('Errors', result_data.summary.errors, "danger", "") }}
+        {{ stats_card('Errors', result_data.pages_errors|length, "danger", "") }}
     </div>
 </div>
 {% endblock %}
