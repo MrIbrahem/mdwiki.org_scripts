@@ -67,14 +67,14 @@ def cancel_job(job_id: int, job_type: str | None = None, job: JobRecord | None =
 
     # 2. Create result_file_cancelled file
     if job and job.result_file:
-        create_job_cancelled_file(f"{job.result_file}.cancelled")
+        cancelled_file = create_job_cancelled_file(f"{job.result_file}.cancelled")
 
     # 3. Persist cancellation to DB (for cross-process detection)
     db_cancelled = cancel_job_db(job_id, job_type)
     if db_cancelled:
         logger.info(f"Database cancellation requested for job {job_id}")
 
-    return local_cancelled or db_cancelled
+    return local_cancelled or cancelled_file or db_cancelled
 
 
 def start_job_with_args(

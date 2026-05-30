@@ -9,7 +9,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import Any, Dict, Final, Optional
 
-import sqlalchemy
+from sqlalchemy.orm.exc import StaleDataError
 
 from ..db.services import (
     is_job_cancelled,
@@ -124,7 +124,7 @@ class BaseObjectsJobWorker(ABC):
         # Update final status
         try:
             update_job_status(self.job_id, final_status, self.result_file, job_type=self.job_type)
-        except (sqlalchemy.orm.exc.StaleDataError, LookupError):
+        except (StaleDataError, LookupError):
             logger.error(f"Job {self.job_id}: Could not update final status, job record might have been deleted.")
         except Exception:
             logger.error(f"Job {self.job_id}: Failed to update final status")
