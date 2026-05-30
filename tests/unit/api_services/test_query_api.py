@@ -5,7 +5,6 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 import pytest
-
 from flask_app.main_app.api_services.query_api import (
     get_page_links,
     get_template_pages,

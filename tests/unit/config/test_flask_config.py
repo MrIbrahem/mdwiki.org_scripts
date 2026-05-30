@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from flask_app.main_app.config.classes import DbConfig
 from flask_app.main_app.config.flask_config import (
     Config,

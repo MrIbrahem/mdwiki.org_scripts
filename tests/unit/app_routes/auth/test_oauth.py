@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from flask_app.main_app.app_routes.auth.oauth import (
     IDENTITY_ERROR_MESSAGE,
     OAuthIdentityError,

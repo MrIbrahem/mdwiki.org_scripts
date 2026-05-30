@@ -18,6 +18,7 @@ from flask import (
 from flask.typing import ResponseReturnValue
 from werkzeug.wrappers.response import Response
 
+from ..db.models import JobRecord
 from ..db.services import (
     active_coordinators,
     delete_job,
@@ -51,9 +52,9 @@ def _can_manage_job(job: Any, user: Any) -> bool:
     return False
 
 
-def _cancel_job(job_id: int, job_type: str) -> Response:
+def _cancel_job(job_id: int, job_type: str, job: JobRecord) -> Response:
     """Cancel a running job."""
-    if jobs_worker.cancel_job(job_id, job_type):
+    if jobs_worker.cancel_job(job_id, job_type, job):
         flash(f"Job {job_id} cancellation requested.", "success")
     else:
         flash(f"Job {job_id} is not running or already cancelled.", "warning")
@@ -225,7 +226,7 @@ class JobsPublicRoutes:
                 flash("You don't have permission to cancel this job.", "danger")
                 return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
 
-            return _cancel_job(job_id, job_type)
+            return _cancel_job(job_id, job_type, job)
 
         # ================================
         # Jobs List routes

@@ -9,11 +9,13 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import Any, Dict, Final, Optional
 
+from sqlalchemy.orm.exc import StaleDataError
+
 from ..db.services import (
     is_job_cancelled,
     update_job_status,
 )
-from ..su_services import jobs_files_service
+from ..su_services import is_job_cancelled_file_exist, save_job_result_by_name
 from .utils import generate_result_file_name
 
 logger = logging.getLogger(__name__)
@@ -71,6 +73,8 @@ class BaseObjectsJobWorker(ABC):
         self._status: str = "pending"
         self.result_object: WorkerObject = None
 
+        self.result_file_cancelled: str = f"{self.result_file}.cancelled"
+
     @abstractmethod
     def get_job_type(self) -> str:
         """Return the job type string identifier.
@@ -120,8 +124,10 @@ class BaseObjectsJobWorker(ABC):
         # Update final status
         try:
             update_job_status(self.job_id, final_status, self.result_file, job_type=self.job_type)
-        except LookupError:
-            logger.exception(f"Job {self.job_id}: Could not update final status, job record might have been deleted.")
+        except (StaleDataError, LookupError):
+            logger.error(f"Job {self.job_id}: Could not update final status, job record might have been deleted.")
+        except Exception:
+            logger.error(f"Job {self.job_id}: Failed to update final status")
 
         logger.info(f"Job {self.job_id}: Finished with status {final_status}")
 
@@ -129,7 +135,7 @@ class BaseObjectsJobWorker(ABC):
         try:
             result = self.result_object.to_json()
             result["last_update"] = datetime.now().isoformat()
-            jobs_files_service.save_job_result_by_name(self.result_file, result)
+            save_job_result_by_name(self.result_file, result)
         except Exception:
             logger.exception(f"Job {self.job_id}: Failed to save job result")
 
@@ -141,6 +147,11 @@ class BaseObjectsJobWorker(ABC):
         """
         if self.cancel_event and self.cancel_event.is_set():
             logger.info(f"Job {self.job_id}: Local cancellation detected, stopping.")
+            self._mark_as_cancelled_in_result()
+            return True
+
+        if is_job_cancelled_file_exist(self.result_file_cancelled):
+            logger.info(f"Job {self.job_id}: Cancelled file detected, stopping.")
             self._mark_as_cancelled_in_result()
             return True
 

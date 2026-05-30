@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 from flask_app.main_app.su_services.jobs_files_service import (
     get_jobs_data_dir,
     load_job_result,
-    save_job_result,
     save_job_result_by_name,
 )
 
@@ -25,16 +23,6 @@ def test_get_jobs_data_dir(temp_jobs_dir):
     dir_path = get_jobs_data_dir()
     assert dir_path == temp_jobs_dir
     assert dir_path.exists()
-
-
-def test_save_and_load_job_result(temp_jobs_dir):
-    data = {"status": "success", "data": [1, 2, 3]}
-    filename = save_job_result(123, data)
-    assert filename == "job_123.json"
-    assert (temp_jobs_dir / filename).exists()
-
-    loaded = load_job_result(filename)
-    assert loaded == data
 
 
 def test_save_job_result_by_name(temp_jobs_dir):

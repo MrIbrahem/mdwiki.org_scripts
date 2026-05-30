@@ -18,4 +18,7 @@ class TestMoveResources:
     def test_returns_string(self):
         text = "{{Infobox drug\n| name = Aspirin\n| CAS_number = 50-78-2\n}}"
         result = move_resources(text, "Aspirin")
-        assert result == """{{Infobox drug\n| name = Aspirin\n}}\n\n== External links ==\n{{drug resources\n\n<!--Identifiers-->\n| CAS_number =  50-78-2\n}}"""
+        assert (
+            result
+            == """{{Infobox drug\n| name = Aspirin\n}}\n\n== External links ==\n{{drug resources\n\n<!--Identifiers-->\n| CAS_number =  50-78-2\n}}"""
+        )

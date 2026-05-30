@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+from flask_app.main_app.new_jobs.base_worker_object import WorkerObject
 from flask_app.main_app.new_jobs.workers.add_r_column.objects import (
     AddRColumnWorkerObject,
     StepDetail,
     Steps,
 )
-from flask_app.main_app.new_jobs.base_worker_object import WorkerObject
 
 
 class TestStepDetail:

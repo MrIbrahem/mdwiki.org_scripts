@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 import pytest
-
+from flask_app.main_app.new_jobs.base_worker_object import WorkerObject
 from flask_app.main_app.new_jobs.workers.import_history.objects import (
     ImportHistoryWorkerObject,
     UpdaterOutcome,
 )
-from flask_app.main_app.new_jobs.base_worker_object import WorkerObject
 
 
 class TestUpdaterOutcome:

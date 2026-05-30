@@ -4,7 +4,7 @@ import functools
 import logging
 from typing import Any, Callable, ParamSpec, TypeVar
 
-import sqlalchemy
+from sqlalchemy.exc import OperationalError
 
 from ...extensions import db
 
@@ -29,7 +29,7 @@ def db_guard(default_return: Any = False, msg: str = "") -> Callable[..., Callab
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             try:
                 return func(*args, **kwargs)
-            except sqlalchemy.exc.OperationalError as exc:
+            except OperationalError as exc:
                 logger.error("DB error in %s", func.__qualname__)
                 logger.exception(f"{msg}: %s", exc)
                 db.session.rollback()

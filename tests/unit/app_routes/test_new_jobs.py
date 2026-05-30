@@ -5,7 +5,6 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from flask_app.main_app.app_routes.new_jobs import _can_manage_job
 
 

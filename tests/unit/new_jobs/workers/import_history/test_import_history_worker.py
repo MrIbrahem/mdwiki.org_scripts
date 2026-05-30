@@ -14,5 +14,6 @@ class TestImportHistoryWorker:
 
     def test_result_object_type(self):
         from flask_app.main_app.new_jobs.workers.import_history.objects import ImportHistoryWorkerObject
+
         worker = ImportHistoryWorker(job_id=1, args={"titles": ["Test"]}, user=None)
         assert isinstance(worker.result_object, ImportHistoryWorkerObject)

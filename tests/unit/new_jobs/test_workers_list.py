@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import FrozenInstanceError
 
 import pytest
-
 from flask_app.main_app.new_jobs.workers_list import JobData, jobs_data
 
 

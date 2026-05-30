@@ -5,8 +5,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 import pytest
-
-from flask_app.main_app.api_services.mwclient_page import MwClientPage, _RETRY_DELAYS
+from flask_app.main_app.api_services.mwclient_page import _RETRY_DELAYS, MwClientPage
 
 
 class TestMwClientPageInit:
