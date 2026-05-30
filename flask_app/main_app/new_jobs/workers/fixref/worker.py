@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 MAX_PAGES_FIXREF = 20000
 
 
-class FixrefWorker(BaseObjectsJobWorker):
+class FixRefWorker(BaseObjectsJobWorker):
     """Normalize references on mdwiki pages."""
 
     def __init__(
@@ -211,7 +211,7 @@ def fixref_worker_entry(
 ) -> None:
     """Background worker entry-point."""
     logger.info(f"Starting job {job_id}: fixref")
-    worker = FixrefWorker(
+    worker = FixRefWorker(
         job_id=job_id,
         user=user,
         args=args,
