@@ -68,7 +68,10 @@ def cancel_job(task_id: int, job_type: str | None = None) -> bool:
         db_cancelled = cancel_job_db(task_id, job_type)
     except Exception:  # pragma: no cover - defensive guard
         logger.exception("Failed to cancel job %s in database.", task_id)
+        from ..extensions import db
+        db.session.rollback()
         db_cancelled = False
+
     if db_cancelled:
         logger.info(f"Database cancellation requested for job {task_id}")
 

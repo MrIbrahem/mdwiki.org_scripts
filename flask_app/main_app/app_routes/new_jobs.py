@@ -135,10 +135,6 @@ def _jobs_list(job_type: str) -> str:
         flash("Unable to load jobs list.", "danger")
         jobs = []
 
-    # sort jobs by created_at key
-    if jobs:
-        jobs = sorted(jobs, key=lambda x: x.created_at.isoformat() if x.created_at else "", reverse=True)
-
     template_data = jobs_data.get(job_type)
 
     if not template_data:
@@ -203,8 +199,6 @@ class JobsPublicRoutes:
                 logger.exception("Unable to load jobs list.")
                 flash("Unable to load jobs list.", "danger")
                 jobs = []
-            if jobs:
-                jobs = sorted(jobs, key=lambda x: x.created_at.isoformat() if x.created_at else "", reverse=True)
             return render_template("jobs_templates/all_jobs_list.html", jobs=jobs)
 
         # ================================
