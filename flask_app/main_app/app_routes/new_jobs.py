@@ -25,7 +25,7 @@ from ..db.services import (
     list_jobs,
 )
 from ..new_jobs import jobs_worker
-from ..new_jobs.workers_list import jobs_data, JOB_TYPE_LIST_TEMPLATES_PUBLIC, JOB_TYPE_TEMPLATES_PUBLIC
+from ..new_jobs.workers_list import jobs_data
 from ..su_services import load_job_result
 from ..su_services.users_service import current_user
 from .utils.routes_utils import load_auth_payload
@@ -134,15 +134,15 @@ def _jobs_list(job_type: str) -> str:
     if jobs:
         jobs = sorted(jobs, key=lambda x: x.created_at.isoformat() if x.created_at else "", reverse=True)
 
-    template = JOB_TYPE_LIST_TEMPLATES_PUBLIC.get(job_type)
-
     template_data = jobs_data.get(job_type)
 
-    if not template or not template_data:
+    if not template_data:
         abort(404)
 
+    template_name = template_data.job_list_template
+
     return render_template(
-        template,
+        template_name,
         jobs=jobs,
         job_type=job_type,
         list_title=template_data.job_name,
@@ -165,14 +165,15 @@ def _job_detail(job_id: int, job_type: str) -> Response | str:
     if job.result_file:
         result_data = load_job_result(job.result_file)
 
-    template = JOB_TYPE_TEMPLATES_PUBLIC.get(job_type) or "jobs_templates/_help_templates/shared_details.html"
     template_data = jobs_data.get(job_type)
 
     if not template_data:
         abort(404)
 
+    template_name = template_data.job_details_template
+
     return render_template(
-        template,
+        template_name,
         job=job,
         job_type=job_type,
         result_data=result_data,

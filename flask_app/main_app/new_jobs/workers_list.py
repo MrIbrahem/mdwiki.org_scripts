@@ -75,39 +75,6 @@ jobs_data = {
     ),
 }
 
-jobs_targets_public = {
-    "add_r_column": add_r_column_worker_entry,
-    "add_unlinkedwikibase": add_unlinkedwikibase_worker_entry,
-    "create_redirects": create_redirects_worker_entry,
-    "duplicate_redirect": duplicate_redirect_worker_entry,
-    "find_and_replace": find_and_replace_worker_entry,
-    "fixred_all": fixred_all_worker_entry,
-    "fixref": fixref_worker_entry,
-    "import_history": import_history_worker_entry,
-}
-
-JOB_TYPE_TEMPLATES_PUBLIC = {
-    "add_unlinkedwikibase": "jobs_templates/_help_templates/shared_details.html",
-    "fixref": "jobs_templates/_help_templates/shared_details.html",
-    "add_r_column": "one_page_templates/add_r_column/details.html",
-    "create_redirects": "jobs_templates/create_redirects/details.html",
-    "duplicate_redirect": "jobs_templates/duplicate_redirect/details.html",
-    "import_history": "jobs_templates/import_history/details.html",
-}
-
-JOB_TYPE_LIST_TEMPLATES_PUBLIC = {
-    "add_r_column": "one_page_templates/add_r_column/list.html",
-    "add_unlinkedwikibase": "jobs_templates/add_unlinkedwikibase/list.html",
-    "create_redirects": "jobs_templates/create_redirects/list.html",
-    "duplicate_redirect": "jobs_templates/duplicate_redirect/list.html",
-    "find_and_replace": "jobs_templates/find_and_replace/list.html",
-    "fixred_all": "jobs_templates/fixred_all/list.html",
-    "fixref": "jobs_templates/fixref/list.html",
-    "import_history": "jobs_templates/import_history/list.html",
-}
-
 __all__ = [
     "jobs_data",
-    "jobs_targets_public",
-    "JOB_TYPE_TEMPLATES_PUBLIC",
 ]

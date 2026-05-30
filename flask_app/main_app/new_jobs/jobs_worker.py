@@ -9,10 +9,8 @@ from typing import Any, Dict
 from flask import Flask, current_app
 
 from ..db.services import cancel_job as cancel_job_db
-from ..db.services import (
-    create_job,
-)
-from .workers_list import jobs_targets_public
+from ..db.services import create_job
+from .workers_list import JobData, jobs_data
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +85,9 @@ def start_job_with_args(
         job_type: The type of job to start
         args: Optional arguments to pass to the worker
     """
-    job_func = jobs_targets_public.get(job_type)
+    job_data: JobData = jobs_data.get(job_type)
+    job_func = job_data.job_callable
+
     if not job_func:
         raise ValueError(f"Unknown job type: {job_type}")
 
