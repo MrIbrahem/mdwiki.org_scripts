@@ -114,6 +114,9 @@ class ImportHistoryWorker(BaseObjectsJobWorker):
             page_record["newrevid"] = outcome.newrevid
             self.result_object.pages_imported_fallback.append(page_record)
 
+        elif outcome.kind == "no_changes":
+            self.result_object.pages_no_changes.append(title)
+
         elif outcome.kind == "missing":
             self.result_object.pages_missing.append(title)
 

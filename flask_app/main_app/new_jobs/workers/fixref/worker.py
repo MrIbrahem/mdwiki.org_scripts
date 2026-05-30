@@ -113,7 +113,7 @@ class FixrefWorker(BaseObjectsJobWorker):
             self.result_object.pages_changed.append(page_record)
 
         elif outcome.kind == "no_changes":
-            self.result_object.pages_no_changes.append(page_record)
+            self.result_object.pages_no_changes.append(title)
 
         elif outcome.kind == "missing":
             self.result_object.pages_missing.append(title)

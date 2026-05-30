@@ -15,13 +15,13 @@
         {{ stats_card('Changed', result_data.pages_changed|length, "success", "") }}
     </div>
     <div class="col-md-2 col-sm-6">
-        {{ stats_card('skipped', result_data.pages_skipped|length, "success", "") }}
+        {{ stats_card('skipped', result_data.pages_skipped|length, "secondary", "") }}
     </div>
     <div class="col-md-2 col-sm-6">
         {{ stats_card('No Changes', result_data.pages_no_changes|length, "secondary", "") }}
     </div>
     <div class="col-md-2 col-sm-6">
-        {{ stats_card('missing', result_data.pages_missing|length, "secondary", "") }}
+        {{ stats_card('missing', result_data.pages_missing|length, "warning", "") }}
     </div>
     <div class="col-md-2 col-sm-6">
         {{ stats_card('Errors', result_data.pages_errors|length, "danger", "") }}
@@ -30,15 +30,11 @@
 {% endblock %}
 
 {% block job_details %}
-{% if result_data and result_data.pages_processed %}
 
-{% set changed_pages = result_data.pages_processed | selectattr("status", "equalto", "changed") | list %}
-{% set remaining_pages = result_data.pages_processed | rejectattr("status", "equalto", "changed") | list %}
-
-{% if changed_pages %}
+{% if result_data and result_data.pages_changed %}
 <div class="card mb-3">
     <div class="card-header">
-        {{ card_header("Changed Pages (" ~ changed_pages|length ~ ")") }}
+        {{ card_header("Changed Pages (" ~ result_data.pages_changed|length ~ ")") }}
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -52,7 +48,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in changed_pages %}
+                    {% for item in result_data.pages_changed %}
                     <tr>
                         <td> {{ loop.index }} </td>
                         <td>
@@ -71,9 +67,10 @@
 </div>
 {% endif %}
 
+{% if result_data and result_data.pages_processed %}
 <div class="card mb-3">
     <div class="card-header">
-        {{ card_header("Pages Processed (" ~ remaining_pages|length ~ ")") }}
+        {{ card_header("Pages Processed (" ~ result_data.pages_processed|length ~ ")") }}
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -87,7 +84,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in remaining_pages %}
+                    {% for item in result_data.pages_processed %}
                     <tr>
                         <td> {{ loop.index }} </td>
                         <td>
@@ -105,4 +102,5 @@
     </div>
 </div>
 {% endif %}
+
 {% endblock %}
