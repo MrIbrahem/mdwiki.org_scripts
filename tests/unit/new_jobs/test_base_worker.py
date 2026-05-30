@@ -1,4 +1,12 @@
-"""
-Unit tests for flask_app/main_app/new_jobs/base_worker.py module.
-TODO: write tests
-"""
+"""Unit tests for flask_app/main_app/new_jobs/base_worker.py (test_base_worker.py)."""
+
+from __future__ import annotations
+
+from flask_app.main_app.new_jobs.base_worker_object import BaseObjectsJobWorker
+
+
+class TestBaseObjectsJobWorkerAbstract:
+    def test_cannot_instantiate_without_methods(self):
+        import pytest
+        with pytest.raises(TypeError):
+            BaseObjectsJobWorker(job_id=1)
