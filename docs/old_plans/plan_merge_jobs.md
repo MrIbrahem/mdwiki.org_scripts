@@ -73,15 +73,15 @@ Edit `flask_app/main_app/new_jobs/workers_list.py`:
 
 1. Add import: `from .workers.<job_type>.worker import <job_type>_worker_entry`
 2. Add an entry to `jobs_data`:
-   ```python
-   "<job_type>": JobData(
-       job_type="<job_type>",
-       job_name="<Display Name>",
-       job_details_template="jobs_templates/<job_type>/details.html",  # optional, has default
-       job_list_template="jobs_templates/<job_type>/list.html",
-       job_callable=<job_type>_worker_entry,
-   ),
-   ```
+    ```python
+    "<job_type>": JobData(
+        job_type="<job_type>",
+        job_name="<Display Name>",
+        job_details_template="jobs_templates/<job_type>/details.html",  # optional, has default
+        job_list_template="jobs_templates/<job_type>/list.html",
+        job_callable=<job_type>_worker_entry,
+    ),
+    ```
 
 ---
 
