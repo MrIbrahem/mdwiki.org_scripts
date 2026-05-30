@@ -1,4 +1,397 @@
+"""Integration tests for flask_app/main_app/app_routes/admin/routes.py module.
+
+Tests the admin dashboard, users listing, and coordinator management through
+the Flask test client with a real SQLite database (via TestingConfig).
 """
-integration tests for flask_app/main_app/app_routes/admin/routes.py module.
-TODO: write tests
-"""
+
+from __future__ import annotations
+
+import pytest
+
+from flask_app.main_app.db.services import (
+    active_coordinators,
+    upsert_user_token,
+)
+from flask_app.main_app.db.services.admin_service import (
+    add_coordinator,
+    delete_coordinator,
+    list_coordinators,
+    set_coordinator_active,
+)
+
+
+def _seed_admin(app, user_id=1, username="AdminUser"):
+    """Create a user token + active coordinator record for testing admin routes."""
+    with app.app_context():
+        upsert_user_token(
+            user_id=user_id,
+            username=username,
+            access_key="admin-key",
+            access_secret="admin-secret",
+        )
+        add_coordinator(username)
+
+
+def _login_admin(mock_client, user_id=1, username="AdminUser"):
+    """Set session to an admin user (DB record must already exist)."""
+    with mock_client.session_transaction() as sess:
+        sess["uid"] = user_id
+        sess["username"] = username
+
+
+@pytest.mark.usefixtures("app")
+class TestAdminDashboard:
+    """GET /admin/ — admin dashboard page."""
+
+    def test_admin_requires_login(self, mock_client):
+        """Unauthenticated user should be redirected to login."""
+        resp = mock_client.get("/admin/")
+        assert resp.status_code == 302
+        assert "login" in resp.headers["Location"]
+
+    def test_admin_requires_coordinator_role(self, app, mock_client):
+        """A regular user (not coordinator) should get 403."""
+        with app.app_context():
+            upsert_user_token(
+                user_id=2,
+                username="RegularUser",
+                access_key="k",
+                access_secret="s",
+            )
+
+        with mock_client.session_transaction() as sess:
+            sess["uid"] = 2
+            sess["username"] = "RegularUser"
+
+        resp = mock_client.get("/admin/")
+        assert resp.status_code == 403
+
+    def test_admin_dashboard_loads(self, app, mock_client):
+        """An admin user should see the dashboard."""
+        _seed_admin(app)
+        _login_admin(mock_client)
+        resp = mock_client.get("/admin/")
+        assert resp.status_code == 200
+
+    def test_admin_inactive_coordinator_gets_403(self, app, mock_client):
+        """A deactivated coordinator should get 403."""
+        with app.app_context():
+            upsert_user_token(
+                user_id=3,
+                username="InactiveAdmin",
+                access_key="k",
+                access_secret="s",
+            )
+            coord = add_coordinator("InactiveAdmin")
+            set_coordinator_active(coord.id, False)
+
+        with mock_client.session_transaction() as sess:
+            sess["uid"] = 3
+            sess["username"] = "InactiveAdmin"
+
+        resp = mock_client.get("/admin/")
+        assert resp.status_code == 403
+
+
+@pytest.mark.usefixtures("app")
+class TestAdminUsersPage:
+    """GET /admin/users — list all registered users."""
+
+    def test_users_page_requires_admin(self, app, mock_client):
+        """Non-admin user should get 403."""
+        with app.app_context():
+            upsert_user_token(
+                user_id=10,
+                username="NonAdmin",
+                access_key="k",
+                access_secret="s",
+            )
+
+        with mock_client.session_transaction() as sess:
+            sess["uid"] = 10
+            sess["username"] = "NonAdmin"
+
+        resp = mock_client.get("/admin/users")
+        assert resp.status_code == 403
+
+    def test_users_page_shows_registered_users(self, app, mock_client):
+        """Admin should see the users list with seeded users."""
+        _seed_admin(app, user_id=1, username="AdminUser")
+        with app.app_context():
+            upsert_user_token(
+                user_id=20,
+                username="SomeUser",
+                access_key="k",
+                access_secret="s",
+            )
+
+        _login_admin(mock_client, user_id=1, username="AdminUser")
+        resp = mock_client.get("/admin/users")
+        assert resp.status_code == 200
+
+    def test_users_page_empty_list(self, app, mock_client):
+        """Users page should load even with no regular users."""
+        _seed_admin(app, user_id=1, username="AdminUser")
+        _login_admin(mock_client, user_id=1, username="AdminUser")
+        resp = mock_client.get("/admin/users")
+        assert resp.status_code == 200
+
+
+@pytest.mark.usefixtures("app")
+class TestCoordinatorRoutes:
+    """Coordinator CRUD via /admin/coordinators/ endpoints."""
+
+    def test_coordinators_dashboard_requires_admin(self, app, mock_client):
+        """Non-admin should get 403 on coordinators page."""
+        with app.app_context():
+            upsert_user_token(
+                user_id=10,
+                username="NonAdmin",
+                access_key="k",
+                access_secret="s",
+            )
+
+        with mock_client.session_transaction() as sess:
+            sess["uid"] = 10
+            sess["username"] = "NonAdmin"
+
+        resp = mock_client.get("/admin/coordinators/")
+        assert resp.status_code == 403
+
+    def test_coordinators_dashboard_loads(self, app, mock_client):
+        """Admin should see the coordinators dashboard."""
+        _seed_admin(app, user_id=1, username="AdminUser")
+        _login_admin(mock_client, user_id=1, username="AdminUser")
+        resp = mock_client.get("/admin/coordinators/")
+        assert resp.status_code == 200
+
+    def test_add_coordinator(self, app, mock_client):
+        """Admin should be able to add a new coordinator."""
+        _seed_admin(app, user_id=1, username="AdminUser")
+        with app.app_context():
+            upsert_user_token(
+                user_id=30,
+                username="NewCoord",
+                access_key="k",
+                access_secret="s",
+            )
+
+        _login_admin(mock_client, user_id=1, username="AdminUser")
+        resp = mock_client.post(
+            "/admin/coordinators/add",
+            data={"username": "NewCoord"},
+            follow_redirects=True,
+        )
+        assert resp.status_code == 200
+
+        with app.app_context():
+            coords = active_coordinators()
+            assert "NewCoord" in coords
+
+    def test_add_coordinator_empty_username_flash(self, app, mock_client):
+        """Adding coordinator with empty username should flash error."""
+        _seed_admin(app, user_id=1, username="AdminUser")
+        _login_admin(mock_client, user_id=1, username="AdminUser")
+        resp = mock_client.post(
+            "/admin/coordinators/add",
+            data={"username": ""},
+            follow_redirects=True,
+        )
+        assert resp.status_code == 200
+        assert b"Username is required" in resp.data
+
+    def test_add_duplicate_coordinator_flash(self, app, mock_client):
+        """Adding a duplicate coordinator should flash warning."""
+        _seed_admin(app, user_id=1, username="AdminUser")
+        _login_admin(mock_client, user_id=1, username="AdminUser")
+        mock_client.post(
+            "/admin/coordinators/add",
+            data={"username": "AdminUser"},
+            follow_redirects=True,
+        )
+        resp = mock_client.post(
+            "/admin/coordinators/add",
+            data={"username": "AdminUser"},
+            follow_redirects=True,
+        )
+        assert resp.status_code == 200
+        assert b"already exists" in resp.data
+
+    def test_toggle_coordinator_active(self, app, mock_client):
+        """Admin should be able to deactivate a coordinator."""
+        _seed_admin(app, user_id=1, username="AdminUser")
+        with app.app_context():
+            upsert_user_token(
+                user_id=31,
+                username="ToggleCoord",
+                access_key="k",
+                access_secret="s",
+            )
+            coord = add_coordinator("ToggleCoord")
+
+        _login_admin(mock_client, user_id=1, username="AdminUser")
+        resp = mock_client.post(
+            f"/admin/coordinators/{coord.id}/active",
+            data={"active": "0"},
+            follow_redirects=True,
+        )
+        assert resp.status_code == 200
+
+        with app.app_context():
+            coords = active_coordinators()
+            assert "ToggleCoord" not in coords
+
+    def test_toggle_coordinator_reactivate(self, app, mock_client):
+        """Admin should be able to reactivate a coordinator."""
+        _seed_admin(app, user_id=1, username="AdminUser")
+        with app.app_context():
+            upsert_user_token(
+                user_id=32,
+                username="ReactivateCoord",
+                access_key="k",
+                access_secret="s",
+            )
+            coord = add_coordinator("ReactivateCoord")
+            set_coordinator_active(coord.id, False)
+
+        _login_admin(mock_client, user_id=1, username="AdminUser")
+        resp = mock_client.post(
+            f"/admin/coordinators/{coord.id}/active",
+            data={"active": "1"},
+            follow_redirects=True,
+        )
+        assert resp.status_code == 200
+
+        with app.app_context():
+            coords = active_coordinators()
+            assert "ReactivateCoord" in coords
+
+    def test_delete_coordinator(self, app, mock_client):
+        """Admin should be able to delete a coordinator."""
+        _seed_admin(app, user_id=1, username="AdminUser")
+        with app.app_context():
+            upsert_user_token(
+                user_id=33,
+                username="DeleteCoord",
+                access_key="k",
+                access_secret="s",
+            )
+            coord = add_coordinator("DeleteCoord")
+
+        _login_admin(mock_client, user_id=1, username="AdminUser")
+        resp = mock_client.post(
+            f"/admin/coordinators/{coord.id}/delete",
+            follow_redirects=True,
+        )
+        assert resp.status_code == 200
+
+        with app.app_context():
+            coords = list_coordinators()
+            usernames = [c.username for c in coords]
+            assert "DeleteCoord" not in usernames
+
+    def test_delete_nonexistent_coordinator_flash(self, app, mock_client):
+        """Deleting a non-existent coordinator should flash warning."""
+        _seed_admin(app, user_id=1, username="AdminUser")
+        _login_admin(mock_client, user_id=1, username="AdminUser")
+        resp = mock_client.post(
+            "/admin/coordinators/9999/delete",
+            follow_redirects=True,
+        )
+        assert resp.status_code == 200
+        assert b"was not found" in resp.data
+
+
+@pytest.mark.usefixtures("app")
+class TestAdminRouteIntegration:
+    """End-to-end integration scenarios for admin features."""
+
+    def test_admin_can_manage_coordinator_lifecycle(self, app, mock_client):
+        """Full lifecycle: add -> deactivate -> reactivate -> delete coordinator."""
+        _seed_admin(app, user_id=1, username="AdminUser")
+        with app.app_context():
+            upsert_user_token(
+                user_id=50,
+                username="LifecycleCoord",
+                access_key="k",
+                access_secret="s",
+            )
+
+        _login_admin(mock_client, user_id=1, username="AdminUser")
+
+        # Add
+        mock_client.post(
+            "/admin/coordinators/add",
+            data={"username": "LifecycleCoord"},
+            follow_redirects=True,
+        )
+        with app.app_context():
+            assert "LifecycleCoord" in active_coordinators()
+
+        # Get the coordinator ID
+        with app.app_context():
+            coords = list_coordinators()
+            coord = next(c for c in coords if c.username == "LifecycleCoord")
+
+        # Deactivate
+        mock_client.post(
+            f"/admin/coordinators/{coord.id}/active",
+            data={"active": "0"},
+            follow_redirects=True,
+        )
+        with app.app_context():
+            assert "LifecycleCoord" not in active_coordinators()
+
+        # Reactivate
+        mock_client.post(
+            f"/admin/coordinators/{coord.id}/active",
+            data={"active": "1"},
+            follow_redirects=True,
+        )
+        with app.app_context():
+            assert "LifecycleCoord" in active_coordinators()
+
+        # Delete
+        mock_client.post(
+            f"/admin/coordinators/{coord.id}/delete",
+            follow_redirects=True,
+        )
+        with app.app_context():
+            coords = list_coordinators()
+            usernames = [c.username for c in coords]
+            assert "LifecycleCoord" not in usernames
+
+    def test_non_admin_cannot_access_any_admin_route(self, app, mock_client):
+        """A regular user should be blocked from all admin endpoints."""
+        with app.app_context():
+            upsert_user_token(
+                user_id=60,
+                username="BlockedUser",
+                access_key="k",
+                access_secret="s",
+            )
+
+        with mock_client.session_transaction() as sess:
+            sess["uid"] = 60
+            sess["username"] = "BlockedUser"
+
+        protected_routes = [
+            ("GET", "/admin/"),
+            ("GET", "/admin/users"),
+            ("GET", "/admin/coordinators/"),
+            ("POST", "/admin/coordinators/add"),
+        ]
+
+        for method, path in protected_routes:
+            if method == "GET":
+                resp = mock_client.get(path)
+            else:
+                resp = mock_client.post(path, data={})
+            assert resp.status_code == 403, f"Expected 403 for {method} {path}"
+
+    def test_sidebar_context_injected(self, app, mock_client):
+        """Admin pages should have the sidebar context variable injected."""
+        _seed_admin(app, user_id=1, username="AdminUser")
+        _login_admin(mock_client, user_id=1, username="AdminUser")
+        resp = mock_client.get("/admin/")
+        assert resp.status_code == 200

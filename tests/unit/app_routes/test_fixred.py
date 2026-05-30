@@ -38,8 +38,8 @@ class TestFixredRoutes:
     def test_get_index_requires_auth(self, mock_client):
         resp = mock_client.get("/fixred/")
         # oauth_required redirects unauthenticated users
-        assert resp.status_code in (302, 401, 403)
+        assert resp.status_code == 403
 
     def test_post_index_requires_auth(self, mock_client):
         resp = mock_client.post("/fixred/", data={"title": "Test"})
-        assert resp.status_code in (302, 401, 403)
+        assert resp.status_code == 403

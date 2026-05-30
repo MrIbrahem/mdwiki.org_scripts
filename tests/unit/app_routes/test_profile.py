@@ -10,7 +10,7 @@ class TestProfileRoutes:
     def test_profile_requires_login(self, mock_client):
         resp = mock_client.get("/profile/")
         # Should either show login prompt or redirect
-        assert resp.status_code in (200, 302)
+        assert resp.status_code == 200
 
     def test_profile_page_with_login(self, mock_client, login):
         login("TestUser")
@@ -19,4 +19,4 @@ class TestProfileRoutes:
 
     def test_user_profile_page(self, mock_client):
         resp = mock_client.get("/profile/TestUser")
-        assert resp.status_code in (200, 302)
+        assert resp.status_code == 200

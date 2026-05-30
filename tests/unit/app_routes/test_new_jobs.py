@@ -55,4 +55,4 @@ class TestNewJobsRoutes:
 
     def test_all_jobs_list_page(self, mock_client):
         resp = mock_client.get("/new_jobs/list")
-        assert resp.status_code in (200, 302)
+        assert resp.status_code == 302
