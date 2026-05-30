@@ -10,7 +10,8 @@ Thread-based background job processing system with a standardized worker lifecyc
 new_jobs/
 ├── __init__.py           # Empty
 ├── jobs_worker.py        # Job runner: start/cancel, thread management
-├── workers_list.py       # Registry: job_type → entry function + templates
+├── workers_list.py       # Registry: JobData dataclass + jobs_data dict
+├── shared_objects.py     # Shared result dataclasses (Summary, SharedworkerObject, UpdaterOutcome)
 ├── utils.py              # generate_result_file_name()
 ├── base_worker_object.py # BaseObjectsJobWorker ABC + WorkerObject dataclass
 └── workers/
@@ -24,7 +25,7 @@ new_jobs/
     └── import_history/        # Import revision history from enwiki
 ```
 
-Each worker directory contains: `__init__.py`, `worker.py`, `objects.py` (result dataclass)
+Most worker directories contain `__init__.py` and `worker.py`. Some have a local `objects.py` for specialized result dataclasses (e.g. `create_redirects`, `find_and_replace`, `import_history`). Others use the shared `SharedworkerObject` from `shared_objects.py`.
 
 ## Key Components
 
@@ -63,6 +64,38 @@ BaseObjectsJobWorker (ABC)
 └── _save_progress() → None     # Persist to JSON file
 ```
 
+### shared_objects.py — Shared Result Objects
+
+Provides common dataclasses used across multiple workers:
+
+```python
+@dataclass(frozen=True)
+class UpdaterOutcome:
+    kind: Literal["missing", "no_changes", "changed", "error"]
+    newrevid: int = 0
+    msg: str = ""
+
+@dataclass
+class Summary:
+    scanned: int = 0
+    total: int = 0
+
+@dataclass
+class SharedworkerObject(WorkerObject):
+    summary: Summary
+    pages_processed: list[dict[str, Any]]
+    pages_changed: list[dict[str, Any]]
+    pages_errors: list[dict[str, Any]]
+    pages_skipped: list[dict[str, Any]]
+    pages_no_changes: list[str]
+    pages_missing: list[str]
+```
+
+-   `SharedworkerObject` is used by workers that don't need custom result structures (`fixref`, `fixred_all`, `duplicate_redirect`, `add_unlinkedwikibase`)
+-   `UpdaterOutcome` standardizes per-page results across workers
+-   Workers with specialized needs (e.g. `create_redirects`, `find_and_replace`, `import_history`) define their own `objects.py` but still import `Summary` from `shared_objects.py`
+-   Each worker implements `record_page_outcome()` to route outcomes into the correct list
+
 ### Worker Types
 
 | Worker                   | Job Type               | Description                                             |
@@ -97,7 +130,8 @@ jobs_data = {
 -   **Clean abstract base class** with template method pattern
 -   **Dual cancellation** — local `Event` (fast) + DB status (cross-process)
 -   **Progress persistence** — results saved periodically during execution
--   **Standardized result objects** — per-worker dataclasses with summary + pages_processed
+-   **Standardized result objects** — `SharedworkerObject` with typed lists (`pages_changed`, `pages_errors`, `pages_no_changes`, etc.) replaces per-worker dataclasses for most workers
+-   **Unified `UpdaterOutcome`** — consistent per-page result kinds (`missing`, `no_changes`, `changed`, `error`) across all workers
 -   **Proper Flask app context** handling for background threads
 -   **Error handling** at both worker and runner levels
 
@@ -106,7 +140,7 @@ jobs_data = {
 -   **Daemon threads** — work lost on process restart, no job recovery
 -   **No job queue** — all jobs run concurrently (no max limit)
 -   **No connection pooling** — each worker creates its own `mwclient.Site`
--   **Duplicate Summary dataclasses** — similar structures per worker
+-   **Remaining Summary duplication** — `create_redirects`, `find_and_replace`, `import_history` still define local Summary dataclasses (could use the shared one)
 -   **`is_cancelled()`** calls `db.session.refresh()` in tight loops
 
 ## Critical Issues
@@ -126,7 +160,7 @@ Under heavy load, this could spawn hundreds of threads and exhaust memory.
 -   [ ] Add maximum concurrent job limit
 -   [ ] Add job recovery on restart (or document limitation)
 -   [ ] Optimize `is_cancelled()` DB check frequency
--   [ ] Consolidate duplicate Summary dataclasses
+-   [ ] Consolidate remaining duplicate Summary dataclasses into `shared_objects.py`
 -   [ ] Add graceful shutdown for running jobs
 
 ## Improvement Plan
@@ -138,7 +172,7 @@ Under heavy load, this could spawn hundreds of threads and exhaust memory.
 
 ### Medium-Term
 
-1. Consolidate Summary dataclasses into a shared base
+1. Consolidate remaining worker Summary dataclasses into `shared_objects.py`
 2. Add connection pooling for mwclient.Site
 3. Add job timeout (harakiri-style)
 
