@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import requests
 import logging
 from typing import Any, Dict
 
@@ -53,6 +54,9 @@ def get_user_site(user: Dict[str, Any] | None) -> mwclient.Site | None:
             access_token=_access_key,
             access_secret=_access_secret,
         )
+    except requests.exceptions.ReadTimeout as exc:  # pragma: no cover - network interaction
+        logger.error(f"Failed to build OAuth site, {str(exc)}")
+        return None
     except Exception as exc:  # pragma: no cover - network interaction
         logger.exception("Failed to build OAuth site", exc_info=exc)
         return None

@@ -9,9 +9,8 @@ from __future__ import annotations
 
 import logging
 import threading
-from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Any, Dict, Literal
+from typing import Any, Dict
 
 import mwclient
 
