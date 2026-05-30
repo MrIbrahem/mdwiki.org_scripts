@@ -65,6 +65,12 @@ Config (base)
 | `ALLOWLIST_USERS`       | No       | `Doc James,Mr. Ibrahem` | Authorized usernames            |
 | `WTF_CSRF_TIME_LIMIT`   | No       | `3600`                  | CSRF token lifetime (seconds)   |
 
+## Testing
+
+```bash
+pytest tests/unit/config --cov=flask_app/main_app/config
+```
+
 ## Strengths
 
 -   **Frozen dataclasses** prevent accidental config mutation

@@ -81,6 +81,16 @@ Generally good use of type hints and docstrings. Some files in `shared/new_updat
 
 The thread-based job runner is simple but limited — no job queue, no persistence across restarts, no horizontal scaling. Suitable for the current Toolforge single-instance deployment.
 
+## Testing
+
+```bash
+pytest tests/unit
+pytest tests/integration
+
+# with coverage
+pytest tests/ --cov=flask_app
+```
+
 ## Strengths
 
 -   **Clean application factory** with proper Flask conventions

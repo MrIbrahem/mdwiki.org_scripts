@@ -65,7 +65,6 @@ class TestGetStatusClass:
             ("error", "danger"),
             ("errors", "danger"),
             ("pending", "secondary"),
-            ("no_changes", "secondary"),
         ],
     )
     def test_known_statuses(self, status, expected):

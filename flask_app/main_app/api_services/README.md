@@ -54,14 +54,14 @@ All functions use `verify_required_fields()` for input validation.
 
 ### query_api.py — Query Helpers
 
-| Function                                      | Description                          |
-| --------------------------------------------- | ------------------------------------ |
-| `get_template_pages(title, namespace, site)`  | Pages transcluding a template        |
-| `is_pages_exists(titles, site)`               | Batch existence check (50 at a time) |
-| `resolve_redirects(titles, site)`             | Batch redirect resolution            |
-| `search_pages(query, site, namespace, limit)` | MediaWiki search API                 |
+| Function                                      | Description                                                    |
+| --------------------------------------------- | -------------------------------------------------------------- |
+| `get_template_pages(title, namespace, site)`  | Pages transcluding a template                                  |
+| `is_pages_exists(titles, site)`               | Batch existence check (50 at a time)                           |
+| `resolve_redirects(titles, site)`             | Batch redirect resolution                                      |
+| `search_pages(query, site, namespace, limit)` | MediaWiki search API                                           |
 | `get_double_redirects(site)`                  | Double redirect detection (returns resolved `from`→`to` pairs) |
-| `get_page_links(title, site, namespace)`      | Wikilinks on a page                  |
+| `get_page_links(title, site, namespace)`      | Wikilinks on a page                                            |
 
 ### category.py
 
@@ -70,6 +70,12 @@ All functions use `verify_required_fields()` for input validation.
 ### clients/wiki_client.py
 
 `get_user_site(user_dict)` → `mwclient.Site` — Creates an OAuth-authenticated mwclient connection. Decrypts stored tokens via Fernet.
+
+## Testing
+
+```bash
+pytest tests/unit/api_services --cov=flask_app/main_app/api_services
+```
 
 ## Strengths
 

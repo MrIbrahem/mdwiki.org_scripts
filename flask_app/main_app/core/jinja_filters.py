@@ -67,7 +67,6 @@ def get_status_class(status):
         "error": "danger",
         "errors": "danger",
         "pending": "secondary",
-        "no_changes": "secondary",
     }
     return status_classes.get(str(status).lower(), "secondary")
 

@@ -22,6 +22,12 @@ def verify_required_fields(required_fields: Dict[str, Any]) -> List[str]:
 
 **Usage**: Called by `api_services/pages_api.py` to validate inputs before MediaWiki API calls.
 
+## Testing
+
+```bash
+pytest tests/unit/utils --cov=flask_app/main_app/utils
+```
+
 ## Strengths
 
 -   Simple, focused utility

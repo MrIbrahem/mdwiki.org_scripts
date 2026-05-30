@@ -28,7 +28,8 @@
 			</div>
 			<div class='col-md-3'>
 				<div class='form-check form-switch'>
-					<input class='form-check-input' type='checkbox' id='save' name='save' value='1'>
+                    <input class='form-check-input' type='checkbox' id='save' name='save' value='1' {% if save %}
+                        checked {% endif %}>
 					<label class='check-label' for='save'>Auto save</label>
 				</div>
 			</div>
@@ -42,9 +43,9 @@
 		<h5>Proposed changes for <code>{{ form_title }}</code></h5>
 		{{ edit_form(wiki_domain, form_title, outcome.new_text) }}
 
-		{% elif outcome.kind == "no_changes" %}
+		{% elif outcome.kind == "skipped" %}
 		<div class="alert alert-info">
-			<code>{{ form_title }}</code>: the rewriter produced no changes.
+			<code>{{ form_title }}</code>: page skipped, reason: {{ outcome.msg }}
 		</div>
 		{% elif outcome.kind == "notext" %}
 		<div class="alert alert-warning">

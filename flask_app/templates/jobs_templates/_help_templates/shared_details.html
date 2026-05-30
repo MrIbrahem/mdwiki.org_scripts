@@ -28,9 +28,9 @@
 
 {% endif %}
 
-{% if result_data and result_data.pages_no_changes %}
+{% if result_data and result_data.pages_skipped %}
 
-{{ template_pages_only_title(wiki_domain, 'Pages no changes', result_data.pages_no_changes) }}
+{{ template_pages_errors(wiki_domain, 'Pages skipped', result_data.pages_skipped) }}
 
 {% endif %}
 

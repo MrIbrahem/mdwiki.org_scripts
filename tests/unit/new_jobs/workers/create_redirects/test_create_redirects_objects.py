@@ -5,13 +5,13 @@ from __future__ import annotations
 from flask_app.main_app.new_jobs.base_worker_object import WorkerObject
 from flask_app.main_app.new_jobs.workers.create_redirects.objects import (
     CreateRedirectsWorkerObject,
-    Summary,
+    RedirectsSummary,
 )
 
 
 class TestSummary:
     def test_defaults(self):
-        s = Summary()
+        s = RedirectsSummary()
         assert s.scanned == 0
         assert s.total == 0
         assert s.created == 0
@@ -21,7 +21,7 @@ class TestSummary:
         assert s.target_missing == 0
 
     def test_mutable(self):
-        s = Summary()
+        s = RedirectsSummary()
         s.created = 5
         s.errors = 1
         assert s.created == 5

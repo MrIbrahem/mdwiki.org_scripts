@@ -51,7 +51,6 @@ class TestImportHistoryWorkerObject:
         assert obj.pages_imported_fallback == []
         assert obj.pages_errors == []
         assert obj.pages_skipped == []
-        assert obj.pages_no_changes == []
         assert obj.pages_missing == []
 
     def test_default_summary(self):

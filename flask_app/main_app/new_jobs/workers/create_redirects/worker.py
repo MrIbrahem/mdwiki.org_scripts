@@ -182,7 +182,7 @@ class CreateRedirectsWorker(BaseObjectsJobWorker):
         counts = {"target_missing": 0, "created": 0, "already_exists": 0, "skipped": 0, "errors": 0}
 
         if not is_page_exists(title, self.site):
-            logger.info(f"Job {self.job_id}: target {title!r} missing on mdwiki, skipping")
+            logger.info(f"Job {self.job_id}: {title!r}: missing!")
             counts["target_missing"] = 1
             return counts
 

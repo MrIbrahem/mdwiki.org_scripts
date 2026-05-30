@@ -79,6 +79,16 @@ Runs `work_on_title()` inline — fast single-page template normalization.
 | GET    | `/`            | Index page  |
 | GET    | `/favicon.ico` | Favicon     |
 
+## Testing
+
+```bash
+pytest tests/unit/app_routes
+pytest tests/integration/app_routes
+
+# with coverage
+pytest tests/integration/app_routes tests/unit/app_routes --cov=flask_app/main_app/app_routes
+```
+
 ## Strengths
 
 -   **Clean Blueprint separation** by concern

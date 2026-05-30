@@ -13,8 +13,8 @@ from flask_app.main_app.new_jobs.shared_objects import (
 
 class TestUpdaterOutcome:
     def test_create_with_defaults(self):
-        o = UpdaterOutcome(kind="no_changes")
-        assert o.kind == "no_changes"
+        o = UpdaterOutcome(kind="skipped")
+        assert o.kind == "skipped"
         assert o.newrevid == 0
         assert o.msg == ""
 
@@ -30,7 +30,7 @@ class TestUpdaterOutcome:
         assert d["msg"] == "not found"
 
     def test_all_kind_values(self):
-        for kind in ("missing", "no_changes", "changed", "error"):
+        for kind in ("missing", "skipped", "changed", "error"):
             o = UpdaterOutcome(kind=kind)
             assert o.kind == kind
 
@@ -60,7 +60,6 @@ class TestSharedworkerObject:
         assert obj.pages_changed == []
         assert obj.pages_errors == []
         assert obj.pages_skipped == []
-        assert obj.pages_no_changes == []
         assert obj.pages_missing == []
 
     def test_default_summary(self):

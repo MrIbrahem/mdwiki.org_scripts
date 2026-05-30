@@ -75,6 +75,12 @@ migrate = Migrate()
 | `bp_newupdater`  | `/newupdater` | Medical content updater     |
 | `bp_fixred`      | `/fixred`     | Single-page redirect fixer  |
 
+## Testing
+
+```bash
+pytest tests/ --cov=flask_app/main_app
+```
+
 ## Strengths
 
 -   **Clean separation of concerns** across subpackages

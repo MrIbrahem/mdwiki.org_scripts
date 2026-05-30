@@ -32,7 +32,6 @@ class TestFindAndReplaceWorkerObject:
         assert obj.pages_changed == []
         assert obj.pages_errors == []
         assert obj.pages_skipped == []
-        assert obj.pages_no_changes == []
         assert obj.pages_missing == []
 
     def test_lists_are_independent(self):

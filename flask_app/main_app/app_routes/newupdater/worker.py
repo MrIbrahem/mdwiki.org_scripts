@@ -30,17 +30,12 @@ def work_on_title(
 ) -> UpdaterTextOutcome:
     """
     Fetch the page, run the updater, and report what the diff would be.
-
-    Returns one of:
-
-    * ``notext``     — the page was empty or the rewriter wiped it out.
-    * ``no_changes`` — the rewriter is satisfied with the current text.
-    * ``changes``    — there is a diff to review/save.
     """
 
     user = current_user()
     if user is None:
-        return UpdaterTextOutcome(kind="notext")
+        return UpdaterTextOutcome(kind="skipped", msg="No user")
+
     user_dict = {
         "access_token": user.access_token,
         "access_secret": user.access_secret,
@@ -49,13 +44,11 @@ def work_on_title(
 
     title = (title or "").strip()
     if not title:
-        return UpdaterTextOutcome(kind="notext")
+        return UpdaterTextOutcome(kind="skipped", msg="Invalid title")
 
     old_text = get_page_text(title, site)
-    if old_text is None:
-        return UpdaterTextOutcome(kind="notext")
 
-    if not old_text.strip():
+    if not old_text or not old_text.strip():
         return UpdaterTextOutcome(kind="notext", old_text=old_text)
 
     try:
@@ -68,7 +61,7 @@ def work_on_title(
         return UpdaterTextOutcome(kind="notext", old_text=old_text)
 
     if new_text == old_text:
-        return UpdaterTextOutcome(kind="no_changes", old_text=old_text, new_text=new_text)
+        return UpdaterTextOutcome(kind="skipped", msg="No changes")
 
     if save:
         result = edit_page(site, title, new_text, summary)

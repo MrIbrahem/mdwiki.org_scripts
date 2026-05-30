@@ -62,6 +62,12 @@ Saves `request.url` as `post_login_redirect` in session for post-login redirect.
 
 JSON serialization uses `default=str` for datetime handling.
 
+## Testing
+
+```bash
+pytest tests/unit/su_services --cov=flask_app/main_app/su_services
+```
+
 ## Strengths
 
 -   **Clean decorator pattern** for auth (`oauth_required`)

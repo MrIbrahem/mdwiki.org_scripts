@@ -140,6 +140,10 @@ class DuplicateRedirectWorker(BaseObjectsJobWorker):
 
             self.record_page_outcome(outcome, entry)
 
+            # Check DB if the job cancelled every N successful edits
+            if outcome.kind == "changed" and self.check_cancel_db_periodic():
+                break
+
             if i == 1 or i % per_item == 0:
                 self._save_progress()
 
@@ -149,12 +153,12 @@ class DuplicateRedirectWorker(BaseObjectsJobWorker):
         return self.result_object
 
     def record_page_outcome(self, outcome: UpdaterOutcome, entry: dict[str, Any]) -> None:
-        from_title = entry["title"]
+        title = entry["title"]
         redirect_to = entry["redirect_to"]
         final_target = entry["final_target"]
 
         page_record = {
-            "from_title": from_title,
+            "from_title": title,
             "redirect_to": redirect_to,
             "final_target": final_target,
             "msg": outcome.msg,
@@ -163,11 +167,8 @@ class DuplicateRedirectWorker(BaseObjectsJobWorker):
             page_record["newrevid"] = outcome.newrevid
             self.result_object.pages_changed.append(page_record)
 
-        elif outcome.kind == "no_changes":
-            self.result_object.pages_no_changes.append(from_title)
-
         elif outcome.kind == "missing":
-            self.result_object.pages_missing.append(from_title)
+            self.result_object.pages_missing.append(title)
 
         elif outcome.kind == "skipped":
             self.result_object.pages_skipped.append(page_record)
@@ -184,27 +185,31 @@ class DuplicateRedirectWorker(BaseObjectsJobWorker):
     # ------------------------------------------------------------------
 
     def _process_one(self, title: str, redirect_to: str, final_target: str) -> UpdaterOutcome:
-        """
-        Treat one double redirect; return a short outcome label.
-        """
         if not is_page_exists(title, self.site):
+            logger.info(f"Job {self.job_id}: {title!r}: missing!")
             return UpdaterOutcome(kind="missing")
 
-        text = get_page_text(title, self.site) or ""
+        text = get_page_text(title, self.site)
+        if not text or not text.strip():
+            return UpdaterOutcome(kind="skipped", msg="Page is empty")
 
-        # TODO: replace only the link not the whole text, use wikitextparser to analyze the text
-        new_text = f"#REDIRECT [[{final_target}]]"
+        new_text, summary = self.make_new_text(final_target)
 
         if new_text == text:
-            return UpdaterOutcome(kind="no_changes")
-
-        summary = f"fix duplicate redirect to [[{final_target}]]"
+            return UpdaterOutcome(kind="skipped", msg="No changes")
 
         result = edit_page(self.site, title, new_text, summary)
+
         if result.get("success"):
             return UpdaterOutcome(kind="changed", newrevid=result.get("newrevid", 0))
 
         return UpdaterOutcome(kind="error", msg=result.get("error", "Unknown error"))
+
+    def make_new_text(self, final_target):
+        # TODO: replace only the link not the whole text, use wikitextparser to analyze the text
+        new_text = f"#REDIRECT [[{final_target}]]"
+        summary = f"fix duplicate redirect to [[{final_target}]]"
+        return new_text, summary
 
 
 def duplicate_redirect_worker_entry(

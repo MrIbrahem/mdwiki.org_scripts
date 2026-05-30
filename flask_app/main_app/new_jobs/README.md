@@ -71,7 +71,7 @@ Provides common dataclasses used across multiple workers:
 ```python
 @dataclass(frozen=True)
 class UpdaterOutcome:
-    kind: Literal["missing", "no_changes", "changed", "error"]
+    kind: Literal["missing", "skipped", "changed", "error"]
     newrevid: int = 0
     msg: str = ""
 
@@ -87,7 +87,6 @@ class SharedworkerObject(WorkerObject):
     pages_changed: list[dict[str, Any]]
     pages_errors: list[dict[str, Any]]
     pages_skipped: list[dict[str, Any]]
-    pages_no_changes: list[str]
     pages_missing: list[str]
 ```
 
@@ -133,13 +132,20 @@ jobs_data = {
 }
 ```
 
+## Testing
+
+```bash
+pytest tests/unit/new_jobs --cov=flask_app/main_app/new_jobs
+pytest tests/unit/new_jobs --cov=flask_app/main_app/new_jobs
+```
+
 ## Strengths
 
 -   **Clean abstract base class** with template method pattern
 -   **Dual cancellation** — local `Event` (fast) + DB status (cross-process)
 -   **Progress persistence** — results saved periodically during execution
--   **Standardized result objects** — `SharedworkerObject` with typed lists (`pages_changed`, `pages_errors`, `pages_no_changes`, etc.) replaces per-worker dataclasses for most workers
--   **Unified `UpdaterOutcome`** — consistent per-page result kinds (`missing`, `no_changes`, `changed`, `error`) across all workers
+-   **Standardized result objects** — `SharedworkerObject` with typed lists (`pages_changed`, `pages_errors`, `pages_skipped`, etc.) replaces per-worker dataclasses for most workers
+-   **Unified `UpdaterOutcome`** — consistent per-page result kinds (`missing`, `skipped`, `changed`, `error`) across all workers
 -   **Proper Flask app context** handling for background threads
 -   **Error handling** at both worker and runner levels
 

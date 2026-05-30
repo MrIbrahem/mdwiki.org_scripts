@@ -96,6 +96,12 @@ def init_db(app, _db):
 
 Idempotent — safe to call on every startup.
 
+## Testing
+
+```bash
+pytest tests/unit/db --cov=flask_app/main_app/db
+```
+
 ## Strengths
 
 -   **Clean model definitions** with proper server defaults

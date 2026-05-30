@@ -26,7 +26,7 @@
                 </div>
             </div>
             <div class="col-md-3 d-flex align-items-end">
-                <button class="btn btn-outline-primary w-100" type="submit">Preview</button>
+                <button class="btn btn-outline-primary w-100" type="submit">Start</button>
             </div>
         </form>
 
@@ -35,9 +35,9 @@
         <h5>Proposed changes for <code>{{ form_title }}</code></h5>
         {{ edit_form(wiki_domain, form_title, outcome.new_text) }}
 
-        {% elif outcome.kind == "no_changes" %}
+        {% elif outcome.kind == "skipped" %}
         <div class="alert alert-info">
-            <code>{{ form_title }}</code>: the rewriter produced no changes.
+            <code>{{ form_title }}</code>: page skipped, reason: {{ outcome.msg }}
         </div>
         {% elif outcome.kind == "notext" %}
         <div class="alert alert-warning">

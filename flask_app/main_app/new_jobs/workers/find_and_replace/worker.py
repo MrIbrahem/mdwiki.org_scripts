@@ -93,6 +93,7 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
             if self.is_cancelled():
                 self.result_object.stopped = True
                 break
+
             if cap is not None and self.result_object.summary.changed >= cap:
                 logger.info(f"Job {self.job_id}: Reached cap of {cap} modifications")
                 break
@@ -107,6 +108,11 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
                 continue
 
             self.record_page_outcome(outcome, title)
+
+            # Check DB if the job cancelled every N successful edits
+            if outcome.kind == "changed" and self.check_cancel_db_periodic():
+                self.result_object.stopped = True
+                break
 
             if i == 1 or i % per_item == 0:
                 self._save_progress()
@@ -124,9 +130,6 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
         if outcome.kind == "changed":
             page_record["newrevid"] = outcome.newrevid
             self.result_object.pages_changed.append(page_record)
-
-        elif outcome.kind == "no_changes":
-            self.result_object.pages_no_changes.append(title)
 
         elif outcome.kind == "missing":
             self.result_object.pages_missing.append(title)
@@ -181,23 +184,29 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
 
     def _process_one(self, title: str, str_find: str, str_replace: str) -> UpdaterOutcome:
         if not is_page_exists(title, self.site):
+            logger.info(f"Job {self.job_id}: {title!r}: missing!")
             return UpdaterOutcome(kind="missing")
 
         text = get_page_text(title, self.site)
         if not text or not text.strip():
-            return UpdaterOutcome(kind="no_changes")
+            return UpdaterOutcome(kind="skipped", msg="Page is empty")
 
-        new_text = text.replace(str_find, str_replace)
+        new_text, summary = self.make_new_text(str_find, str_replace, text)
+
         if new_text == text:
-            return UpdaterOutcome(kind="no_changes")
+            return UpdaterOutcome(kind="skipped", msg="No changes")
 
-        summary = "Replace via mdwiki.toolforge.org find-and-replace tool."
         result = edit_page(self.site, title, new_text, summary)
 
         if result.get("success"):
             return UpdaterOutcome(kind="changed", newrevid=result.get("newrevid", 0))
 
         return UpdaterOutcome(kind="error", msg=result.get("error", "Unknown error"))
+
+    def make_new_text(self, str_find, str_replace, text):
+        new_text = text.replace(str_find, str_replace)
+        summary = "Replace via mdwiki.toolforge.org find-and-replace tool."
+        return new_text, summary
 
 
 def find_and_replace_worker_entry(

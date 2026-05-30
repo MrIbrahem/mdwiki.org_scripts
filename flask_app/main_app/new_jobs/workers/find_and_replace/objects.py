@@ -27,7 +27,6 @@ class FindAndReplaceWorkerObject(WorkerObject):
     pages_errors: list[dict[str, Any]] = field(default_factory=list)
     pages_skipped: list[dict[str, Any]] = field(default_factory=list)
 
-    pages_no_changes: list[str] = field(default_factory=list)
     pages_missing: list[str] = field(default_factory=list)
 
 

@@ -94,6 +94,10 @@ class FixRefWorker(BaseObjectsJobWorker):
 
             self.record_page_outcome(outcome, title)
 
+            # Check DB if the job cancelled every N successful edits
+            if outcome.kind == "changed" and self.check_cancel_db_periodic():
+                break
+
             if i == 1 or i % per_item == 0:
                 self._save_progress()
 
@@ -110,9 +114,6 @@ class FixRefWorker(BaseObjectsJobWorker):
         if outcome.kind == "changed":
             page_record["newrevid"] = outcome.newrevid
             self.result_object.pages_changed.append(page_record)
-
-        elif outcome.kind == "no_changes":
-            self.result_object.pages_no_changes.append(title)
 
         elif outcome.kind == "missing":
             self.result_object.pages_missing.append(title)
@@ -180,18 +181,17 @@ class FixRefWorker(BaseObjectsJobWorker):
 
     def _process_one(self, title: str) -> UpdaterOutcome:
         if not is_page_exists(title, self.site):
+            logger.info(f"Job {self.job_id}: {title!r}: missing!")
             return UpdaterOutcome(kind="missing")
 
         text = get_page_text(title, self.site)
         if not text or not text.strip():
-            return UpdaterOutcome(kind="missing")
+            return UpdaterOutcome(kind="skipped", msg="Page is empty")
 
-        new_text, summary = fix_ref_template(text, returnsummary=True)
-        if not summary:
-            summary = "Normalize references"
+        new_text, summary = self.make_new_text(text)
 
         if new_text == text:
-            return UpdaterOutcome(kind="no_changes")
+            return UpdaterOutcome(kind="skipped", msg="No changes")
 
         result = edit_page(self.site, title, new_text, summary)
 
@@ -199,6 +199,11 @@ class FixRefWorker(BaseObjectsJobWorker):
             return UpdaterOutcome(kind="changed", newrevid=result.get("newrevid", 0))
 
         return UpdaterOutcome(kind="error", msg=result.get("error", "Unknown error"))
+
+    def make_new_text(self, text):
+        new_text, summary = fix_ref_template(text, returnsummary=True)
+        summary = summary or "Normalize references"
+        return new_text, summary
 
 
 def fixref_worker_entry(

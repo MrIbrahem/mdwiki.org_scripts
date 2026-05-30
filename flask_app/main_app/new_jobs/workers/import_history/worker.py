@@ -91,6 +91,10 @@ class ImportHistoryWorker(BaseObjectsJobWorker):
 
             self.record_page_outcome(outcome, title)
 
+            # Check DB if the job cancelled every N successful edits
+            if outcome.kind in ("imported", "imported_fallback") and self.check_cancel_db_periodic():
+                break
+
             if i == 1 or i % per_item == 0:
                 self._save_progress()
 
@@ -112,9 +116,6 @@ class ImportHistoryWorker(BaseObjectsJobWorker):
             page_record["newrevid"] = outcome.newrevid
             self.result_object.pages_imported_fallback.append(page_record)
 
-        elif outcome.kind == "no_changes":
-            self.result_object.pages_no_changes.append(title)
-
         elif outcome.kind == "missing":
             self.result_object.pages_missing.append(title)
 
@@ -131,10 +132,12 @@ class ImportHistoryWorker(BaseObjectsJobWorker):
 
     def _process_one(self, title: str) -> UpdaterOutcome:
         if not is_page_exists(title, self.site):
-            logger.info(f"Job {self.job_id}: {title!r}: missing on mdwiki")
+            logger.info(f"Job {self.job_id}: {title!r}: missing!")
             return UpdaterOutcome(kind="missing")
 
         text = get_page_text(title, self.site)
+        if not text or not text.strip():
+            return UpdaterOutcome(kind="skipped", msg="Page is empty")
 
         result = import_page_from_wiki(self.site, title, family="wikipedia")
         if result.get("error"):

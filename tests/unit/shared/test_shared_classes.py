@@ -8,8 +8,8 @@ from flask_app.main_app.shared.shared_classes import UpdaterTextOutcome
 
 class TestUpdaterTextOutcome:
     def test_create_with_defaults(self):
-        o = UpdaterTextOutcome(kind="no_changes")
-        assert o.kind == "no_changes"
+        o = UpdaterTextOutcome(kind="skipped")
+        assert o.kind == "skipped"
         assert o.old_text == ""
         assert o.new_text == ""
         assert o.newrevid == 0
@@ -36,6 +36,6 @@ class TestUpdaterTextOutcome:
         assert "new_text" in d
 
     def test_all_kind_values(self):
-        for kind in ("notext", "no_changes", "changes", "saved"):
+        for kind in ("notext", "changes", "saved"):
             o = UpdaterTextOutcome(kind=kind)
             assert o.kind == kind
