@@ -52,14 +52,29 @@ def _can_manage_job(job: Any, user: Any) -> bool:
     return False
 
 
-def _cancel_job(job_id: int, job_type: str, job: JobRecord) -> Response:
+def _cancel_job(job_id: int, job_type: str) -> Response:
     """Cancel a running job."""
+    user = current_user()
+    if not user:
+        flash("You must be logged in to cancel jobs.", "danger")
+        return redirect(url_for("new_jobs.job_detail", job_type=job_type, job_id=job_id))
+
+    try:
+        job = get_job(job_id, job_type)
+    except LookupError:
+        flash("Job not found.", "warning")
+        return redirect(url_for("new_jobs.job_detail", job_type=job_type, job_id=job_id))
+
+    if not _can_manage_job(job, user):
+        flash("You don't have permission to cancel this job.", "danger")
+        return redirect(url_for("new_jobs.job_detail", job_type=job_type, job_id=job_id))
+
     if jobs_worker.cancel_job(job_id, job_type, job):
         flash(f"Job {job_id} cancellation requested.", "success")
     else:
         flash(f"Job {job_id} is not running or already cancelled.", "warning")
 
-    return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
+    return redirect(url_for("new_jobs.job_detail", job_type=job_type, job_id=job_id))
 
 
 def _delete_job(job_id: int, job_type: str) -> Response:
@@ -209,24 +224,10 @@ class JobsPublicRoutes:
         @bp_public_jobs.post("/<string:job_type>/<int:job_id>/cancel")
         def cancel_job(job_type: str, job_id: int) -> Response:
             if job_type not in jobs_data:
+                flash("Job type not found.", "warning")
                 abort(404)
 
-            user = current_user()
-            if not user:
-                flash("You must be logged in to cancel jobs.", "danger")
-                return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
-
-            try:
-                job = get_job(job_id, job_type)
-            except LookupError:
-                flash("Job not found.", "warning")
-                return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
-
-            if not _can_manage_job(job, user):
-                flash("You don't have permission to cancel this job.", "danger")
-                return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
-
-            return _cancel_job(job_id, job_type, job)
+            return _cancel_job(job_id, job_type)
 
         # ================================
         # Jobs List routes
