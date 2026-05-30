@@ -3,23 +3,28 @@ import ast
 from pathlib import Path
 
 def extract_classes_and_functions(file_path):
-    """تحليل الملف واستخراج أسماء الكلاسات والدوال منه."""
+    """Parse the file and extract only the top-level class and function names."""
     classes = []
     functions = []
     try:
         file_content = file_path.read_text(encoding="utf-8")
         tree = ast.parse(file_content)
 
-        for node in ast.walk(tree):
+        # Use tree.body to iterate over top-level elements only.
+        # This prevents extracting functions defined inside classes or other functions.
+        for node in tree.body:
             if isinstance(node, ast.ClassDef):
-                classes.append(node.name)
-            # إضافة الدوال العادية والدوال غير المتزامنة (async)
+                # Ignore classes starting with _
+                if not node.name.startswith('_'):
+                    classes.append(node.name)
+
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                # إذا لم تكن الدالة تابعة لكلاس (تجنب تكرار توثيق التوابع داخل الكلاسات إذا أردت)
-                functions.append(node.name)
+                # Ignore functions starting with _
+                if not node.name.startswith('_'):
+                    functions.append(node.name)
 
     except SyntaxError:
-        # تجاهل الملفات التي تحتوي على أخطاء في الصياغة (Syntax Errors)
+        # Ignore files with Syntax Errors
         pass
     except Exception as e:
         print(f"Error parsing {file_path}: {e}")
@@ -28,7 +33,7 @@ def extract_classes_and_functions(file_path):
 
 
 def generate_domain_test_placeholders(src_root, test_root):
-    """ """
+    """Generates test placeholders based on the source directory structure."""
     src_path = Path(src_root)
     test_base_unit = Path(test_root) / "unit"
     test_base_integration = Path(test_root) / "integration"
@@ -38,8 +43,8 @@ def generate_domain_test_placeholders(src_root, test_root):
 
         # if "domain" not in current_path.parts: continue
 
-        # استخراج المسار النسبي من بعد مجلد المشروع (مثلاً: admin/domain/db)
-        # نستخدم current_path.relative_to(src_path) للحصول على المسار داخل flask_app/x
+        # Extract the relative path after the project folder
+        # Use current_path.relative_to(src_path) to get the path inside the source dir
         rel_path = current_path.relative_to(src_path)
 
         for file in files:
@@ -71,24 +76,45 @@ def generate_domain_test_placeholders(src_root, test_root):
                     else:
                         test_filename = f"test_{parent_name}_init.py"
 
-                # إنشاء المجلد إذا لم يكن موجوداً
+                # Create the directory if it doesn't exist
                 target_dir.mkdir(parents=True, exist_ok=True)
                 test_file_path = target_dir / test_filename
 
-                # المسار الذي سيظهر في النص الوصفي (مثلاً domain/models/user.py)
-                # نبحث عن موقع word "domain" وما بعدها
+                # The path that will appear in the docstring
+                # Find the index of the "flask_app" part to build the internal path
                 parts = current_path.parts
                 try:
                     internal_path = "/".join(parts[parts.index("flask_app") :])
                 except ValueError:
                     internal_path = "/".join(parts)
 
-                # extract functions and classes
+                # Extract classes and functions from the current file
                 classes, functions = extract_classes_and_functions(file_path)
 
-                #
+                # Format the lists as strings for the Docstring
                 classes_str = ", ".join(classes) if classes else ""
                 functions_str = ", ".join(functions) if functions else ""
+
+                # Combine classes and functions to create the import statement
+                items_to_import = classes + functions
+
+                if items_to_import:
+                    # Convert elements to a comma-separated string
+                    items_str = ", ".join(items_to_import)
+
+                    # Convert path (e.g., flask_app/main_app/domain) to python path (flask_app.main_app.domain)
+                    module_path = f"{internal_path.replace('/', '.')}.{file_stem}"
+
+                    if module_path.endswith(".__init__"):
+                        module_path = f"{internal_path.replace('/', '.')}"
+
+                    # Create absolute import statement (safer for tests)
+                    import_statement = f"from {module_path} import (\n    {items_str},\n)"
+
+                    # If you prefer to use relative imports, you can enable this line instead:
+                    # import_statement = f"from ..{file_stem} import ({items_str})"
+                else:
+                    import_statement = ""
 
                 methods_parts = []
                 if classes_str:
@@ -105,6 +131,7 @@ def generate_domain_test_placeholders(src_root, test_root):
                     'TODO: write tests',
                     '"""',
                     '\n',
+                    import_statement,
                 ]
                 # ------------------------------------------------
                 _old = [
