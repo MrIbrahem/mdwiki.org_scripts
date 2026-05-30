@@ -9,7 +9,7 @@ from typing import List
 
 from ...extensions import db
 from ..models import AdminUserRecord
-from .utils import db_bool
+from .utils import db_try_except
 
 logger = logging.getLogger(__name__)
 
@@ -67,18 +67,15 @@ def set_coordinator_active(coordinator_id: int, is_active: bool) -> AdminUserRec
         db.session.refresh(record)
         return record
 
-
-@db_bool
+@db_try_except(False)
 def delete_coordinator(coordinator_id: int) -> bool:
-    """Delete a coordinator."""
-    # record = get_coordinator_by_id(coordinator_id)
-    record = db.session.query(AdminUserRecord).filter(AdminUserRecord.id == coordinator_id).first()
-
-    if record:
-        db.session.delete(record)
-        db.session.commit()
-        return True
-    return False
+    """Delete a coordinator efficiently."""
+    affected_rows = (
+        db.session.query(AdminUserRecord)
+        .filter(AdminUserRecord.id == coordinator_id)
+        .delete(synchronize_session=False)
+    )
+    return affected_rows > 0
 
 
 __all__ = [

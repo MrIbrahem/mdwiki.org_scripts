@@ -13,7 +13,7 @@ from sqlalchemy.orm import defer
 from ...core.crypto import encrypt_value
 from ...extensions import db
 from ..models import UserTokenRecord
-from .utils import db_bool
+from .utils import db_try_except
 
 logger = logging.getLogger(__name__)
 
@@ -71,16 +71,18 @@ def get_user_token(user_id: str | int) -> Optional[UserTokenRecord]:
         return None
     return orm_obj
 
-
-@db_bool
+@db_try_except
 def delete_user_token(user_id: int) -> bool:
     """Remove the stored OAuth credentials for the given user id."""
     if not user_id:
         return False
 
-    db.session.query(UserTokenRecord).filter(UserTokenRecord.user_id == user_id).delete()
-    db.session.commit()
-    return True
+    affected_rows = (
+        db.session.query(UserTokenRecord)
+        .filter(UserTokenRecord.user_id == user_id)
+        .delete(synchronize_session=False)
+    )
+    return affected_rows > 0
 
 def get_user_token_by_username(username: str) -> Optional[UserTokenRecord]:
     """Fetch the encrypted OAuth credentials for a user by username."""

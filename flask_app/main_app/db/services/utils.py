@@ -9,7 +9,7 @@ from ...extensions import db
 logger = logging.getLogger(__name__)
 
 
-def db_bool[**P](func: Callable[P, bool]) -> Callable[P, bool]:
+def db_try_except[**P](func: Callable[P, bool], default_return: bool | list = False) -> Callable[P, bool | list]:
     """Wrap a db service function that returns ``bool``.
 
     On success the original return value is passed through.
@@ -24,6 +24,6 @@ def db_bool[**P](func: Callable[P, bool]) -> Callable[P, bool]:
         except Exception:
             db.session.rollback()
             logger.exception("DB error in %s", func.__qualname__)
-            return False
+            return default_return
 
     return wrapper  # type: ignore[return-value]

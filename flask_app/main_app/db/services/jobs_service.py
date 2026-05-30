@@ -7,7 +7,7 @@ from sqlalchemy import func
 
 from ...extensions import db
 from ..models.jobs import JobRecord
-from .utils import db_bool
+from .utils import db_try_except
 
 logger = logging.getLogger(__name__)
 
@@ -139,27 +139,15 @@ def list_jobs(limit: int = 100, job_type: str | None = None) -> list[JobRecord]:
         query = query.filter(JobRecord.job_type == job_type)
     return query.order_by(JobRecord.created_at.desc()).limit(limit).all()
 
-
-@db_bool
+@db_try_except
 def delete_job(job_id: int, job_type: str) -> bool:
-    """
-    Delete a job by ID and job type.
-
-    Code to match:
-        query = "DELETE FROM jobs WHERE id = %s AND job_type = %s"
-        try:
-            self.db.execute_query_safe(query, (job_id, job_type))
-            return True
-        except Exception as e:
-            logger.exception(f"Failed to delete job id {job_id} of type {job_type}: {e}")
-            return False
-    """
-    record = db.session.query(JobRecord).filter(JobRecord.id == job_id, JobRecord.job_type == job_type).first()
-    if not record:
-        return False
-    db.session.delete(record)
-    db.session.commit()
-    return True
+    """Delete a job by ID and job type efficiently."""
+    affected_rows = (
+        db.session.query(JobRecord)
+        .filter(JobRecord.id == job_id, JobRecord.job_type == job_type)
+        .delete(synchronize_session=False)
+    )
+    return affected_rows > 0
 
 
 def cancel_job(job_id: int, job_type: str | None = None) -> bool:
