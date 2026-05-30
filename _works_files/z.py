@@ -20,10 +20,15 @@ def generate_domain_test_placeholders(src_root, test_root):
         for file in files:
             if file.endswith(".py") and file != "__init__.py":
                 file_stem = Path(file).stem
-
-                if file_stem == "worker":
+                to_re = [
+                    "worker",
+                    "utils",
+                    "objects",
+                ]
+                if file_stem in to_re:
                     parent_name = current_path.stem
-                    test_filename = f"test_{parent_name}_worker.py"
+                    test_filename = f"test_{parent_name}_{file_stem}.py"
+
                 elif "routes" in current_path.parts:
                     test_filename = f"test_{file_stem}_routes.py"
                     continue
