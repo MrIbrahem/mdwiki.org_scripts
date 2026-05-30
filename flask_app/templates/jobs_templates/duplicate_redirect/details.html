@@ -35,12 +35,12 @@
 
 {% if result_data and result_data.pages_no_changes %}
 
-{{ template_pages_only_title(wiki_domain, 'Pages no changes', result_data.pages_no_changes, title_columns=title_columns) }}
+{{ template_pages_errors(wiki_domain, 'Pages no changes', result_data.pages_no_changes, title_columns=title_columns) }}
 
 {% endif %}
 {% if result_data and result_data.pages_missing %}
 
-{{ template_pages_only_title(wiki_domain, 'Pages missing', result_data.pages_missing, title_columns=title_columns) }}
+{{ template_pages_only_title(wiki_domain, 'Pages missing', result_data.pages_missing) }}
 
 {% endif %}
 {% endblock %}

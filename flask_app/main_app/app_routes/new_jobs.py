@@ -63,7 +63,7 @@ def _cancel_job(job_id: int, job_type: str) -> Response:
         job = get_job(job_id, job_type)
     except LookupError:
         flash("Job not found.", "warning")
-        return redirect(url_for("new_jobs.job_detail", job_type=job_type, job_id=job_id))
+        return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
 
     if not _can_manage_job(job, user):
         flash("You don't have permission to cancel this job.", "danger")

@@ -145,7 +145,7 @@
 
 {# {%- from "jobs_templates/_help_templates/_jobs_macros.html" import template_pages_only_title -%} #}
 
-{% macro template_pages_only_title(domain, title, data, title_columns={"title": "Title"}) %}
+{% macro template_pages_only_title(domain, title, data) %}
 <div class="card mb-3">
     <div class="card-header">
         {{ card_header(title ~ " (" ~ data|length ~ ")") }}
@@ -156,23 +156,15 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        {% if title_columns %}
-                        {{ th_titles_columns(title_columns) }}
-                        {% else %}
                         <th>Title</th>
-                        {% endif %}
                         <th>Msg</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in data %}
+                    {% for title in data %}
                     <tr>
                         <td> {{ loop.index }} </td>
-                        {% if title_columns %}
-                        {{ td_titles_columns(domain, title_columns, item) }}
-                        {% else %}
-                        <td> {{ wiki_domain_link(domain, item) }} </td>
-                        {% endif %}
+                        <td> {{ wiki_domain_link(domain, title) }} </td>
                         <td><small></small></td>
                     </tr>
                     {% endfor %}

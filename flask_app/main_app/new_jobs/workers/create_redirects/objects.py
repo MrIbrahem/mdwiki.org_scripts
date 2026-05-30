@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class Summary:
+class RedirectsSummary:
     scanned: int = 0
     total: int = 0
 
@@ -26,7 +26,7 @@ class Summary:
 
 @dataclass
 class CreateRedirectsWorkerObject(WorkerObject):
-    summary: Summary = field(default_factory=Summary)
+    summary: RedirectsSummary = field(default_factory=RedirectsSummary)
     pages_to_work: list[str] = field(default_factory=list)
     pages_processed: list[dict[str, Any]] = field(default_factory=list)
     pages_errors: list[dict[str, Any]] = field(default_factory=list)
