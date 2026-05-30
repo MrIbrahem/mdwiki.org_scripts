@@ -120,7 +120,7 @@ All error handlers render `index.html` with a flash message — users get no use
 
 ## Areas That Need Attention
 
--   [ ] Add health check endpoint (`/healthz`)
+-   [ ] Add health check endpoint (`/health`)
 -   [ ] Create dedicated error templates
 -   [ ] Add request logging middleware
 -   [ ] Document the `shared/` package's wikitext processing logic
@@ -131,7 +131,7 @@ All error handlers render `index.html` with a flash message — users get no use
 
 ### Quick Wins
 
-1. Add `/healthz` endpoint for monitoring
+1. Add `/health` endpoint for monitoring
 2. Create proper error templates (404.html, 500.html)
 3. Fix the Fernet thread-safety lock
 
