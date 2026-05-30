@@ -20,6 +20,7 @@ def generate_domain_test_placeholders(src_root, test_root):
         for file in files:
             target_dir = test_base_unit / rel_path
             if file.endswith(".py"):
+                parent_name = current_path.stem
 
                 file_stem = Path(file).stem
                 if "routes" in current_path.parts or file_stem == "routes":
@@ -32,7 +33,6 @@ def generate_domain_test_placeholders(src_root, test_root):
                     "routes",
                 ]
                 if file_stem in to_re:
-                    parent_name = current_path.stem
                     test_filename = f"test_{parent_name}_{file_stem}.py"
 
                 else:
