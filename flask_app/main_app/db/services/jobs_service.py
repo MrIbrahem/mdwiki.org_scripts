@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from datetime import UTC, datetime
-
+import sqlalchemy
 from sqlalchemy import func
 
 from ...extensions import db
@@ -194,11 +194,16 @@ def is_job_cancelled(job_id: int, job_type: str) -> bool:
     Query to match:
         SELECT status FROM jobs WHERE id = %s AND job_type = %s
     """
-    record = db.session.query(JobRecord).filter(JobRecord.id == job_id, JobRecord.job_type == job_type).first()
-    if record:
-        # Refresh from database to ensure we don't use a stale cached status
-        db.session.refresh(record)
-        return record.status == "cancelled"
+    try:
+        record = db.session.query(JobRecord).filter(JobRecord.id == job_id, JobRecord.job_type == job_type).first()
+        if record:
+            # Refresh from database to ensure we don't use a stale cached status
+            db.session.refresh(record)
+            return record.status == "cancelled"
+    except sqlalchemy.exc.OperationalError as exc:
+        logger.error("Failed to check job status: %s", exc)
+    except Exception as exc:
+        logger.error("Failed to check job status: %s", exc)
     return False
 
 

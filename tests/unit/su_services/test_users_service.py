@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from flask import Flask, g, session
+from flask import g, session
 from flask_app.main_app.su_services.users_service import current_user, oauth_required
 
 
