@@ -1,0 +1,33 @@
+<div class="card mb-3">
+    <div class="card-header">
+        {{ card_header("Changed Pages (" ~ result_data.pages_changed|length ~ ")") }}
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Page</th>
+                        <th>Diff</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in result_data.pages_changed %}
+                    <tr>
+                        <td> {{ loop.index }} </td>
+                        <td>
+                            {{ wiki_domain_link(item.title) }}
+                        </td>
+                        <td>
+                            {{ diff_link(item.newrevid) }}
+                        </td>
+                        <td><small>{{ item.msg if item.msg else '' }}</small></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

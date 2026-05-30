@@ -7,64 +7,13 @@
 {% block detail_headline %}Fix Redirects in All Pages{% endblock %}
 
 {% block job_summary %}
-<div class="row g-3 mb-4">
-    <div class="col-md-2 col-sm-6">
-        {{ stats_card('Processing', result_data.summary.scanned ~ ' / ' ~ result_data.summary.total, "primary", "") }}
-    </div>
-    <div class="col-md-2 col-sm-6">
-        {{ stats_card('Changed', result_data.pages_changed|length, "success", "") }}
-    </div>
-    <div class="col-md-2 col-sm-6">
-        {{ stats_card('skipped', result_data.pages_skipped|length, "secondary", "") }}
-    </div>
-    <div class="col-md-2 col-sm-6">
-        {{ stats_card('No Changes', result_data.pages_no_changes|length, "secondary", "") }}
-    </div>
-    <div class="col-md-2 col-sm-6">
-        {{ stats_card('missing', result_data.pages_missing|length, "warning", "") }}
-    </div>
-    <div class="col-md-2 col-sm-6">
-        {{ stats_card('Errors', result_data.pages_errors|length, "danger", "") }}
-    </div>
-</div>
+{% include 'jobs_templates/_help_templates/_job_summary.html' %}
 {% endblock %}
 
 {% block job_details %}
 
 {% if result_data and result_data.pages_changed %}
-<div class="card mb-3">
-    <div class="card-header">
-        {{ card_header("Changed Pages (" ~ result_data.pages_changed|length ~ ")") }}
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-striped table-sm">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Page</th>
-                        <th>Diff</th>
-                        <th>Message</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in result_data.pages_changed %}
-                    <tr>
-                        <td> {{ loop.index }} </td>
-                        <td>
-                            {{ wiki_domain_link(item.title) }}
-                        </td>
-                        <td>
-                            {{ diff_link(item.newrevid) }}
-                        </td>
-                        <td><small>{{ item.msg if item.msg else '' }}</small></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+{% include 'jobs_templates/_help_templates/_changed_pages.html' %}
 {% endif %}
 
 {% if result_data and result_data.pages_processed %}
