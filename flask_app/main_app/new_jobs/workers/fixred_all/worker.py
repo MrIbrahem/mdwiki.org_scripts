@@ -23,7 +23,7 @@ from ...shared_objects import SharedworkerObject, UpdaterOutcome
 logger = logging.getLogger(__name__)
 
 
-class FixredAllWorker(BaseObjectsJobWorker):
+class FixRedAllWorker(BaseObjectsJobWorker):
     """Fix redirect links in all mdwiki pages."""
 
     def __init__(
@@ -159,7 +159,7 @@ def fixred_all_worker_entry(
 ) -> None:
     """Background worker entry-point."""
     logger.info(f"Starting job {job_id}: fixred_all")
-    worker = FixredAllWorker(
+    worker = FixRedAllWorker(
         job_id=job_id,
         user=user,
         args=args,
