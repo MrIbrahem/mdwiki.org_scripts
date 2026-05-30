@@ -18,9 +18,7 @@ tests/
 │   │   │   └── test_wiki_client.py
 │   │   ├── test_category.py
 │   │   ├── test_mwclient_page.py
-│   │   ├── test_pages_api.py
-│   │   ├── test_text_api.py
-│   │   └── test_text_bot.py
+│   │   └── test_pages_api.py
 │   ├── app_routes/
 │   │   ├── auth/
 │   │   │   ├── test_cookie.py
@@ -54,6 +52,7 @@ tests/
 │   │   └── test_jobs_runner.py
 │   ├── new_jobs/
 │   │   ├── workers/
+│   │   │   ├── copy_svg_langs/
 │   │   │   ├── create_redirects/
 │   │   │   │   └── test_create_redirects_worker.py
 │   │   │   ├── duplicate_redirect/
@@ -67,6 +66,7 @@ tests/
 │   │   │   └── import_history/
 │   │   │       └── test_import_history_worker.py
 │   │   ├── test_base_worker.py
+│   │   ├── test_job_lifecycle_updates.py
 │   │   ├── test_jobs_worker.py
 │   │   ├── test_utils.py
 │   │   └── test_workers_list.py
