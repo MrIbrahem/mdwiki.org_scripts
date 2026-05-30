@@ -9,6 +9,7 @@ from typing import List
 
 from ...extensions import db
 from ..models import AdminUserRecord
+from .utils import db_bool
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +68,7 @@ def set_coordinator_active(coordinator_id: int, is_active: bool) -> AdminUserRec
         return record
 
 
+@db_bool
 def delete_coordinator(coordinator_id: int) -> bool:
     """Delete a coordinator."""
     # record = get_coordinator_by_id(coordinator_id)

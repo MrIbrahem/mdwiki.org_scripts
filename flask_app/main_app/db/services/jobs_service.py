@@ -7,6 +7,7 @@ from sqlalchemy import func
 
 from ...extensions import db
 from ..models.jobs import JobRecord
+from .utils import db_bool
 
 logger = logging.getLogger(__name__)
 
@@ -139,6 +140,7 @@ def list_jobs(limit: int = 100, job_type: str | None = None) -> list[JobRecord]:
     return query.order_by(JobRecord.created_at.desc()).limit(limit).all()
 
 
+@db_bool
 def delete_job(job_id: int, job_type: str) -> bool:
     """
     Delete a job by ID and job type.
