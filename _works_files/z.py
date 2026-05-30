@@ -20,7 +20,7 @@ def generate_domain_test_placeholders(src_root, test_root):
         for file in files:
             if file.endswith(".py") and file != "__init__.py":
                 file_stem = Path(file).stem
-                if "routes" in current_path.parts:
+                if "routes" in current_path.parts or file_stem == "routes":
                     continue
 
                 to_re = [
