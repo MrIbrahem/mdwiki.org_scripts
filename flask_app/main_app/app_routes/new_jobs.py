@@ -128,7 +128,12 @@ def _start_job_with_args(job_type: str, args: dict[str, Any]) -> int | None:
 def _jobs_list(job_type: str) -> str:
     """Render the jobs list dashboard for any job type."""
     # Filter jobs at database level for better performance
-    jobs = list_jobs(limit=100, job_type=job_type)
+    try:
+        jobs = list_jobs(limit=100, job_type=job_type)
+    except Exception:  # pragma: no cover - defensive guard
+        logger.exception("Unable to load jobs list.")
+        flash("Unable to load jobs list.", "danger")
+        jobs = []
 
     # sort jobs by created_at key
     if jobs:
@@ -192,7 +197,12 @@ class JobsPublicRoutes:
 
         @bp_public_jobs.get("/list")
         def all_jobs_list() -> str:
-            jobs = list_jobs(limit=100)
+            try:
+                jobs = list_jobs(limit=100)
+            except Exception:  # pragma: no cover - defensive guard
+                logger.exception("Unable to load jobs list.")
+                flash("Unable to load jobs list.", "danger")
+                jobs = []
             if jobs:
                 jobs = sorted(jobs, key=lambda x: x.created_at.isoformat() if x.created_at else "", reverse=True)
             return render_template("jobs_templates/all_jobs_list.html", jobs=jobs)
