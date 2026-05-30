@@ -226,7 +226,7 @@ class TestCallbackRoute:
 
         assert resp.status_code == 302
         location = resp.headers["Location"]
-        assert location.endswith("/") or location.endswith("/")
+        assert location.endswith(("/", "/"))
 
     def test_callback_success_redirects_to_post_login(self, app, mock_client):
         """If post_login_redirect is set, callback redirects there."""

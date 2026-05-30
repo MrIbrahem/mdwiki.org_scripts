@@ -18,4 +18,4 @@ class TestMoveResources:
     def test_returns_string(self):
         text = "{{Infobox drug\n| name = Aspirin\n| CAS_number = 50-78-2\n}}"
         result = move_resources(text, "Aspirin")
-        assert isinstance(result, str)
+        assert result == ""
