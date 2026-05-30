@@ -13,11 +13,14 @@ from .utils import db_try_except
 
 logger = logging.getLogger(__name__)
 
-
+@db_try_except(default_return=[])
 def list_coordinators() -> List[AdminUserRecord]:
-    """Return all coordinators."""
-    return db.session.query(AdminUserRecord).all()
+    """
+    Return all coordinators from the database.
 
+    Returns a list of records, or an empty list on failure.
+    """
+    return db.session.query(AdminUserRecord).all()
 
 def active_coordinators() -> list[str]:
     """Get a list of active coordinator usernames from the database."""
@@ -67,9 +70,14 @@ def set_coordinator_active(coordinator_id: int, is_active: bool) -> AdminUserRec
         db.session.refresh(record)
         return record
 
-@db_try_except(False)
+
+@db_try_except(default_return=False)
 def delete_coordinator(coordinator_id: int) -> bool:
-    """Delete a coordinator efficiently."""
+    """
+    Delete a coordinator efficiently.
+
+    Returns True if rows were affected, False otherwise (or on failure).
+    """
     affected_rows = (
         db.session.query(AdminUserRecord)
         .filter(AdminUserRecord.id == coordinator_id)

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 from datetime import UTC, datetime
-import sqlalchemy
 from sqlalchemy import func
 
 from ...extensions import db
@@ -139,7 +138,7 @@ def list_jobs(limit: int = 100, job_type: str | None = None) -> list[JobRecord]:
         query = query.filter(JobRecord.job_type == job_type)
     return query.order_by(JobRecord.created_at.desc()).limit(limit).all()
 
-@db_try_except
+@db_try_except(default_return=False)
 def delete_job(job_id: int, job_type: str) -> bool:
     """Delete a job by ID and job type efficiently."""
     affected_rows = (
@@ -176,7 +175,7 @@ def cancel_job(job_id: int, job_type: str | None = None) -> bool:
         return True
     return False
 
-
+@db_try_except(default_return=False)
 def is_job_cancelled(job_id: int, job_type: str) -> bool:
     """
     Check if a job is marked as cancelled.
@@ -184,16 +183,11 @@ def is_job_cancelled(job_id: int, job_type: str) -> bool:
     Query to match:
         SELECT status FROM jobs WHERE id = %s AND job_type = %s
     """
-    try:
-        record = db.session.query(JobRecord).filter(JobRecord.id == job_id, JobRecord.job_type == job_type).first()
-        if record:
-            # Refresh from database to ensure we don't use a stale cached status
-            db.session.refresh(record)
-            return record.status == "cancelled"
-    except sqlalchemy.exc.OperationalError as exc:
-        logger.error("Failed to check job status: %s", exc)
-    except Exception as exc:
-        logger.error("Failed to check job status: %s", exc)
+    record = db.session.query(JobRecord).filter(JobRecord.id == job_id, JobRecord.job_type == job_type).first()
+    if record:
+        # Refresh from database to ensure we don't use a stale cached status
+        db.session.refresh(record)
+        return record.status == "cancelled"
     return False
 
 
