@@ -6,6 +6,8 @@ Full ``run()`` is exercised against a fake AllAPIS to verify:
 * per-page outcomes (changed / no_changes / missing / error),
 * the ``number`` cap on successful modifications,
 * cooperative ``stop_event``.
+
+TODO: write tests
 """
 
 from __future__ import annotations
