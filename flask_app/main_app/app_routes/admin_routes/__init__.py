@@ -1,6 +1,6 @@
 """Admin blueprint package."""
 
-from .coordinators import bp_coordinators
+from .coordinators import coordinators_module
 
 # from .jobs import bp_jobs
 # from .owid_charts import bp_owidcharts
@@ -8,7 +8,7 @@ from .coordinators import bp_coordinators
 # from .templates import bp_templates
 
 __all__ = [
-    "bp_coordinators",
+    "coordinators_module",
     # "bp_jobs",
     # "bp_owidcharts",
     # "bp_settings",

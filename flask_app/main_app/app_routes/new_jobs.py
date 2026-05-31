@@ -33,9 +33,6 @@ from .utils.routes_utils import load_auth_payload
 logger = logging.getLogger(__name__)
 
 
-bp_public_jobs = Blueprint("new_jobs", __name__, url_prefix="/new_jobs")
-
-
 def _can_manage_job(job: Any, user: Any) -> bool:
     """Check if the current user can manage (cancel/delete) a job.
 
@@ -180,12 +177,16 @@ def _job_detail(job_id: int, job_type: str) -> Response | str:
 class JobsPublicRoutes:
     """Jobs management routes."""
 
-    def __init__(self, bp_public_jobs: Blueprint) -> None:
+    def __init__(self):
+        self.bp = Blueprint("new_jobs", __name__, url_prefix="/new_jobs")
+        self._setup_routes()
+
+    def _setup_routes(self):
         # ================================
         # All Jobs List route
         # ================================
 
-        @bp_public_jobs.get("/list")
+        @self.bp.get("/list")
         def all_jobs_list() -> str:
             try:
                 jobs = list_jobs(limit=100)
@@ -199,7 +200,7 @@ class JobsPublicRoutes:
         # Cancel Jobs routes
         # ================================
 
-        @bp_public_jobs.post("/<string:job_type>/<int:job_id>/cancel")
+        @self.bp.post("/<string:job_type>/<int:job_id>/cancel")
         def cancel_job(job_type: str, job_id: int) -> Response:
             if job_type not in jobs_data:
                 flash("Job type not found.", "warning")
@@ -211,7 +212,7 @@ class JobsPublicRoutes:
         # Jobs List routes
         # ================================
 
-        @bp_public_jobs.get("/<string:job_type>")
+        @self.bp.get("/<string:job_type>")
         def jobs_list(job_type: str) -> str:
             return _jobs_list(job_type)
 
@@ -219,7 +220,7 @@ class JobsPublicRoutes:
         # Job Detail routes
         # ================================
 
-        @bp_public_jobs.get("/<string:job_type>/<int:job_id>")
+        @self.bp.get("/<string:job_type>/<int:job_id>")
         def job_detail(job_type: str, job_id: int) -> Response | str:
             return _job_detail(job_id, job_type)
 
@@ -227,7 +228,7 @@ class JobsPublicRoutes:
         # Start Job routes
         # ================================
 
-        @bp_public_jobs.post("/<string:job_type>/start")
+        @self.bp.post("/<string:job_type>/start")
         def start_job(job_type: str) -> ResponseReturnValue:
             if job_type not in jobs_data:
                 abort(404)
@@ -245,17 +246,17 @@ class JobsPublicRoutes:
         # ================================
 
         # @admin_required
-        @bp_public_jobs.post("/<string:job_type>/<int:job_id>/delete")
+        @self.bp.post("/<string:job_type>/<int:job_id>/delete")
         def delete_job(job_type: str, job_id: int) -> Response:
             if job_type not in jobs_data:
                 abort(404)
             return _delete_job(job_id, job_type)
 
-        @bp_public_jobs.get("/read-job-result-file/<path:result_file>")
+        @self.bp.get("/read-job-result-file/<path:result_file>")
         def read_job_result_file(result_file: str) -> ResponseReturnValue:
             """ """
             result_data = load_job_result(result_file)
             return jsonify(result_data)
 
 
-JobsPublicRoutes(bp_public_jobs)
+jobs_module = JobsPublicRoutes()
