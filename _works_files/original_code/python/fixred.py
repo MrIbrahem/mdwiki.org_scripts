@@ -240,7 +240,7 @@ def treat_page(title):
 
             oldlink2 = normalized.get(tit, tit)
             if oldlink2 != tit:
-                newtext = replace_links2(newtext, tit, fixed_tit)
+                newtext = replace_links2(newtext, oldlink2, fixed_tit)
 
         elif tit not in nonredirects:
             if tit2 != tit:
