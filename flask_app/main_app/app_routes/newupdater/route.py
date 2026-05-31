@@ -19,7 +19,7 @@ def _prase_title(title: str) -> str:
     title = urllib.parse.unquote(title)
     return title
 
-def _newupdater(title: str, save: int) -> str:
+def _newupdater(title: str, save: bool) -> str:
     if not title:
         return render_template(
             "newupdater.html",
@@ -61,7 +61,7 @@ def _newupdater(title: str, save: int) -> str:
 @oauth_required
 def newupdater() -> str:
     title = _prase_title(request.args.get("title") or "")
-    save = int(request.args.get("save", "0")) or 0
+    save = int(request.args.get("save", "0")) == 1
     return _newupdater(title, save)
 
 
