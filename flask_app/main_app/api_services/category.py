@@ -41,7 +41,7 @@ def get_category_members_api(category, project, limit=500):
             else:
                 break
     except requests.exceptions.RequestException as e:
-        logger.error(f"Error: get_category_members : {e}")
+        logger.error(e)
     else:
         logger.debug(f"Found {len(pages)} pages in category {category}")
 
