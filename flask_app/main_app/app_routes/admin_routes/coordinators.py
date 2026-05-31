@@ -14,8 +14,8 @@ from flask import (
 )
 from flask.typing import ResponseReturnValue
 
+from ...db.exceptions import UserNotFoundError
 from ...db.services import admin_service
-from ...db.services.admin_service import UserNotFoundError
 from ..admin.admins_required import admin_required
 
 logger = logging.getLogger(__name__)

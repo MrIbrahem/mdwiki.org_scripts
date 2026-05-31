@@ -12,8 +12,8 @@ def get_category_members_api(category, project, limit=500):
     Fetch all pages belonging to a given category from a Wikimedia project.
 
     Args:
-        category (str): Category title (e.g. 'Category:Pages using gadget owidslider')
-        project (str): Domain of wiki (default: commons.wikimedia.org)
+        category (str): Category title
+        project (str): Domain of wiki
         limit (int): Maximum results per request (max 500 for normal users, 5000 for bots)
 
     Returns:
@@ -41,18 +41,8 @@ def get_category_members_api(category, project, limit=500):
             else:
                 break
     except requests.exceptions.RequestException as e:
-        logger.error(f"Error: get_category_members : {e}")
+        logger.error("Failed to fetch category members: %s", e)
     else:
         logger.debug(f"Found {len(pages)} pages in category {category}")
 
     return pages
-
-
-def get_category_members(category="Category:Pages using gadget owidslider", project="commons.wikimedia.org", limit=500):
-    result = get_category_members_api(category, project, limit)
-
-    logger.info(f"Found {len(result)} pages in category {category}")
-
-    EXCLUDED_TEMPLATES = {"template:owidslider", "template:owid"}
-    result = [x for x in result if x.startswith("Template:") and x.lower() not in EXCLUDED_TEMPLATES]
-    return result

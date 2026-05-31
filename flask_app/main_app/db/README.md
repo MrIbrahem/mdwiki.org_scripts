@@ -37,8 +37,6 @@ Stores encrypted OAuth credentials for authenticated MediaWiki users.
 | `last_used_at`  | DateTime            | Last authentication                |
 | `rotated_at`    | DateTime            | Last token rotation                |
 
-Methods: `decrypted()` → `(access_key, access_secret)` tuple
-
 #### `AdminUserRecord`
 
 Admin users table for authorization.

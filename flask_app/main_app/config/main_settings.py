@@ -137,16 +137,11 @@ def _get_paths() -> Paths:
     main_dir = os.getenv("MAIN_DIR", "~/data")
     main_dir = Path(os.path.expandvars(main_dir)).expanduser()
 
-    _dirs = {
-        "log_dir": f"{main_dir}/logs",
-        "jobs_path": f"{main_dir}/jobs",
-        "new_jobs_path": f"{main_dir}/new_jobs",
-    }
-    # Ensure directories exist
-    for dir_name in _dirs.values():
-        Path(dir_name).mkdir(parents=True, exist_ok=True)
-
-    return Paths(**_dirs)
+    return Paths(
+        log_dir=str(main_dir / "logs"),
+        jobs_path=str(main_dir / "jobs"),
+        new_jobs_path=str(main_dir / "new_jobs"),
+    )
 
 
 def load_other_config() -> OtherConfig:
@@ -263,6 +258,17 @@ def get_settings() -> Settings:
 # Singleton settings instance
 settings = get_settings()
 
+
+def ensure_directories() -> None:
+    """Create application directories if they don't exist.
+
+    Call this once at app startup (in the factory), not at import time.
+    """
+    for dir_name in [settings.paths.log_dir, settings.paths.jobs_path, settings.paths.new_jobs_path]:
+        Path(dir_name).mkdir(parents=True, exist_ok=True)
+
+
 __all__ = [
+    "ensure_directories",
     "settings",
 ]

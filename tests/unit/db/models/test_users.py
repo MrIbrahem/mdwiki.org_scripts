@@ -47,9 +47,8 @@ def test_user_token_record(app):
         assert user_token.user_id == 123
         assert user_token.user.username == "model_token_user"
 
-        dec_token, dec_secret = user_token.decrypted()
-        assert dec_token == "access_token_val"
-        assert dec_secret == "access_secret_val"
+        assert user_token.access_token != b"access_token_val"  # encrypted
+        assert user_token.access_secret != b"access_secret_val"
 
 
 def test_user_token_record_validation(app):
