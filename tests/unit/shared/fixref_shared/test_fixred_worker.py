@@ -32,17 +32,13 @@ class TestReplaceLinks:
         result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
         assert result == text
 
-    def test_normalized_alias_is_also_replaced(self):
-        # state.normalized maps the canonical title back to the alternate
-        # (e.g. lowercase) form the page text uses.
+    def test_case_sensitive_matching(self):
         text = "[[aspirin]] and [[Aspirin]]"
         result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
         assert "[[aspirin]]" in result
         assert "[[Aspirin]]" not in result
         assert "[[Acetylsalicylic acid|Aspirin]]" in result
 
-
-class TestReplaceLinksExtended:
     def test_simple_link(self):
         text = "see [[Aspirin]]."
         result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
@@ -58,17 +54,38 @@ class TestReplaceLinksExtended:
         result = _replace_links(text, "Aspirin", "New")
         assert result == text
 
-    def test_normalized_alias(self):
-        text = "[[aspirin]] and [[Aspirin]]"
-        result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
-        assert "[[Aspirin]]" not in result
-
     def test_multiple_occurrences(self):
         text = "[[X]] and [[X|alt]]"
         result = _replace_links(text, "X", "Y")
         assert "[[X]]" not in result
         assert "[[Y|X]]" in result
         assert "[[Y|alt]]" in result
+
+    def test_link_with_fragment_gets_target_replaced(self):
+        text = "see [[Aspirin#Uses|the uses]]."
+        result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
+        assert result == "see [[Acetylsalicylic acid#Uses|the uses]]."
+
+    def test_bare_link_with_fragment(self):
+        text = "see [[Aspirin#Uses]]."
+        result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
+        assert result == "see [[Acetylsalicylic acid#Uses|Aspirin#Uses]]."
+
+    def test_empty_display_text_preserved(self):
+        text = "[[Aspirin|]]"
+        result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
+        assert result == "[[Acetylsalicylic acid|]]"
+
+    def test_surrounding_text_preserved(self):
+        text = "Before [[Aspirin]] after"
+        result = _replace_links(text, "Aspirin", "New")
+        assert result == "Before [[New|Aspirin]] after"
+
+    def test_multiple_different_links_only_target_replaced(self):
+        text = "[[Aspirin]] and [[Ibuprofen]]"
+        result = _replace_links(text, "Aspirin", "New")
+        assert "[[New|Aspirin]]" in result
+        assert "[[Ibuprofen]]" in result
 
 
 class TestReplaceInText:

@@ -5,9 +5,9 @@ Service: fix redirects in page text on mdwiki.
 from __future__ import annotations
 
 import logging
-import re
 
 import mwclient
+import wikitextparser as wtp
 
 from ...api_services.query_api import get_page_links, resolve_redirects
 from .objects import RunState
@@ -26,20 +26,14 @@ def _replace_links(
     Each wikilink
         - ``[[old]]`` becomes ``[[new|old]]`` (preserve the original display text);
         - ``[[old|...]]`` becomes ``[[new|...]]``.
-
-    Also handles the normalized-title alias if present in ``state.normalized``.
     """
-
-    text = text.replace(f"[[{oldlink}]]", f"[[{newlink}|{oldlink}]]")
-    text = text.replace(f"[[{oldlink}|", f"[[{newlink}|")
-
-    text = re.sub(
-        rf"\[\[{re.escape(oldlink)}(\|\]\])",
-        rf"[[{newlink}\g<1>",
-        text,
-        flags=re.IGNORECASE,
-    )
-    return text
+    parsed = wtp.parse(text)
+    for wl in parsed.wikilinks:
+        if wl.title == oldlink:
+            if wl.text is None:
+                wl.text = oldlink
+            wl.title = newlink
+    return str(parsed)
 
 
 def replace_in_text(text, new_targets):
