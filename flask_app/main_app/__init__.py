@@ -15,7 +15,8 @@ from .app_routes.utils import context_user
 from .config import ensure_directories, settings
 from .core.cookies import CookieHeaderClient
 from .core.jinja_filters import filters
-from .db import DatabaseInitError, init_db
+from .db import init_db
+from .db.exceptions import DatabaseInitError
 from .extensions import db as _db
 from .extensions import migrate
 

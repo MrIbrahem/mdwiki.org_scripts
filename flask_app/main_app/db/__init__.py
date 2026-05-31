@@ -5,11 +5,9 @@ import logging
 from sqlalchemy import event, text
 from sqlalchemy.exc import OperationalError
 
+from .exceptions import DatabaseInitError
+
 logger = logging.getLogger(__name__)
-
-
-class DatabaseInitError(Exception):
-    """Raised when database initialization fails."""
 
 
 def _enable_sqlite_foreign_keys(dbapi_connection, connection_record):

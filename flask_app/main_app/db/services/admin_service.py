@@ -13,12 +13,11 @@ from typing import List
 from sqlalchemy.exc import IntegrityError
 
 from ...extensions import db
+from ..exceptions import UserNotFoundError
 from ..models import AdminUserRecord
 from .utils import db_guard
 
-
-class UserNotFoundError(Exception):
-    """Raised when a referenced user does not exist in users."""
+logger = logging.getLogger(__name__)
 
 
 logger = logging.getLogger(__name__)
