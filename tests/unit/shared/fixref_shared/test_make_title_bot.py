@@ -11,7 +11,7 @@ class TestMakeTitle:
     def setup_method(self):
         import flask_app.main_app.shared.fixref_shared.make_title_bot as mod
 
-        mod.Title_cash.clear()
+        mod.cache.clear()
 
     def test_empty_url_returns_empty(self):
         assert make_title("") == {}
