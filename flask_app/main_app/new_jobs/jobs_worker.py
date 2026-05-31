@@ -9,9 +9,8 @@ from typing import Any, Dict
 from flask import Flask, current_app
 
 from ..db.models import JobRecord
-from ..db.services import cancel_job as cancel_job_db
-from ..db.services import create_job
-from ..su_services import create_job_cancelled_file
+from ..db.services import cancel_job_db, create_job
+from ..su_services.jobs_files_service import create_job_cancelled_file
 from .workers_list import JobData, jobs_data
 
 logger = logging.getLogger(__name__)
@@ -51,7 +50,7 @@ def _runner(
             _pop_cancel_event(job_id)
 
 
-def cancel_job(job_id: int, job_type: str | None = None, job: JobRecord | None = None) -> bool:
+def cancel_job_worker(job_id: int, job_type: str | None = None, job: JobRecord | None = None) -> bool:
     """
     Cancel a running job.
     Works across multiple processes by updating the database status.
@@ -128,5 +127,5 @@ def start_job(
 
 __all__ = [
     "start_job",
-    "cancel_job",
+    "cancel_job_worker",
 ]

@@ -228,7 +228,7 @@ class TestCancelJob:
         job_id = _seed_job(app, VALID_JOB_TYPE, username="Owner")
 
         with patch(
-            "flask_app.main_app.app_routes.new_jobs.jobs_worker.cancel_job",
+            "flask_app.main_app.app_routes.new_jobs.jobs_worker.cancel_job_worker",
             return_value=True,
         ):
             resp = mock_client.post(
@@ -264,7 +264,7 @@ class TestCancelJob:
         _login_user(mock_client, user_id=2, username="AdminCancel")
 
         with patch(
-            "flask_app.main_app.app_routes.new_jobs.jobs_worker.cancel_job",
+            "flask_app.main_app.app_routes.new_jobs.jobs_worker.cancel_job_worker",
             return_value=True,
         ):
             resp = mock_client.post(
@@ -293,7 +293,7 @@ class TestDeleteJob:
         job_id = _seed_job(app, VALID_JOB_TYPE, username="Owner")
 
         with patch(
-            "flask_app.main_app.app_routes.new_jobs.jobs_worker.cancel_job",
+            "flask_app.main_app.app_routes.new_jobs.jobs_worker.cancel_job_worker",
             return_value=False,
         ):
             resp = mock_client.post(
@@ -313,7 +313,7 @@ class TestDeleteJob:
         _login_user(mock_client)
 
         with patch(
-            "flask_app.main_app.app_routes.new_jobs.jobs_worker.cancel_job",
+            "flask_app.main_app.app_routes.new_jobs.jobs_worker.cancel_job_worker",
             return_value=False,
         ):
             resp = mock_client.post(
@@ -385,7 +385,7 @@ class TestJobsRouteIntegration:
             job2_id = job2.id
 
         with patch(
-            "flask_app.main_app.app_routes.new_jobs.jobs_worker.cancel_job",
+            "flask_app.main_app.app_routes.new_jobs.jobs_worker.cancel_job_worker",
             return_value=False,
         ):
             mock_client.post(

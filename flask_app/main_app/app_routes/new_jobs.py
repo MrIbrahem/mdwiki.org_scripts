@@ -68,7 +68,7 @@ def _cancel_job(job_id: int, job_type: str) -> Response:
         flash("You don't have permission to cancel this job.", "danger")
         return redirect(url_for("new_jobs.job_detail", job_type=job_type, job_id=job_id))
 
-    if jobs_worker.cancel_job(job_id, job_type, job):
+    if jobs_worker.cancel_job_worker(job_id, job_type, job):
         flash(f"Job {job_id} cancellation requested.", "success")
     else:
         flash(f"Job {job_id} is not running or already cancelled.", "warning")
@@ -81,7 +81,7 @@ def _delete_job(job_id: int, job_type: str) -> Response:
 
     try:
         # Cancel the job if it's running
-        if jobs_worker.cancel_job(job_id, job_type):
+        if jobs_worker.cancel_job_worker(job_id, job_type):
             logger.info(f"Cancelled running job {job_id} before deletion")
 
         delete_job(job_id, job_type)

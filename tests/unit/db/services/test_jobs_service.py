@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 from flask_app.main_app.db.services.jobs_service import (
-    cancel_job,
+    cancel_job_db,
     create_job,
     delete_job,
     get_job,
@@ -33,7 +33,7 @@ def test_jobs_service_lifecycle(app):
         assert is_job_cancelled(job_id, "test_type") is False
 
         # Cancel
-        assert cancel_job(job_id, "test_type") is True
+        assert cancel_job_db(job_id, "test_type") is True
         assert is_job_cancelled(job_id, "test_type") is True
         job = get_job(job_id, job_type="test_type")
         assert job.status == "cancelled"
@@ -64,7 +64,7 @@ def test_update_status_not_found(app):
 
 def test_cancel_non_existent(app):
     with app.app_context():
-        assert cancel_job(999, "any") is False
+        assert cancel_job_db(999, "any") is False
 
 
 def test_delete_non_existent(app):

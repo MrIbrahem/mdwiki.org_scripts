@@ -151,7 +151,7 @@ def delete_job(job_id: int, job_type: str) -> bool:
     return affected_rows > 0
 
 
-def cancel_job(job_id: int, job_type: str | None = None) -> bool:
+def cancel_job_db(job_id: int, job_type: str | None = None) -> bool:
     """
     Mark a job as cancelled.
         query = "UPDATE jobs SET status = 'cancelled', completed_at = NOW() WHERE id = %s AND status IN ('pending', 'running')"
@@ -241,7 +241,7 @@ __all__ = [
     "get_job",
     "list_jobs",
     "update_job_status",
-    "cancel_job",
+    "cancel_job_db",
     "is_job_cancelled",
     "delete_job",
     "get_user_jobs_stats",
