@@ -6,7 +6,7 @@ import logging
 from dataclasses import dataclass, field, fields
 from typing import Optional
 
-from ....new_jobs.base_worker_object import WorkerObject
+from ...base_worker_object import WorkerObject
 
 logger = logging.getLogger(__name__)
 

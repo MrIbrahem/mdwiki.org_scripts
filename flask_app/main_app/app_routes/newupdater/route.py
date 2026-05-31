@@ -6,7 +6,7 @@ import logging
 
 from flask import Blueprint, flash, g, render_template, request
 
-from ...app_routes.auth.utils import oauth_required
+from ..auth.utils import oauth_required
 from ...db.models import UserTokenRecord
 from . import worker as svc
 
