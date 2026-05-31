@@ -39,11 +39,7 @@ def newupdater_one_title(
     if user is None:
         return UpdaterTextOutcome(kind="skipped", msg="No user")
 
-    user_dict = {
-        "access_token": user.access_token,
-        "access_secret": user.access_secret,
-    }
-    site = get_user_site(user_dict)
+    site = get_user_site(user.to_auth_payload())
 
     old_text = get_page_text(title, site)
 
