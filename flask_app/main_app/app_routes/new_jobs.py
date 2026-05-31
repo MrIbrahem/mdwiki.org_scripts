@@ -93,28 +93,7 @@ def _delete_job(job_id: int, job_type: str) -> Response:
     return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
 
 
-def _start_job(job_type: str) -> int | None:
-    """Start a job."""
-    user = getattr(g, "_current_user", None)
-
-    if not user:
-        flash("You must be logged in to start this job.", "danger")
-        return None
-
-    try:
-        # Get auth payload for OAuth uploads
-        auth_payload = load_auth_payload(user)
-        job_id = jobs_worker.start_job(auth_payload, job_type)
-        flash(f"Job {job_id} started to {job_type.replace('_', ' ')}.", "success")
-        return job_id
-    except Exception:
-        logger.exception("Failed to start job")
-        flash("Failed to start job. Please try again.", "danger")
-
-    return None
-
-
-def _start_job_with_args(job_type: str, args: dict[str, Any]) -> int | None:
+def _start_job(job_type: str, args: dict[str, Any]) -> int | None:
     """Start a job."""
     user = getattr(g, "_current_user", None)
 
@@ -252,20 +231,13 @@ class JobsPublicRoutes:
         def start_job(job_type: str) -> ResponseReturnValue:
             if job_type not in jobs_data:
                 abort(404)
-            job_id = _start_job(job_type)
-            if not job_id:
-                return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
-            return redirect(url_for("new_jobs.job_detail", job_type=job_type, job_id=job_id))
-
-        @bp_public_jobs.post("/<string:job_type>/start_with_args")
-        def start_job_with_args(job_type: str) -> ResponseReturnValue:
-            if job_type not in jobs_data:
-                abort(404)
 
             args = request.form.to_dict()
-            job_id = _start_job_with_args(job_type, args)
+
+            job_id = _start_job(job_type, args)
             if not job_id:
                 return redirect(url_for("new_jobs.jobs_list", job_type=job_type))
+
             return redirect(url_for("new_jobs.job_detail", job_type=job_type, job_id=job_id))
 
         # ================================

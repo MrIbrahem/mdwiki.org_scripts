@@ -157,7 +157,7 @@ class TestStartJob:
                 return_value={"id": 1, "username": "JobUser"},
             ),
             patch(
-                "flask_app.main_app.app_routes.new_jobs.jobs_worker.start_job",
+                "flask_app.main_app.app_routes.new_jobs.jobs_worker.start_job_with_args",
                 return_value=1,
             ),
         ):
@@ -168,7 +168,7 @@ class TestStartJob:
 
         assert resp.status_code == 302
 
-    def test_start_with_args_creates_job(self, app, mock_client):
+    def test_start_creates_job(self, app, mock_client):
         """Starting a job with args should succeed."""
         _seed_user(app)
         _login_user(mock_client)
@@ -184,7 +184,7 @@ class TestStartJob:
             ),
         ):
             resp = mock_client.post(
-                f"/new_jobs/{VALID_JOB_TYPE}/start_with_args",
+                f"/new_jobs/{VALID_JOB_TYPE}/start",
                 data={"key": "value"},
                 follow_redirects=False,
             )
