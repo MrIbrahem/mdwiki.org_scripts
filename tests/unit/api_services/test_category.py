@@ -33,4 +33,3 @@ def test_get_category_members_api_error(mock_session_cls):
 
     members = get_category_members_api("Category:Test", "example.org")
     assert members == []
-
