@@ -1,4 +1,3 @@
-#
 """ """
 
 import logging
@@ -17,7 +16,7 @@ class FixChembox:
 
         self.all_params = {}
         self.oldchembox = ""
-        self.newchembox = "{{drugbox"
+        self.newchembox_list = ["{{drugbox"]
 
     def run(self):
         # ---
@@ -28,11 +27,12 @@ class FixChembox:
         if not self.all_params:
             return self.new_text
         # ---
-        # create self.newchembox
         self.new_temp()
         # ---
-        if self.oldchembox != "" and self.newchembox != "":
-            self.new_text = self.new_text.replace(self.oldchembox, self.newchembox)
+        new_tmp_text = "\n".join(self.newchembox_list)
+        # ---
+        if self.oldchembox != "" and new_tmp_text != "":
+            self.new_text = self.new_text.replace(self.oldchembox, new_tmp_text)
         # ---
         return self.new_text
 
@@ -81,12 +81,11 @@ class FixChembox:
     def new_temp(self):
         # ---
         for p, value in self.all_params.items():
-            # ---
-            p = rename_chem_params.get(p, "") if rename_chem_params.get(p, "") != "" else p
-            # ---
-            p_v = f"\n| {p}= {value}"
-            # ---
-            self.newchembox += p_v
-            # ---
-        # ---
-        self.newchembox += "\n}}"
+
+            param = rename_chem_params.get(p, "") if rename_chem_params.get(p, "") != "" else p
+
+            param_value = f"| {param}= {value}" if value.strip() else f"| {param}="
+
+            self.newchembox_list.append(param_value.strip())
+
+        self.newchembox_list.append("}}")

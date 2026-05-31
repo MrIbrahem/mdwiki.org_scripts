@@ -9,3 +9,4 @@ src/app1.py
 patch-diff.diff
 coverage.xml
 .coverage
+**/work_on_text_result.wiki

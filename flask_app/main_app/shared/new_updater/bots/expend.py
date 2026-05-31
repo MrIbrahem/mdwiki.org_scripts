@@ -49,7 +49,7 @@ def expend_infoboxs_and_fix(new_text):
                 for x in _params:
                     value = params.get(x, "").strip()
                     newparam = f"| {x.ljust(16)}"
-                    new_temp += f"{newparam}= {value}\n"
+                    new_temp += f"{newparam}= {value}\n" if value.strip() else f"{newparam}=\n"
                 # ---
                 new_temp += "}}"
                 # ---

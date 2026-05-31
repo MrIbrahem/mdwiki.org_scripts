@@ -1,0 +1,21 @@
+{{drugbox
+| image=  Eravacycline structure.svg
+| width=  320px
+| PIN=  (4''S'',4a''S'',5a''R'',12a''S'')-4-(Dimethylamino)-7-fluoro-3,10,12,12a-tetrahydroxy-1,11-dioxo-9-[2-(pyrrolidin-1-yl)acetamido]-1,4,4a,5,5a,6,11,12a-octahydrotetracene-2-carboxamide
+| synonyms=  Xerava, TP-434
+| CAS_number=  1207283-85-9
+| CAS_number_Ref=  {{cascite|correct|CAS}}
+| UNII_Ref=  {{fdacite|correct|FDA}}
+| UNII=  07896928ZC
+| PubChem=  54726192
+| ChemSpiderID=  28495485
+| KEGG=  D10369
+| KEGG2=  D10421
+| SMILES=  CN(C)[C@H]1[C@@H]2C[C@@H]3CC4=C(C=C(C(=C4C(=O)C3=C([C@@]2(C(=O)C(=C1O)C(=O)N)O)O)O)NC(=O)CN5CCCC5)F
+| StdInChI=  1S/C27H31FN4O8/c1-31(2)20-13-8-11-7-12-14(28)9-15(30-16(33)10-32-5-3-4-6-32)21(34)18(12)22(35)17(11)24(37)27(13,40)25(38)19(23(20)36)26(29)39/h9,11,13,20,34,36-37,40H,3-8,10H2,1-2H3,(H2,29,39)(H,30,33)/t11-,13-,20-,27-/m0/s1
+| StdInChIKey=  HLFSMUUOKPBTSM-ISIOAQNYSA-N
+| chemical_formula=  C<sub>27</sub>H<sub>31</sub>FN<sub>4</sub>O<sub>8</sub>
+| molecular_weight=  558.555
+| ATC_prefix=  J01
+| ATC_suffix=  AA13
+}}

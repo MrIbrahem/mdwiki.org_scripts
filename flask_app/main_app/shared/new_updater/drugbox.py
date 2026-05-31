@@ -202,9 +202,10 @@ class TextProcessor:
             # ---
             n += 1
             # ---
-            vv = f"| {x}= {x_val} "
+            vv = f"| {x}= {x_val} " if x_val.strip() else f"| {x}="
             # ---
             if n % 5 == 0:
+                vv = vv.removesuffix(" ")
                 vv += "\n"
             # ---
             sec_text += vv
@@ -269,7 +270,7 @@ class TextProcessor:
                 # ---
                 self.params_done_lowers.append(p.lower())
                 # ---
-                p_v = f"\n| {p2}= {p_value}"
+                p_v = f"\n| {p2}= {p_value}" if p_value.strip() else f"\n| {p2}="
                 # ---
                 sec_text += p_v
         # ---

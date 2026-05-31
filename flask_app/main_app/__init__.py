@@ -155,4 +155,3 @@ __all__ = [
     "init_app_and_db",
     "create_app",
 ]
-
