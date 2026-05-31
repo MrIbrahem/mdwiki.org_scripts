@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from flask_app.main_app.app_routes.newupdater.worker import newupdater_one_title
+from flask_app.main_app.shared.newupdater_service import newupdater_one_title
 
 
 class TestWorkOnTitle:

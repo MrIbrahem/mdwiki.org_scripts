@@ -14,11 +14,11 @@ from __future__ import annotations
 
 import logging
 
-from ...api_services.clients.wiki_client import get_user_site
-from ...api_services.pages_api import edit_page, get_page_text
-from ...db.models import UserTokenRecord
-from ...shared.new_updater import work_on_text
-from ...shared.shared_classes import UpdaterTextOutcome
+from ..api_services.clients.wiki_client import get_user_site
+from ..api_services.pages_api import edit_page, get_page_text
+from ..db.models import UserTokenRecord
+from .new_updater import work_on_text
+from .shared_classes import UpdaterTextOutcome
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +71,5 @@ def newupdater_one_title(
 
 
 __all__ = [
-    "UpdaterTextOutcome",
     "newupdater_one_title",
 ]
