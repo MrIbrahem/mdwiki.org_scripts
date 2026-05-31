@@ -3,26 +3,24 @@
 from __future__ import annotations
 
 from flask_app.main_app.shared.fixref_shared.fixred_worker import (
-    RunState,
     _replace_links,
     replace_in_text,
 )
 
-
 class TestReplaceLinks:
     def test_simple_link_gets_piped_with_display_text(self):
         text = "see [[Aspirin]]."
-        result = _replace_links(text, "Aspirin", "Aspirin", "Acetylsalicylic acid")
+        result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
         assert result == "see [[Acetylsalicylic acid|Aspirin]]."
 
     def test_already_piped_link_swaps_only_the_target(self):
         text = "see [[Aspirin|the drug]]."
-        result = _replace_links(text, "Aspirin", "Aspirin", "Acetylsalicylic acid")
+        result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
         assert result == "see [[Acetylsalicylic acid|the drug]]."
 
     def test_multiple_occurrences_all_replaced(self):
         text = "[[Aspirin]] and [[aspirin|asp]]"
-        result = _replace_links(text, "Aspirin", "aspirin", "Acetylsalicylic acid")
+        result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
         assert "[[Aspirin]]" not in result
         assert "[[Aspirin|" not in result
         assert "[[Acetylsalicylic acid|Aspirin]]" in result
@@ -30,76 +28,44 @@ class TestReplaceLinks:
 
     def test_no_change_when_link_not_present(self):
         text = "no relevant links here"
-        result = _replace_links(text, "Aspirin", "aspirin", "Acetylsalicylic acid")
+        result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
         assert result == text
 
     def test_normalized_alias_is_also_replaced(self):
         # state.normalized maps the canonical title back to the alternate
         # (e.g. lowercase) form the page text uses.
         text = "[[aspirin]] and [[Aspirin]]"
-        result = _replace_links(text, "Aspirin", "aspirin", "Acetylsalicylic acid")
+        result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
         assert "[[aspirin]]" not in result
         assert "[[Aspirin]]" not in result
         assert "[[Acetylsalicylic acid|aspirin]]" in result
         assert "[[Acetylsalicylic acid|Aspirin]]" in result
 
-
-class TestRunStateIsolation:
-    def test_each_state_starts_empty(self):
-        a = RunState()
-        b = RunState()
-        a.from_to["X"] = "Y"
-        a.normalized["P"] = "p"
-        # The other state must be untouched (no shared default mutable state).
-        assert b.from_to == {}
-        assert b.normalized == {}
-
-
-class TestRunState:
-    def test_default_empty(self):
-        state = RunState()
-        assert state.from_to == {}
-        assert state.normalized == {}
-
-    def test_mutable(self):
-        state = RunState()
-        state.from_to["A"] = "B"
-        state.normalized["X"] = "x"
-        assert state.from_to["A"] == "B"
-        assert state.normalized["X"] == "x"
-
-    def test_isolation(self):
-        a = RunState()
-        b = RunState()
-        a.from_to["key"] = "val"
-        assert b.from_to == {}
-
-
 class TestReplaceLinksExtended:
     def test_simple_link(self):
         text = "see [[Aspirin]]."
-        result = _replace_links(text, "Aspirin", "Aspirin", "Acetylsalicylic acid")
+        result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
         assert result == "see [[Acetylsalicylic acid|Aspirin]]."
 
     def test_piped_link(self):
         text = "see [[Aspirin|the drug]]."
-        result = _replace_links(text, "Aspirin", "Aspirin", "Acetylsalicylic acid")
+        result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
         assert result == "see [[Acetylsalicylic acid|the drug]]."
 
     def test_no_match(self):
         text = "no links here"
-        result = _replace_links(text, "Aspirin", "aspirin", "New")
+        result = _replace_links(text, "Aspirin", "New")
         assert result == text
 
     def test_normalized_alias(self):
         text = "[[aspirin]] and [[Aspirin]]"
-        result = _replace_links(text, "Aspirin", "aspirin", "Acetylsalicylic acid")
+        result = _replace_links(text, "Aspirin", "Acetylsalicylic acid")
         assert "[[aspirin]]" not in result
         assert "[[Aspirin]]" not in result
 
     def test_multiple_occurrences(self):
         text = "[[X]] and [[X|alt]]"
-        result = _replace_links(text, "X", "X", "Y")
+        result = _replace_links(text, "X", "Y")
         assert "[[X]]" not in result
         assert "[[Y|X]]" in result
         assert "[[Y|alt]]" in result

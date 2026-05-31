@@ -6,33 +6,18 @@ from __future__ import annotations
 
 import logging
 import re
-from dataclasses import dataclass, field
 
 import mwclient
 
 from ...api_services.query_api import get_page_links, resolve_redirects
 
+from .objects import RunState
+
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class RunState:
-    """Per-run mutable state.
-
-    ``from_to``    maps redirect source -> resolved target.
-    ``normalized`` maps the API-normalized title -> the input title (for
-                   case-corrected matching when the page text uses a different
-                   capitalization than the canonical title).
-    """
-
-    from_to: dict[str, str] = field(default_factory=dict)
-    normalized: dict[str, str] = field(default_factory=dict)
-
 
 def _replace_links(
     text: str,
     oldlink: str,
-    oldlink2: str,
     newlink: str,
 ) -> str:
     """Mirror of legacy ``replace_links2``.
@@ -51,24 +36,14 @@ def _replace_links(
         text,
         flags=re.IGNORECASE,
     )
-
-    if oldlink != oldlink2:
-        text = re.sub(
-            rf"\[\[{re.escape(oldlink2)}(\|\]\])",
-            rf"[[{newlink}\g<1>",
-            text,
-            flags=re.IGNORECASE,
-        )
-        text = text.replace(f"[[{oldlink2}]]", f"[[{newlink}|{oldlink2}]]")
-        text = text.replace(f"[[{oldlink2}|", f"[[{newlink}|")
     return text
 
 
 def replace_in_text(text, new_targets):
     newtext = text
 
-    for oldlink2, target in new_targets.items():
-        newtext = _replace_links(newtext, oldlink2, oldlink2, target)
+    for oldlink, target in new_targets.items():
+        newtext = _replace_links(newtext, oldlink, target)
 
     return newtext
 

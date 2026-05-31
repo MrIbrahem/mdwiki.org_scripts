@@ -16,7 +16,7 @@ import mwclient
 from ....api_services.clients import get_user_site
 from ....api_services.pages_api import edit_page, get_page_text, is_page_exists
 from ....new_jobs.base_worker_object import BaseObjectsJobWorker
-from ....shared.fixred_one import RunState
+from ....shared.fixref_shared.objects import RunState
 from ....shared.fixref_shared.fixred_worker import work_on_text
 from ...shared_objects import SharedworkerObject, UpdaterOutcome
 
@@ -174,5 +174,6 @@ def fixred_all_worker_entry(
 
 
 __all__ = [
+    "FixRedAllWorker",
     "fixred_all_worker_entry",
 ]
