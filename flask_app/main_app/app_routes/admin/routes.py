@@ -24,6 +24,7 @@ bp_admin = Blueprint("admin", __name__, url_prefix="/admin")
 
 bp_admin.register_blueprint(coordinators_module.bp)
 
+
 @bp_admin.app_context_processor
 def inject_sidebar():
     path_parts = request.path.strip("/").split("/")
@@ -57,6 +58,7 @@ def users_dashboard() -> str:
         users=users,
         total_users=total,
     )
+
 
 __all__ = [
     "bp_admin",

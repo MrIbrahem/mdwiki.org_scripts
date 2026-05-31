@@ -28,7 +28,8 @@ flask_app/
 │   │   │   ├── cookie.py
 │   │   │   ├── oauth.py
 │   │   │   ├── rate_limit.py
-│   │   │   └── routes.py
+│   │   │   ├── routes.py
+│   │   │   └── utils.py
 │   │   ├── main/
 │   │   │   └── __init__.py
 │   │   ├── newupdater/
@@ -100,7 +101,8 @@ flask_app/
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── objects.py
 │   │   │   │   └── worker.py
-│   │   │   └── __init__.py
+│   │   │   ├── __init__.py
+│   │   │   └── README.md
 │   │   ├── __init__.py
 │   │   ├── base_worker_object.py
 │   │   ├── jobs_worker.py
@@ -113,7 +115,8 @@ flask_app/
 │   │   │   ├── __init__.py
 │   │   │   ├── fixred_worker.py
 │   │   │   ├── fixref_text_new.py
-│   │   │   └── make_title_bot.py
+│   │   │   ├── make_title_bot.py
+│   │   │   └── objects.py
 │   │   ├── new_updater/
 │   │   │   ├── bots/
 │   │   │   │   ├── __init__.py
@@ -134,6 +137,8 @@ flask_app/
 │   │   │   ├── MedWorkNew.py
 │   │   │   ├── mv_section.py
 │   │   │   └── resources_new.py
+│   │   ├── replace_wikilink/
+│   │   │   └── __init__.py
 │   │   ├── __init__.py
 │   │   ├── decode_bytes.py
 │   │   ├── fixred_one.py
