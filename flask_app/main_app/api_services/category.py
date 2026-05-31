@@ -46,3 +46,8 @@ def get_category_members_api(category, project, limit=500):
         logger.debug(f"Found {len(pages)} pages in category {category}")
 
     return pages
+
+
+__all__ = [
+    "get_category_members_api",
+]
