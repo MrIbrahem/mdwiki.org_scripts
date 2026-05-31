@@ -53,7 +53,7 @@ class AdminUserRecord(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(
         String(255),
-        db.ForeignKey("users.username", ondelete="CASCADE"),
+        db.ForeignKey("users.username", ondelete="CASCADE", onupdate="CASCADE"),
         unique=True,
         nullable=False,
     )
@@ -89,7 +89,7 @@ class UserTokenRecord(db.Model):
 
     user_id = Column(
         Integer,
-        db.ForeignKey("users.user_id", ondelete="CASCADE"),
+        db.ForeignKey("users.user_id", ondelete="CASCADE", onupdate="CASCADE"),
         primary_key=True,
     )
     access_token = Column(LargeBinary(1024), nullable=False)
