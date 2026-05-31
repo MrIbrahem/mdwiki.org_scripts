@@ -18,7 +18,7 @@ from .utils import db_guard
 
 
 class UserNotFoundError(Exception):
-    """Raised when a referenced user does not exist in user_tokens."""
+    """Raised when a referenced user does not exist in users."""
 
 
 logger = logging.getLogger(__name__)
@@ -68,7 +68,7 @@ def add_coordinator(username: str) -> AdminUserRecord:
     except IntegrityError as exc:
         db.session.rollback()
         if "a foreign key constraint fails" in str(exc):
-            raise UserNotFoundError(f"User '{username}' does not exist in user_tokens") from exc
+            raise UserNotFoundError(f"User '{username}' does not exist") from exc
         raise
     db.session.refresh(record)
     return record

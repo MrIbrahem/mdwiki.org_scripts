@@ -16,7 +16,7 @@ import logging
 
 from ..api_services.clients.wiki_client import get_user_site
 from ..api_services.pages_api import edit_page, get_page_text
-from ..db.models import UserTokenRecord
+from ..su_services.current_user import CurrentUser
 from .new_updater import work_on_text
 from .shared_classes import UpdaterTextOutcome
 
@@ -27,7 +27,7 @@ def newupdater_one_title(
     title: str,
     save: bool = False,
     summary: str = "Med updater.",
-    user: UserTokenRecord | None = None,
+    user: CurrentUser | None = None,
 ) -> UpdaterTextOutcome:
     """
     Fetch the page, run the updater, and report what the diff would be.

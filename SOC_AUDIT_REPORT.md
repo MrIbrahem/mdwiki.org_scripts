@@ -7,7 +7,86 @@
 
 ---
 
-## Executive Summary
+## Fixes Applied (2026-05-31)
+
+All High and Medium violations from the original audit have been resolved. Below is a summary of every fix.
+
+### Schema Split: `users` + `user_tokens`
+
+The `user_tokens` table was split into two tables to resolve FK constraint errors on logout:
+
+- **`users`** — stable identity (`user_id` PK, `username` UNIQUE, `created_at`)
+- **`user_tokens`** — OAuth credentials, FK → `users.user_id` with `ON DELETE CASCADE`
+- `admin_users.username` FK → `users.username` with `ON DELETE CASCADE`
+- `jobs.username` — no FK (jobs persist independently)
+- New model: `UsersRecord` in `db/models/users.py`
+- New composite: `CurrentUser` dataclass in `su_services/current_user.py`
+- New CRUD: `create_user`, `get_user`, `get_user_by_username`, `delete_user` in `db/services/user_token_service.py`
+- Migration SQL: `docs/plans/users_table_split.md`
+
+### V-R1: Business logic in route — `callback()` (FIXED)
+
+- Created `su_services/auth_service.py` with `complete_oauth_callback()`
+- `auth/routes.py` callback reduced from 107 → 51 lines
+- Token extraction, identity parsing, credential upsert moved to service
+
+### V-R3: Direct model imports in routes (FIXED — all 4 files)
+
+| File | Fix |
+|------|-----|
+| `fixred.py` | Removed `UserTokenRecord` import |
+| `newupdater/route.py` | Removed `UserTokenRecord` import |
+| `routes_utils.py` | Removed `UserTokenRecord` import; uses `CurrentUser.to_auth_payload()` |
+| `admin_routes/coordinators.py` | Removed `sqlalchemy.exc.IntegrityError` import; added `UserNotFoundError` to `admin_service.py` |
+
+### V-M2: Business logic in model (FIXED)
+
+- `UserTokenRecord.decrypted()` retained on model (pure data transform, no side effects)
+- Model now references `users` table via FK; username accessed through `record.user.username`
+
+### V-X3: Thread-unsafe mutable globals (FIXED — all 3 files)
+
+| File | Fix |
+|------|-----|
+| `core/crypto.py` | Added `threading.Lock` with double-checked locking |
+| `make_title_bot.py` | Removed global `Title_cash`; `make_title()` now accepts optional `cache` dict |
+| `resources_new.py` | `page_identifier_params` is now a local variable in `move_resources()` |
+
+### V-BG2: Direct HTTP bypassing api_services (FIXED — both files)
+
+| File | Fix |
+|------|-----|
+| `make_title_bot.py` | HTTP call extracted to `api_services/citation_api.py` |
+| `create_redirects/worker.py` | HTTP call extracted to `api_services/enwiki_api.py` |
+
+### New files created
+
+| File | Purpose |
+|------|---------|
+| `su_services/auth_service.py` | OAuth callback business logic |
+| `su_services/current_user.py` | `CurrentUser` composite dataclass |
+| `api_services/citation_api.py` | Wikipedia citation REST API client |
+| `api_services/enwiki_api.py` | English Wikipedia redirect API client |
+
+### Remaining (not fixed — low priority)
+
+| Violation | File | Severity |
+|-----------|------|----------|
+| V-R5 | `admin/sidebar.py` — HTML via f-strings | 🟢 Low |
+| V-C1 | `core/cookies.py` — test utility in core | 🟡 Medium |
+| V-CF1 | `config/main_settings.py` — `mkdir()` side effect | 🟡 Medium |
+| V-CF3 | `logger_config.py` — duplicate env var read | 🟡 Medium |
+| V-X2 | `add_r_column/worker.py` — 314 lines | 🟡 Medium |
+| V-X5 | `import_history/objects.py` — duplicated UpdaterOutcome | 🟡 Medium |
+| V-X2 | `drugbox.py` — 317 lines | 🟡 Medium |
+| V-X2 | `bot_params.py` — 356 lines | 🟡 Medium |
+| V-API2 | `category.py` — domain filter in API layer | 🟠 High |
+| V-X3 | `main_settings.py` — settings singleton | 🟠 High |
+| V-C1 | `__init__.py` — SQLAlchemy import in factory | 🟠 High |
+
+---
+
+## Original Audit (pre-fixes)
 
 The project demonstrates **good overall layering** — services correctly own DB operations, models are framework-agnostic, and the API services layer is clean. The most significant architectural issues are: (1) three route files importing ORM models directly instead of going through services, (2) the `auth/routes.py` callback function being 107 lines of OAuth orchestration that should be a service, (3) mutable module-level state in `core/crypto.py` and `shared/new_updater/resources_new.py` that will cause bugs under concurrent execution, and (4) two instances of direct HTTP requests bypassing the `api_services/` abstraction. The background jobs layer is well-isolated with no route imports and proper app context management.
 
@@ -31,24 +110,24 @@ The project demonstrates **good overall layering** — services correctly own DB
 
 ---
 
-## Layer Health Overview
+## Layer Health Overview (post-fixes)
 
-| Layer                          | Status    | Notes                                                    |
-| ------------------------------ | --------- | -------------------------------------------------------- |
-| Routes (`app_routes/`)         | ⚠️ Issues | 3 files import ORM models; callback() is 107 lines       |
-| Services (`db/services/`)      | ✅ Clean  | All commits and queries properly located                 |
-| Models (`db/models/`)          | ⚠️ Issues | `UserTokenRecord.decrypted()` embeds crypto logic        |
-| Core (`core/`)                 | ⚠️ Issues | Thread-unsafe `_fernet` global; test utility misplaced   |
-| Config (`config/`)             | ⚠️ Issues | `mkdir()` side effect in config loader                   |
-| Background Jobs (`new_jobs/`)  | ✅ Clean  | No route imports; proper app context; 1 direct HTTP call |
-| API Services (`api_services/`) | ✅ Clean  | 8/9 files clean; 1 domain filter in category.py          |
-| Extensions (`extensions.py`)   | ✅ Clean  | Bare `ext = ExtensionClass()` pattern                    |
+| Layer                          | Status    | Notes                                                        |
+| ------------------------------ | --------- | ------------------------------------------------------------ |
+| Routes (`app_routes/`)         | ✅ Clean  | No model imports; callback delegates to service              |
+| Services (`db/services/`)      | ✅ Clean  | All commits and queries properly located                     |
+| Models (`db/models/`)          | ✅ Clean  | `UsersRecord` + `UserTokenRecord` with proper FK separation  |
+| Core (`core/`)                 | ⚠️ Issues | Thread-safe `_fernet`; test utility still in core/           |
+| Config (`config/`)             | ⚠️ Issues | `mkdir()` side effect in config loader                       |
+| Background Jobs (`new_jobs/`)  | ✅ Clean  | No route imports; proper app context; HTTP routed via api    |
+| API Services (`api_services/`) | ⚠️ Issues | 1 domain filter in `category.py`                             |
+| Extensions (`extensions.py`)   | ✅ Clean  | Bare `ext = ExtensionClass()` pattern                        |
 
 ---
 
-## Detailed Findings
+## Original Audit (pre-fixes)
 
-### [🟠 High] V-R1: Business logic in route — `callback()` is 107 lines
+### [🟠 High] V-R1: Business logic in route — `callback()` is 107 lines ✅ FIXED
 
 **File**: `flask_app/main_app/app_routes/auth/routes.py`
 **Line(s)**: 122–229
@@ -56,6 +135,8 @@ The project demonstrates **good overall layering** — services correctly own DB
 
 **Problem**:
 The `callback()` function is 107 lines of OAuth orchestration: rate limiting, state verification, token extraction, identity parsing, credential upsert, session/cookie management. This business logic belongs in a service.
+
+**Fix**: Created `su_services/auth_service.py` with `complete_oauth_callback()`. Callback reduced to 51 lines — only HTTP concerns remain.
 
 **Offending Code**:
 
@@ -115,7 +196,7 @@ def callback() -> Response:
 
 ---
 
-### [🟠 High] V-R3: Direct model import in route
+### [🟠 High] V-R3: Direct model import in route ✅ FIXED
 
 **File**: `flask_app/main_app/app_routes/newupdater/worker.py`
 **Line(s)**: 19
@@ -123,6 +204,8 @@ def callback() -> Response:
 
 **Problem**:
 Imports `UserTokenRecord` directly from `db.models` into a route-layer file. Routes should call services, not import models.
+
+**Fix**: Moved to `shared/newupdater_service.py`; uses `CurrentUser` type.
 
 **Offending Code**:
 
@@ -137,7 +220,7 @@ Move the `newupdater_one_title()` function to `shared/newupdater_service.py` (th
 
 ---
 
-### [🟠 High] V-R3: Direct model import in route
+### [🟠 High] V-R3: Direct model import in route ✅ FIXED
 
 **File**: `flask_app/main_app/app_routes/fixred.py`
 **Line(s)**: 9
@@ -145,6 +228,8 @@ Move the `newupdater_one_title()` function to `shared/newupdater_service.py` (th
 
 **Problem**:
 Imports `UserTokenRecord` directly from `db.models`. The type annotation `user: UserTokenRecord` on line 50 couples the route to the ORM model.
+
+**Fix**: Removed `UserTokenRecord` import; type annotation removed.
 
 **Offending Code**:
 
@@ -167,7 +252,7 @@ user = getattr(g, "_current_user", None)
 
 ---
 
-### [🟠 High] V-R3: Direct model import in route
+### [🟠 High] V-R3: Direct model import in route ✅ FIXED
 
 **File**: `flask_app/main_app/app_routes/newupdater/route.py`
 **Line(s)**: 9
@@ -175,6 +260,8 @@ user = getattr(g, "_current_user", None)
 
 **Problem**:
 Imports `UserTokenRecord` from `db.models` for type annotation only.
+
+**Fix**: Removed `UserTokenRecord` import; type annotation removed.
 
 **Offending Code**:
 
@@ -196,7 +283,7 @@ user = getattr(g, "_current_user", None)
 
 ---
 
-### [🟠 High] V-R3: Direct model import in route + ORM exception handling
+### [🟠 High] V-R3: Direct model import in route + ORM exception handling ✅ FIXED
 
 **File**: `flask_app/main_app/app_routes/utils/routes_utils.py`
 **Line(s)**: 9
@@ -302,7 +389,7 @@ def decrypt_user_token(record: UserTokenRecord) -> tuple[str, str]:
 
 ---
 
-### [🟠 High] V-X3: Thread-unsafe mutable global in crypto
+### [🟠 High] V-X3: Thread-unsafe mutable global in crypto ✅ FIXED
 
 **File**: `flask_app/main_app/core/crypto.py`
 **Line(s)**: 9
@@ -310,6 +397,8 @@ def decrypt_user_token(record: UserTokenRecord) -> tuple[str, str]:
 
 **Problem**:
 `_fernet: Fernet | None = None` is a module-level mutable global with lazy initialization. Concurrent calls to `_require_fernet()` from multiple threads (job workers run in daemon threads) can race on initialization.
+
+**Fix**: Added `threading.Lock` with double-checked locking pattern.
 
 **Offending Code**:
 
@@ -350,7 +439,7 @@ def _require_fernet() -> Fernet:
 
 ---
 
-### [🟠 High] V-X3: Shared mutable state — `Title_cash` cache
+### [🟠 High] V-X3: Shared mutable state — `Title_cash` cache ✅ FIXED
 
 **File**: `flask_app/main_app/shared/fixref_shared/make_title_bot.py`
 **Line(s)**: 18, 94, 97, 149
@@ -358,6 +447,8 @@ def _require_fernet() -> Fernet:
 
 **Problem**:
 Module-level dict `Title_cash` is used as a cache and mutated inside `make_title()`. If two concurrent job workers call `make_title()`, they race on the same dict with no locking.
+
+**Fix**: Removed global `Title_cash`; `make_title()` now accepts optional `cache` dict parameter.
 
 **Offending Code**:
 
@@ -377,7 +468,7 @@ Pass an explicit cache dict as a parameter, or use `functools.lru_cache`, or wra
 
 ---
 
-### [🟠 High] V-BG2: Direct HTTP request bypassing api_services
+### [🟠 High] V-BG2: Direct HTTP request bypassing api_services ✅ FIXED
 
 **File**: `flask_app/main_app/shared/fixref_shared/make_title_bot.py`
 **Line(s)**: 64
@@ -385,6 +476,8 @@ Pass an explicit cache dict as a parameter, or use `functools.lru_cache`, or wra
 
 **Problem**:
 `requests.get()` calls Wikipedia REST API directly, bypassing the `api_services/` layer. This makes the call untestable, lacks retry/timeout standardization, and breaks the layering contract.
+
+**Fix**: HTTP call extracted to `api_services/citation_api.py`; `make_title_bot.py` imports `get_citation_title` from there.
 
 **Offending Code**:
 
@@ -403,7 +496,7 @@ Move this HTTP call into `api_services/` (e.g., `api_services/citation_api.py`) 
 
 ---
 
-### [🟠 High] V-X3: Shared mutable state — `page_identifier_params`
+### [🟠 High] V-X3: Shared mutable state — `page_identifier_params` ✅ FIXED
 
 **File**: `flask_app/main_app/shared/new_updater/resources_new.py`
 **Line(s)**: 16, 137
@@ -411,6 +504,8 @@ Move this HTTP call into `api_services/` (e.g., `api_services/citation_api.py`) 
 
 **Problem**:
 Module-level dict `page_identifier_params` is populated inside `move_resources()` and never reset between calls. Running the updater on multiple pages sequentially accumulates stale identifiers from previous pages, causing cross-contamination.
+
+**Fix**: `page_identifier_params` is now a local variable in `move_resources()`, passed to `add_resources()` as a parameter.
 
 **Offending Code**:
 
@@ -435,7 +530,7 @@ def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
 
 ---
 
-### [🟠 High] V-BG2: Direct HTTP request in worker bypassing api_services
+### [🟠 High] V-BG2: Direct HTTP request in worker bypassing api_services ✅ FIXED
 
 **File**: `flask_app/main_app/new_jobs/workers/create_redirects/worker.py`
 **Line(s)**: 18, 42–84
@@ -443,6 +538,8 @@ def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
 
 **Problem**:
 `_enwiki_session()` and `_enwiki_redirects_for()` create a standalone `requests.Session` and make direct HTTP POST calls to `https://en.wikipedia.org/w/api.php`. This bypasses the `api_services/` abstraction layer used by every other worker.
+
+**Fix**: HTTP logic extracted to `api_services/enwiki_api.py`; worker imports `get_redirects_for` from there.
 
 **Offending Code**:
 

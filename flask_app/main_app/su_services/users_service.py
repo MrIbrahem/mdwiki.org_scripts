@@ -1,12 +1,12 @@
-""" """
+"""User authentication service — bridges OAuth callbacks to the DB layer."""
 
 from __future__ import annotations
 
 import logging
 from typing import Optional
 
-from ..db.models import UserTokenRecord
-from ..db.services import get_user_token, upsert_user_token
+from ..db.services import get_authenticated_user_token, get_user_token, upsert_user_token
+from .current_user import CurrentUser
 
 logger = logging.getLogger(__name__)
 
@@ -18,29 +18,43 @@ class UserService:
         username: str,
         access_key: str,
         access_secret: str,
-    ) -> Optional[UserTokenRecord]:
-        """Business logic for upserting and retrieving the user token record."""
+    ) -> Optional[CurrentUser]:
+        """Upsert OAuth credentials and return a CurrentUser composite."""
         try:
-            # 1. Update or insert into database via repository
             upsert_user_token(
                 user_id=user_id,
                 username=username,
                 access_key=access_key,
                 access_secret=access_secret,
             )
-            # 2. Get the fresh record
-            return get_user_token(user_id)
+            token = get_user_token(user_id)
+            if not token:
+                return None
+            return CurrentUser(
+                user_id=user_id,
+                username=username,
+                access_token=token.access_token,
+                access_secret=token.access_secret,
+            )
         except Exception as e:
             logger.exception("Failed to upsert or fetch user credentials: %s", e)
             return None
 
     @staticmethod
-    def get_authenticated_user(user_id: int) -> Optional[UserTokenRecord]:
-        """Fetch the user token record by ID for session restoration."""
+    def get_authenticated_user(user_id: int) -> Optional[CurrentUser]:
+        """Fetch the CurrentUser composite for session restoration."""
         try:
-            return get_user_token(user_id)
+            token = get_authenticated_user_token(user_id)
+            if not token:
+                return None
+            return CurrentUser(
+                user_id=user_id,
+                username=token.user.username,
+                access_token=token.access_token,
+                access_secret=token.access_secret,
+            )
         except Exception as e:
-            logger.error("Error loading user token for ID %s: %s", user_id, e)
+            logger.error("Error loading user for ID %s: %s", user_id, e)
             return None
 
 

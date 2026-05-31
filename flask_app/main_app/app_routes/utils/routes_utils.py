@@ -32,18 +32,17 @@ def context_user(wiki_domain: str, static_server: str) -> dict[str, Any]:
 
 
 def load_auth_payload(user: Any | None) -> Dict[str, Any]:
-    auth_payload: Dict[str, Any] = {}
+    if user and hasattr(user, "to_auth_payload"):
+        return user.to_auth_payload()
     if user:
-        # returns (access_key, access_secret) and marks token used
         access_key, access_secret = user.access_token, user.access_secret
-
-        auth_payload = {
+        return {
             "id": user.user_id,
             "username": user.username,
             "access_token": access_key,
             "access_secret": access_secret,
         }
-    return auth_payload
+    return {}
 
 
 def get_job_detail_url(job_id: int, job_type: str) -> str:

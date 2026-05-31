@@ -165,10 +165,11 @@ class TestCallbackRoute:
             )
 
         with app.app_context():
-            from flask_app.main_app.db.services import get_user_token
+            from flask_app.main_app.db.services import get_user, get_user_token
 
-            user = get_user_token(99)
-            assert user is not None
+            token = get_user_token(99)
+            assert token is not None
+            user = get_user(99)
             assert user.username == "DbUser"
 
     def test_callback_success_sets_cookie(self, app, mock_client):
@@ -359,10 +360,11 @@ class TestAuthRouteIntegration:
 
         # Step 4: Verify user is in the database
         with app.app_context():
-            from flask_app.main_app.db.services import get_user_token
+            from flask_app.main_app.db.services import get_user, get_user_token
 
-            user = get_user_token(77)
-            assert user is not None
+            token = get_user_token(77)
+            assert token is not None
+            user = get_user(77)
             assert user.username == "FlowUser"
 
     def test_authenticated_user_can_access_profile(self, mock_client, login):
