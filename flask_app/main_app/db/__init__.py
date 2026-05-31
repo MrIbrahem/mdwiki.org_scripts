@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 
 from sqlalchemy import event, text
-from sqlalchemy.exc import OperationalError
+from sqlalchemy.exc import SQLAlchemyError
 
 from .exceptions import DatabaseInitError
 
@@ -46,7 +46,7 @@ def init_db(_db) -> None:
             tables=real_tables,
             checkfirst=True,
         )
-    except OperationalError as exc:
+    except SQLAlchemyError as exc:
         raise DatabaseInitError(f"Failed to create tables: {exc}") from exc
 
     from sqlalchemy import inspect as sa_inspect

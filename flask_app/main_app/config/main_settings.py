@@ -138,9 +138,9 @@ def _get_paths() -> Paths:
     main_dir = Path(os.path.expandvars(main_dir)).expanduser()
 
     return Paths(
-        log_dir=f"{main_dir}/logs",
-        jobs_path=f"{main_dir}/jobs",
-        new_jobs_path=f"{main_dir}/new_jobs",
+        log_dir=str(main_dir / "logs"),
+        jobs_path=str(main_dir / "jobs"),
+        new_jobs_path=str(main_dir / "new_jobs"),
     )
 
 
