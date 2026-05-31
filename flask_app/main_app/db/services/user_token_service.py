@@ -27,14 +27,22 @@ def create_user(user_id: int, username: str) -> UsersRecord:
     if existing:
         if existing.username != username:
             existing.username = username
-            db.session.commit()
-            db.session.refresh(existing)
+            try:
+                db.session.commit()
+                db.session.refresh(existing)
+            except Exception:
+                db.session.rollback()
+                raise
         return existing
 
     record = UsersRecord(user_id=user_id, username=username)
     db.session.add(record)
-    db.session.commit()
-    db.session.refresh(record)
+    try:
+        db.session.commit()
+        db.session.refresh(record)
+    except Exception:
+        db.session.rollback()
+        raise
     return record
 
 

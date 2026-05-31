@@ -127,7 +127,7 @@ The project demonstrates **good overall layering** — services correctly own DB
 
 ## Original Audit (pre-fixes)
 
-### [🟠 High] V-R1: Business logic in route — `callback()` is 107 lines
+### [🟠 High] V-R1: Business logic in route — `callback()` is 107 lines ✅ FIXED
 
 **File**: `flask_app/main_app/app_routes/auth/routes.py`
 **Line(s)**: 122–229
@@ -275,7 +275,7 @@ user = getattr(g, "_current_user", None)
 
 ---
 
-### [🟠 High] V-R3: Direct model import in route + ORM exception handling
+### [🟠 High] V-R3: Direct model import in route + ORM exception handling ✅ FIXED
 
 **File**: `flask_app/main_app/app_routes/utils/routes_utils.py`
 **Line(s)**: 9
@@ -381,7 +381,7 @@ def decrypt_user_token(record: UserTokenRecord) -> tuple[str, str]:
 
 ---
 
-### [🟠 High] V-X3: Thread-unsafe mutable global in crypto
+### [🟠 High] V-X3: Thread-unsafe mutable global in crypto ✅ FIXED
 
 **File**: `flask_app/main_app/core/crypto.py`
 **Line(s)**: 9
@@ -456,7 +456,7 @@ Pass an explicit cache dict as a parameter, or use `functools.lru_cache`, or wra
 
 ---
 
-### [🟠 High] V-BG2: Direct HTTP request bypassing api_services
+### [🟠 High] V-BG2: Direct HTTP request bypassing api_services ✅ FIXED
 
 **File**: `flask_app/main_app/shared/fixref_shared/make_title_bot.py`
 **Line(s)**: 64
@@ -514,7 +514,7 @@ def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
 
 ---
 
-### [🟠 High] V-BG2: Direct HTTP request in worker bypassing api_services
+### [🟠 High] V-BG2: Direct HTTP request in worker bypassing api_services ✅ FIXED
 
 **File**: `flask_app/main_app/new_jobs/workers/create_redirects/worker.py`
 **Line(s)**: 18, 42–84
