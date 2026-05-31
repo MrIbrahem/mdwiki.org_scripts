@@ -22,14 +22,16 @@ class AdminUserRecord(db.Model):
         `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (`id`),
         UNIQUE KEY `username` (`username`),
-        CONSTRAINT `admin_users_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user_tokens` (`username`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+    NOTE: db.ForeignKey("user_tokens.username") removed to solve: issue: Failed to delete user token during logout.
+        sqlalchemy.exc.IntegrityError: (pymysql.err.IntegrityError) (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`mdwiki_scripts`.`admin_users`, CONSTRAINT `admin_users_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user_tokens` (`username`))')
     """
 
     __tablename__ = "admin_users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String(255), db.ForeignKey("user_tokens.username"), unique=True, nullable=False)
+    username = Column(String(255), unique=True, nullable=False)
     is_active = Column(Boolean, nullable=False, default=True, server_default="1")
 
     created_at = Column(DateTime, nullable=False, server_default=func.current_timestamp())
