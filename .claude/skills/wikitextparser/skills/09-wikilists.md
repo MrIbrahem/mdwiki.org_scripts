@@ -1,19 +1,19 @@
 ---
 name: wikitextparser-wikilists
 description: >
-  Work with bullet (*), numbered (#), and definition (:;) lists. Covers
-  WikiList items vs fullitems, level/sublists/convert, multi-pattern
-  retrieval, definition-list handling, and constructing a WikiList directly
-  from a string.
+    Work with bullet (*), numbered (#), and definition (:;) lists. Covers
+    WikiList items vs fullitems, level/sublists/convert, multi-pattern
+    retrieval, definition-list handling, and constructing a WikiList directly
+    from a string.
 applies_to:
-  - "WikiList"
-  - "* item"
-  - "# item"
-  - ": item"
-  - "; term"
-  - "get_lists"
-  - "sublists"
-  - "convert"
+    - "WikiList"
+    - "* item"
+    - "# item"
+    - ": item"
+    - "; term"
+    - "get_lists"
+    - "sublists"
+    - "convert"
 ---
 
 # 09 — Wiki Lists (`*`, `#`, `:`, `;`)
@@ -25,43 +25,43 @@ applies_to:
 
 Use this file for:
 
-- Counting or extracting list items.
-- Converting between list types (bullet ↔ numbered).
-- Walking sub-lists.
-- Working with definition lists (`;` term and `:` definition).
+-   Counting or extracting list items.
+-   Converting between list types (bullet ↔ numbered).
+-   Walking sub-lists.
+-   Working with definition lists (`;` term and `:` definition).
 
 ## Mental model
 
 MediaWiki has three list flavours, all line-prefixed:
 
-| Prefix | Meaning             | Example     |
-| ------ | ------------------- | ----------- |
-| `*`    | unordered (bullet)  | `* item`    |
-| `#`    | ordered (numbered)  | `# item`    |
-| `;`/`:`| definition list     | `; term` / `: definition` |
+| Prefix  | Meaning            | Example                   |
+| ------- | ------------------ | ------------------------- |
+| `*`     | unordered (bullet) | `* item`                  |
+| `#`     | ordered (numbered) | `# item`                  |
+| `;`/`:` | definition list    | `; term` / `: definition` |
 
 Nesting is by repeating the prefix: `**` is a sub-bullet, `*#` mixes types.
 A `WikiList` represents one consecutive block sharing the same starting
 character.
 
-`wikitextparser` does *not* enumerate these automatically; you ask for them
+`wikitextparser` does _not_ enumerate these automatically; you ask for them
 by passing a regex pattern.
 
 ## Quick reference
 
-| Operation                                                           | Description                              |
-| ------------------------------------------------------------------- | ---------------------------------------- |
-| `parsed.get_lists()`                                                | All lists (default pattern matches all)  |
-| `parsed.get_lists(r'\*')`                                           | Only `*` bullet lists                    |
-| `parsed.get_lists(r'\#')`                                           | Only `#` numbered lists                  |
-| `parsed.get_lists('[:;]')`                                          | Only definition lists                    |
-| `parsed.get_lists((r'\*', r'\#'))`                                  | Multiple patterns                        |
-| `wl.items`                                                          | Item text (no prefix, no sub-items)      |
-| `wl.fullitems`                                                      | Item text including prefix and sub-items |
-| `wl.level`                                                          | Nesting depth (1-based)                  |
-| `wl.sublists(i=None, pattern=...)`                                  | Sub-lists; `i=N` restricts to item N     |
-| `wl.convert(newstart)`                                              | In-place: replace prefix pattern         |
-| `wtp.WikiList(text, pattern)`                                       | Build directly from a fragment           |
+| Operation                          | Description                              |
+| ---------------------------------- | ---------------------------------------- |
+| `parsed.get_lists()`               | All lists (default pattern matches all)  |
+| `parsed.get_lists(r'\*')`          | Only `*` bullet lists                    |
+| `parsed.get_lists(r'\#')`          | Only `#` numbered lists                  |
+| `parsed.get_lists('[:;]')`         | Only definition lists                    |
+| `parsed.get_lists((r'\*', r'\#'))` | Multiple patterns                        |
+| `wl.items`                         | Item text (no prefix, no sub-items)      |
+| `wl.fullitems`                     | Item text including prefix and sub-items |
+| `wl.level`                         | Nesting depth (1-based)                  |
+| `wl.sublists(i=None, pattern=...)` | Sub-lists; `i=N` restricts to item N     |
+| `wl.convert(newstart)`             | In-place: replace prefix pattern         |
+| `wtp.WikiList(text, pattern)`      | Build directly from a fragment           |
 
 ## Step by step
 
@@ -115,7 +115,7 @@ wl.sublists(1, pattern=r'\#')
 # only the numbered sub-lists under item 1
 ```
 
-`pattern` here is the *child* pattern. The current list's pattern is
+`pattern` here is the _child_ pattern. The current list's pattern is
 prepended automatically — you don't repeat it.
 
 ### 4. Convert list types
@@ -140,7 +140,7 @@ wl.items
 # ['Apple ', ' red fruit', 'Banana ', ' yellow fruit']
 ```
 
-The pattern `[:;]` returns *both* terms and definitions interleaved.
+The pattern `[:;]` returns _both_ terms and definitions interleaved.
 To pair them, walk in pairs:
 
 ```python
@@ -161,7 +161,7 @@ ol.convert(':')
 str(ol)                 # ': step 1\n: step 2\n'
 ```
 
-This is useful when you have a fragment of wikitext that *is* a list (no
+This is useful when you have a fragment of wikitext that _is_ a list (no
 surrounding article), and you want the WikiList API directly.
 
 ### 7. Multiple sub-list patterns at once
@@ -172,23 +172,23 @@ wl.sublists(pattern=(r'\#', r'\*'))   # all sub-lists of either type
 
 ## Edge cases & gotchas
 
-- **Patterns are regex literals.** Always escape `*`, `+`, `#`, `?`, etc.
-  Use `r'\*'` not `'*'`.
-- **Fragment lists** that don't start at a line boundary may not be matched.
-  Add a leading `\n` before parsing if needed.
-- **Definition lists with external links** containing `:` look ambiguous to
-  the parser. The library shadows `[url]` regions before matching list
-  patterns, so `: see [https://example.com link]` works correctly.
-- **`fullitems` may differ in order from `items`** for definition lists
-  because MediaWiki allows `;A : B` on one line. The library normalises
-  this internally and `fullitems` is sorted; don't rely on positional
-  parity between `items[i]` and `fullitems[i]`.
-- **`level` is 1-based**, not 0-based. The outermost list is `level == 1`.
-- **Converting a sub-list does not touch its parent.** If you want to
-  convert a whole tree, recurse via `sublists()`.
-- **`convert` does not adjust nested patterns.** A `**` sub-bullet stays
-  `**` even after `convert('#')` on the parent. Convert sub-lists
-  separately.
+-   **Patterns are regex literals.** Always escape `*`, `+`, `#`, `?`, etc.
+    Use `r'\*'` not `'*'`.
+-   **Fragment lists** that don't start at a line boundary may not be matched.
+    Add a leading `\n` before parsing if needed.
+-   **Definition lists with external links** containing `:` look ambiguous to
+    the parser. The library shadows `[url]` regions before matching list
+    patterns, so `: see [https://example.com link]` works correctly.
+-   **`fullitems` may differ in order from `items`** for definition lists
+    because MediaWiki allows `;A : B` on one line. The library normalises
+    this internally and `fullitems` is sorted; don't rely on positional
+    parity between `items[i]` and `fullitems[i]`.
+-   **`level` is 1-based**, not 0-based. The outermost list is `level == 1`.
+-   **Converting a sub-list does not touch its parent.** If you want to
+    convert a whole tree, recurse via `sublists()`.
+-   **`convert` does not adjust nested patterns.** A `**` sub-bullet stays
+    `**` even after `convert('#')` on the parent. Convert sub-lists
+    separately.
 
 ## Recipes
 
@@ -248,6 +248,6 @@ def flatten_with_depth(wl, depth=1, out=None):
 
 ## See also
 
-- `02-templates.md` — lists inside template arguments are reachable via
-  `template.get_lists(...)`
-- `references/reference.md` — full WikiList API
+-   `02-templates.md` — lists inside template arguments are reachable via
+    `template.get_lists(...)`
+-   `references/reference.md` — full WikiList API
