@@ -1,16 +1,16 @@
 ---
 name: wikitextparser
 description: >
-  Parse, extract, and manipulate MediaWiki wikitext using the wikitextparser
-  Python library. Use this skill whenever the user works with wikitext,
-  Wikipedia/MediaWiki markup, infoboxes, templates, wikilinks, categories,
-  files/images, galleries, tables, sections, lists, refs/citations, parser
-  functions, or any pipeline that reads, edits, cleans, or rewrites
-  MediaWiki-formatted text. Triggers include phrases like "parse wikitext",
-  "extract templates", "get all wikilinks", "convert table to CSV", "remove
-  wiki markup", "find categories", "rename a section", "modify infobox",
-  "extract citations", "list all refs", "find files in article", or any task
-  involving `{{ }}`, `[[ ]]`, `{| |}`, `<ref>`, `<gallery>`, `<!-- -->`, etc.
+    Parse, extract, and manipulate MediaWiki wikitext using the wikitextparser
+    Python library. Use this skill whenever the user works with wikitext,
+    Wikipedia/MediaWiki markup, infoboxes, templates, wikilinks, categories,
+    files/images, galleries, tables, sections, lists, refs/citations, parser
+    functions, or any pipeline that reads, edits, cleans, or rewrites
+    MediaWiki-formatted text. Triggers include phrases like "parse wikitext",
+    "extract templates", "get all wikilinks", "convert table to CSV", "remove
+    wiki markup", "find categories", "rename a section", "modify infobox",
+    "extract citations", "list all refs", "find files in article", or any task
+    involving `{{ }}`, `[[ ]]`, `{| |}`, `<ref>`, `<gallery>`, `<!-- -->`, etc.
 ---
 
 # WikiTextParser Skill
@@ -43,23 +43,23 @@ runtime dependencies beyond the regex backport and `wcwidth` (auto-installed).
 
 ## 2. "I want to ..." — pick a sub-skill
 
-| Goal                                                                | Open                                                          |
-| ------------------------------------------------------------------- | ------------------------------------------------------------- |
-| Understand `parse`, `string`, `plain_text`, `pformat`               | [`skills/01-wikitext-basics.md`](skills/01-wikitext-basics.md) |
-| Read or modify `{{template|args}}` calls                            | [`skills/02-templates.md`](skills/02-templates.md)             |
-| Work with `{{{param|default}}}` declarations (template `/doc`)      | [`skills/03-parameters.md`](skills/03-parameters.md)           |
-| Read or modify `[[wikilinks]]`                                      | [`skills/04-wikilinks.md`](skills/04-wikilinks.md)             |
-| Extract or add `[[Category:...]]`, `[[File:...]]`, `<gallery>`      | [`skills/05-categories-files.md`](skills/05-categories-files.md) |
-| Read tables, get cell data, export to CSV                           | [`skills/06-tables.md`](skills/06-tables.md)                   |
-| Read `[url text]` and bare URLs                                     | [`skills/07-external-links.md`](skills/07-external-links.md)   |
-| Navigate or rename headings (`== Section ==`)                       | [`skills/08-sections.md`](skills/08-sections.md)               |
-| Work with `*`, `#`, `:`, `;` lists                                  | [`skills/09-wikilists.md`](skills/09-wikilists.md)             |
-| Work with `<ref>`, `<gallery>`, `<nowiki>`, comments, bold/italic   | [`skills/10-tags-comments.md`](skills/10-tags-comments.md)     |
-| Inspect parser functions like `{{#if:}}` and `{{#switch:}}`         | [`skills/11-parser-functions.md`](skills/11-parser-functions.md) |
-| Walk parents/ancestors; understand the in-place mutation model      | [`skills/12-tree-navigation.md`](skills/12-tree-navigation.md) |
-| Copy-paste recipes: infobox→dict, refs, link graphs, validation     | [`skills/13-common-patterns.md`](skills/13-common-patterns.md) |
-| Need full method signatures and edge cases                          | [`references/reference.md`](references/reference.md)           |
-| Need long end-to-end pipelines                                      | [`references/examples.md`](references/examples.md)             |
+| Goal                                                              | Open                                                             |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Understand `parse`, `string`, `plain_text`, `pformat`             | [`skills/01-wikitext-basics.md`](skills/01-wikitext-basics.md)   |
+| Read or modify `{{template\|args}}` calls                         | [`skills/02-templates.md`](skills/02-templates.md)               |
+| Work with `{{{param\|default}}}` declarations (template `/doc`)   | [`skills/03-parameters.md`](skills/03-parameters.md)             |
+| Read or modify `[[wikilinks]]`                                    | [`skills/04-wikilinks.md`](skills/04-wikilinks.md)               |
+| Extract or add `[[Category:...]]`, `[[File:...]]`, `<gallery>`    | [`skills/05-categories-files.md`](skills/05-categories-files.md) |
+| Read tables, get cell data, export to CSV                         | [`skills/06-tables.md`](skills/06-tables.md)                     |
+| Read `[url text]` and bare URLs                                   | [`skills/07-external-links.md`](skills/07-external-links.md)     |
+| Navigate or rename headings (`== Section ==`)                     | [`skills/08-sections.md`](skills/08-sections.md)                 |
+| Work with `*`, `#`, `:`, `;` lists                                | [`skills/09-wikilists.md`](skills/09-wikilists.md)               |
+| Work with `<ref>`, `<gallery>`, `<nowiki>`, comments, bold/italic | [`skills/10-tags-comments.md`](skills/10-tags-comments.md)       |
+| Inspect parser functions like `{{#if:}}` and `{{#switch:}}`       | [`skills/11-parser-functions.md`](skills/11-parser-functions.md) |
+| Walk parents/ancestors; understand the in-place mutation model    | [`skills/12-tree-navigation.md`](skills/12-tree-navigation.md)   |
+| Copy-paste recipes: infobox→dict, refs, link graphs, validation   | [`skills/13-common-patterns.md`](skills/13-common-patterns.md)   |
+| Need full method signatures and edge cases                        | [`references/reference.md`](references/reference.md)             |
+| Need long end-to-end pipelines                                    | [`references/examples.md`](references/examples.md)               |
 
 ---
 
@@ -67,22 +67,22 @@ runtime dependencies beyond the regex backport and `wcwidth` (auto-installed).
 
 Every parsed string is a tree of objects sharing one underlying string.
 
-| Class            | How to obtain                                              | Sub-skill                          |
-| ---------------- | ---------------------------------------------------------- | ---------------------------------- |
-| `WikiText`       | `wtp.parse(s)`                                             | `01-wikitext-basics.md`            |
-| `Template`       | `parsed.templates`                                         | `02-templates.md`                  |
-| `Argument`       | `template.arguments`, `template.get_arg(name)`             | `02-templates.md`                  |
-| `Parameter`      | `parsed.parameters`                                        | `03-parameters.md`                 |
-| `WikiLink`       | `parsed.wikilinks`                                         | `04-wikilinks.md`                  |
-| `ExternalLink`   | `parsed.external_links`                                    | `07-external-links.md`             |
-| `Section`        | `parsed.sections`, `parsed.get_sections(...)`              | `08-sections.md`                   |
-| `Table`          | `parsed.tables`, `parsed.get_tables(recursive=True)`       | `06-tables.md`                     |
-| `Cell`           | `table.cells(row, column)`                                 | `06-tables.md`                     |
-| `WikiList`       | `parsed.get_lists(pattern=...)`                            | `09-wikilists.md`                  |
-| `Tag`            | `parsed.get_tags(name)`                                    | `10-tags-comments.md`              |
-| `Comment`        | `parsed.comments`                                          | `10-tags-comments.md`              |
-| `Bold` / `Italic`| `parsed.get_bolds()`, `parsed.get_italics()`               | `10-tags-comments.md`              |
-| `ParserFunction` | `parsed.parser_functions`                                  | `11-parser-functions.md`           |
+| Class             | How to obtain                                        | Sub-skill                |
+| ----------------- | ---------------------------------------------------- | ------------------------ |
+| `WikiText`        | `wtp.parse(s)`                                       | `01-wikitext-basics.md`  |
+| `Template`        | `parsed.templates`                                   | `02-templates.md`        |
+| `Argument`        | `template.arguments`, `template.get_arg(name)`       | `02-templates.md`        |
+| `Parameter`       | `parsed.parameters`                                  | `03-parameters.md`       |
+| `WikiLink`        | `parsed.wikilinks`                                   | `04-wikilinks.md`        |
+| `ExternalLink`    | `parsed.external_links`                              | `07-external-links.md`   |
+| `Section`         | `parsed.sections`, `parsed.get_sections(...)`        | `08-sections.md`         |
+| `Table`           | `parsed.tables`, `parsed.get_tables(recursive=True)` | `06-tables.md`           |
+| `Cell`            | `table.cells(row, column)`                           | `06-tables.md`           |
+| `WikiList`        | `parsed.get_lists(pattern=...)`                      | `09-wikilists.md`        |
+| `Tag`             | `parsed.get_tags(name)`                              | `10-tags-comments.md`    |
+| `Comment`         | `parsed.comments`                                    | `10-tags-comments.md`    |
+| `Bold` / `Italic` | `parsed.get_bolds()`, `parsed.get_italics()`         | `10-tags-comments.md`    |
+| `ParserFunction`  | `parsed.parser_functions`                            | `11-parser-functions.md` |
 
 All classes ultimately inherit from `WikiText`, which means **every property
 access returns objects that are still attached to the same root**. Editing a
@@ -139,19 +139,19 @@ root" — it is not a side effect, it is the core design.
 
 ## 6. Known limitations (universal)
 
-- **Not an evaluator.** `{{#if:}}`, `{{ucfirst:}}`, and template expansion are
-  *not* executed. You get the parse tree only.
-- **Localized namespaces** like `[[Categoría:X]]` or `[[ملف:X]]` are valid
-  wikilinks, but the library has no built-in localization table — you must
-  match namespace prefixes yourself (see `05-categories-files.md`).
-- **Templates inside link targets.** In `[[{{name}}]]` the parser cannot know
-  what the template expands to, so it guesses based on syntax.
-- **`Table.data()` does not look inside templates.** Use `table.cells(...)` or
-  parse the cell value separately. See `06-tables.md`.
-- **Extension tag list** is based on English Wikipedia; rarely-used tags from
-  other wikis may parse as plain HTML. See `10-tags-comments.md`.
-- **No `ast.walk()` equivalent.** Traversal is via `.parent()` and
-  `.ancestors()`, plus list properties on each node. See `12-tree-navigation.md`.
+-   **Not an evaluator.** `{{#if:}}`, `{{ucfirst:}}`, and template expansion are
+    _not_ executed. You get the parse tree only.
+-   **Localized namespaces** like `[[Categoría:X]]` or `[[ملف:X]]` are valid
+    wikilinks, but the library has no built-in localization table — you must
+    match namespace prefixes yourself (see `05-categories-files.md`).
+-   **Templates inside link targets.** In `[[{{name}}]]` the parser cannot know
+    what the template expands to, so it guesses based on syntax.
+-   **`Table.data()` does not look inside templates.** Use `table.cells(...)` or
+    parse the cell value separately. See `06-tables.md`.
+-   **Extension tag list** is based on English Wikipedia; rarely-used tags from
+    other wikis may parse as plain HTML. See `10-tags-comments.md`.
+-   **No `ast.walk()` equivalent.** Traversal is via `.parent()` and
+    `.ancestors()`, plus list properties on each node. See `12-tree-navigation.md`.
 
 ---
 
@@ -171,10 +171,10 @@ Need recursive structure?     →  parsed.get_tables(recursive=True), .get_lists
 
 ## 8. Reference files
 
-- **`references/reference.md`** — full API surface, every method signature,
-  parameter, return type, and edge case (~600 lines).
-- **`references/examples.md`** — 15+ end-to-end scripts covering common
-  workflows from start to finish.
+-   **`references/reference.md`** — full API surface, every method signature,
+    parameter, return type, and edge case (~600 lines).
+-   **`references/examples.md`** — 15+ end-to-end scripts covering common
+    workflows from start to finish.
 
 Open these only when a sub-skill points you to them or when you need a detail
 that is not in the focused sub-skill files.
