@@ -31,7 +31,7 @@ def _replace_links(
     for wl in parsed.wikilinks:
         if wl.title == oldlink:
             if wl.text is None:
-                wl.text = f"{oldlink}#{wl.fragment}" if wl.fragment else oldlink
+                wl.text = wl.target
             wl.title = newlink
     return str(parsed)
 
