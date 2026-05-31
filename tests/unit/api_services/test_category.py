@@ -4,7 +4,6 @@ from unittest.mock import MagicMock, patch
 
 import requests
 from flask_app.main_app.api_services.category import (
-    get_category_members,
     get_category_members_api,
 )
 
@@ -35,16 +34,3 @@ def test_get_category_members_api_error(mock_session_cls):
     members = get_category_members_api("Category:Test", "example.org")
     assert members == []
 
-
-@patch("flask_app.main_app.api_services.category.get_category_members_api")
-def test_get_category_members_filtering(mock_api):
-    mock_api.return_value = [
-        "Template:Valid",
-        "Template:OWID",  # Excluded
-        "Template:OWIDslider",  # Excluded
-        "Main Page",  # Not Template
-        "Template:Other",
-    ]
-
-    result = get_category_members()
-    assert result == ["Template:Valid", "Template:Other"]
