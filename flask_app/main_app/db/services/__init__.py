@@ -12,7 +12,11 @@ from .jobs_service import (
     update_job_status,
 )
 from .user_token_service import (
+    create_user,
+    delete_user,
     delete_user_token,
+    get_user,
+    get_user_by_username,
     get_user_token,
     get_user_token_by_username,
     list_users,
@@ -20,7 +24,12 @@ from .user_token_service import (
 )
 
 __all__ = [
-    # user_token_service
+    # user_token_service — user CRUD
+    "create_user",
+    "get_user",
+    "get_user_by_username",
+    "delete_user",
+    # user_token_service — token CRUD
     "upsert_user_token",
     "get_user_token",
     "delete_user_token",

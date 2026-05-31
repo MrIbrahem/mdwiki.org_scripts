@@ -8,7 +8,7 @@ import logging
 
 from ..api_services.clients.wiki_client import get_user_site
 from ..api_services.pages_api import edit_page, get_page_text
-from ..db.models import UserTokenRecord
+from ..su_services.current_user import CurrentUser
 from .fixref_shared.fixred_worker import work_on_text
 from .fixref_shared.objects import RunState
 from .shared_classes import UpdaterTextOutcome
@@ -20,7 +20,7 @@ def work_on_title(
     title: str,
     save: bool = False,
     summary: str = "Fix redirects.",
-    user: UserTokenRecord | None = None,
+    user: CurrentUser | None = None,
 ) -> UpdaterTextOutcome:
     """
     s

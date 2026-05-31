@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch
 
 from flask import g, session
 from flask_app.main_app.app_routes.auth.utils import load_logged_in_user, load_user, oauth_required
+from flask_app.main_app.su_services.current_user import CurrentUser
 
 
 class TestOauthRequired:
@@ -35,16 +36,16 @@ class TestLoadLoggedInUser:
     def test_current_user_from_session(self, app):
         with app.test_request_context():
             session["uid"] = 123
-            with patch("flask_app.main_app.su_services.users_service.get_user_token") as mock_get:
-                mock_user = MagicMock()
-                mock_user.username = "test_user"
-                mock_get.return_value = mock_user
-
+            fake_user = CurrentUser(user_id=123, username="test_user", access_token=b"t", access_secret=b"s")
+            with patch(
+                "flask_app.main_app.su_services.users_service.UserService.get_authenticated_user",
+                return_value=fake_user,
+            ):
                 load_logged_in_user()
                 user = load_user()
-                assert user == mock_user
+                assert user == fake_user
                 assert session["username"] == "test_user"
-                assert g._current_user == mock_user
+                assert g._current_user == fake_user
 
     def test_current_user_cached_in_g(self, app):
         with app.test_request_context():
@@ -54,7 +55,7 @@ class TestLoadLoggedInUser:
     def test_current_user_no_session(self, app):
         with app.test_request_context():
             # No uid in session, no cookie
-            with patch("flask_app.main_app.su_services.users_service.get_user_token") as mock_get:
+            with patch("flask_app.main_app.su_services.users_service.UserService.get_authenticated_user") as mock_get:
                 user = load_user()
                 assert user is None
                 mock_get.assert_not_called()
