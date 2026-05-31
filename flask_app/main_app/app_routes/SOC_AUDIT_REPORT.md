@@ -7,7 +7,25 @@
 
 ---
 
-## Executive Summary
+## Fixes Applied (2026-05-31)
+
+All 🟠 High violations in `app_routes/` have been resolved:
+
+| File | Violation | Fix |
+|------|-----------|-----|
+| `auth/routes.py` | V-R1 (107-line callback) | Extracted `complete_oauth_callback()` to `su_services/auth_service.py`; callback now 51 lines |
+| `auth/routes.py` | V-R3 (model import) | Removed `UserTokenRecord` import; `g._current_user` now holds `CurrentUser` |
+| `fixred.py` | V-R3 (model import) | Removed `from ..db.models import UserTokenRecord` |
+| `newupdater/route.py` | V-R3 (model import) | Removed `from ...db.models import UserTokenRecord` |
+| `newupdater/worker.py` | V-R1+V-R3 (misplaced service) | Moved to `shared/newupdater_service.py` |
+| `utils/routes_utils.py` | V-R3 (model import) | Removed import; uses `CurrentUser.to_auth_payload()` |
+| `admin_routes/coordinators.py` | V-R3 (IntegrityError import) | Moved to `admin_service.add_coordinator()` with `UserNotFoundError` |
+
+Remaining: `admin/sidebar.py` (🟡 V-R5 — HTML via f-strings, low priority).
+
+---
+
+## Original Audit (pre-fixes)
 
 The `app_routes/` layer is **moderately healthy**. Most routes delegate to services properly, but there are two categories of recurring violations: (1) **direct model imports** in 4 files, and (2) a **service-layer worker file mislocated inside app_routes** (`newupdater/worker.py`). The `auth/routes.py` callback route is the longest function and contains significant orchestration logic. One file imports `sqlalchemy.exc.IntegrityError` directly.
 
