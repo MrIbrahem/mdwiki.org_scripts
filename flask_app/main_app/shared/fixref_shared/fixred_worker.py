@@ -10,6 +10,7 @@ import mwclient
 import wikitextparser as wtp
 
 from ...api_services.query_api import get_page_links, resolve_redirects
+from ..replace_wikilink import replace_wikilink_redirects
 from .objects import RunState
 
 logger = logging.getLogger(__name__)
@@ -40,7 +41,7 @@ def replace_in_text(text, new_targets):
     newtext = text
 
     for oldlink, target in new_targets.items():
-        newtext = _replace_links(newtext, oldlink, target)
+        newtext = replace_wikilink_redirects(newtext, oldlink, target)
 
     return newtext
 
