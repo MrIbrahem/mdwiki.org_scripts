@@ -305,7 +305,7 @@ Use `Any` or a protocol/TypedDict for the user parameter type. The function only
 
 ---
 
-### [🟠 High] V-R3: SQLAlchemy exception caught in route
+### [🟠 High] V-R3: SQLAlchemy exception caught in route ✅ FIXED
 
 **File**: `flask_app/main_app/app_routes/admin_routes/coordinators.py`
 **Line(s)**: 16, 55–56
@@ -313,6 +313,8 @@ Use `Any` or a protocol/TypedDict for the user parameter type. The function only
 
 **Problem**:
 Imports `sqlalchemy.exc.IntegrityError` directly in a route file and catches it to inspect `"a foreign key constraint fails"`. ORM exception handling belongs in the service layer.
+
+**Fix**: `IntegrityError` handling moved to `admin_service.add_coordinator()`. Route now catches `UserNotFoundError`.
 
 **Offending Code**:
 
