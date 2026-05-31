@@ -25,6 +25,7 @@ from ....api_services.pages_api import (
 )
 from ....api_services.query_api import get_double_redirects
 from ....new_jobs.base_worker_object import BaseObjectsJobWorker
+from ....shared.replace_wikilink import replace_wikilink_destinations
 from ...shared_objects import SharedworkerObject, UpdaterOutcome
 
 logger = logging.getLogger(__name__)
@@ -193,7 +194,7 @@ class DuplicateRedirectWorker(BaseObjectsJobWorker):
         if not text or not text.strip():
             return UpdaterOutcome(kind="skipped", msg="Page is empty")
 
-        new_text, summary = self.make_new_text(final_target)
+        new_text, summary = self.make_new_text(text, redirect_to, final_target)
 
         if new_text == text:
             return UpdaterOutcome(kind="skipped", msg="No changes")
@@ -205,10 +206,10 @@ class DuplicateRedirectWorker(BaseObjectsJobWorker):
 
         return UpdaterOutcome(kind="error", msg=result.get("error", "Unknown error"))
 
-    def make_new_text(self, final_target):
-        # TODO: replace only the link not the whole text, use wikitextparser to analyze the text
-        new_text = f"#REDIRECT [[{final_target}]]"
+    def make_new_text(self, text: str, redirect_to: str, final_target: str) -> tuple[str, str]:
+        new_text = replace_wikilink_destinations(text, redirect_to, final_target)
         summary = f"fix duplicate redirect to [[{final_target}]]"
+
         return new_text, summary
 
 

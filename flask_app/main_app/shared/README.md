@@ -16,6 +16,7 @@ shared/
 │   ├── __init__.py
 │   ├── fixred_worker.py  # Redirect-fixing algorithm (work_on_text)
 │   ├── fixref_text_new.py # Reference normalization (fix_ref_template)
+│   └── objects.py        #
 │   └── make_title_bot.py # URL → title extraction via Citoid API
 └── new_updater/
     ├── __init__.py       # Re-exports work_on_text, FixChembox, etc.

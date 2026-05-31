@@ -1,18 +1,18 @@
 ---
 name: wikitextparser-wikilinks
 description: >
-  Read and modify [[wikilinks]] — the [[target#fragment|display text]] syntax.
-  Covers WikiLink target/title/fragment/text properties, how setters and
-  deleters affect the pipe and hash separators, nested wikilinks, and the
-  filtering pattern for namespace-specific links (Categories, Files,
-  interwiki).
+    Read and modify [[wikilinks]] — the [[target#fragment|display text]] syntax.
+    Covers WikiLink target/title/fragment/text properties, how setters and
+    deleters affect the pipe and hash separators, nested wikilinks, and the
+    filtering pattern for namespace-specific links (Categories, Files,
+    interwiki).
 applies_to:
-  - "WikiLink"
-  - "[[Article]]"
-  - "[[Article|text]]"
-  - "[[Article#section|text]]"
-  - "[[File:...]]"
-  - "[[Category:...]]"
+    - "WikiLink"
+    - "[[Article]]"
+    - "[[Article|text]]"
+    - "[[Article#section|text]]"
+    - "[[File:...]]"
+    - "[[Category:...]]"
 ---
 
 # 04 — WikiLinks (`[[ ... ]]`)
@@ -25,10 +25,10 @@ applies_to:
 
 Use this file for:
 
-- Listing every internal link in an article.
-- Renaming a link target globally.
-- Changing or removing display text.
-- Distinguishing the title, fragment, and text parts.
+-   Listing every internal link in an article.
+-   Renaming a link target globally.
+-   Changing or removing display text.
+-   Distinguishing the title, fragment, and text parts.
 
 ## Mental model
 
@@ -51,13 +51,13 @@ removed — read the rules carefully, because they are easy to get wrong.
 
 ## Quick reference
 
-| Property      | Type            | Get             | Set                       | Delete                                |
-| ------------- | --------------- | --------------- | ------------------------- | ------------------------------------- |
-| `wl.target`   | `str`           | "title#fragment"| Replaces target           | Removes target *and* the pipe         |
-| `wl.title`    | `str`           | before `#`      | Replaces title            | Removes title and the `#`             |
-| `wl.fragment` | `str` or `None` | after `#`       | Adds `#` if absent        | Removes `#` and fragment              |
-| `wl.text`     | `str` or `None` | after `|`       | Adds `|` if absent        | Removes `|` and text                  |
-| `wl.wikilinks`| `list[WikiLink]`| nested only     | —                         | —                                     |
+| Property       | Type             | Get              | Set                 | Delete                        |
+| -------------- | ---------------- | ---------------- | ------------------- | ----------------------------- |
+| `wl.target`    | `str`            | "title#fragment" | Replaces target     | Removes target _and_ the pipe |
+| `wl.title`     | `str`            | before `#`       | Replaces title      | Removes title and the `#`     |
+| `wl.fragment`  | `str` or `None`  | after `#`        | Adds `#` if absent  | Removes `#` and fragment      |
+| `wl.text`      | `str` or `None`  | after `\|`       | Adds `\|` if absent | Removes `\|` and text         |
+| `wl.wikilinks` | `list[WikiLink]` | nested only      | —                   | —                             |
 
 ## Step by step
 
@@ -191,26 +191,26 @@ del wl.text                 # [[Earth]]
 
 ## Edge cases & gotchas
 
-- **Templates inside link targets** are guessed: `[[{{name}}]]` is treated
-  as a wikilink. The library has no way to expand the template — your code
-  may want to skip such links.
-- **Trailing characters after `]]`** (the wikilink "trail") — words like
-  `[[fish]]es` rendering as "fishes" — are *not* part of `wl.text`. They sit
-  in the surrounding string.
-- **`wl.title` strips fragment, but not whitespace.** `'  Earth  '` is a
-  valid title with surrounding spaces. Compare with `.strip()`.
-- **Setting `wl.text = ''`** keeps the `|`, producing `[[Earth|]]` — sometimes
-  rendered as a "pipe trick". Use `del wl.text` if you want the bare link.
-- **`wl.fragment = ''`** keeps the `#`, producing `[[Earth#]]`. Use
-  `del wl.fragment` to drop it.
-- **`wl.wikilinks`** excludes `wl` itself — all "list" properties on
-  wikitextparser nodes follow this convention.
-- **Self-links and red-links** look identical to normal links here. The
-  library has no online index. To detect them, post-process `wl.title`
-  against a list you maintain.
-- **Interwiki links** like `[[en:Earth]]` are normal wikilinks; the namespace
-  prefix logic does not strip them. Check `wl.title.startswith('en:')` etc.
-  yourself, or consult Pywikibot for canonical namespace tables.
+-   **Templates inside link targets** are guessed: `[[{{name}}]]` is treated
+    as a wikilink. The library has no way to expand the template — your code
+    may want to skip such links.
+-   **Trailing characters after `]]`** (the wikilink "trail") — words like
+    `[[fish]]es` rendering as "fishes" — are _not_ part of `wl.text`. They sit
+    in the surrounding string.
+-   **`wl.title` strips fragment, but not whitespace.** `'  Earth  '` is a
+    valid title with surrounding spaces. Compare with `.strip()`.
+-   **Setting `wl.text = ''`** keeps the `|`, producing `[[Earth|]]` — sometimes
+    rendered as a "pipe trick". Use `del wl.text` if you want the bare link.
+-   **`wl.fragment = ''`** keeps the `#`, producing `[[Earth#]]`. Use
+    `del wl.fragment` to drop it.
+-   **`wl.wikilinks`** excludes `wl` itself — all "list" properties on
+    wikitextparser nodes follow this convention.
+-   **Self-links and red-links** look identical to normal links here. The
+    library has no online index. To detect them, post-process `wl.title`
+    against a list you maintain.
+-   **Interwiki links** like `[[en:Earth]]` are normal wikilinks; the namespace
+    prefix logic does not strip them. Check `wl.title.startswith('en:')` etc.
+    yourself, or consult Pywikibot for canonical namespace tables.
 
 ## Recipes
 
@@ -263,7 +263,7 @@ for wl in parsed.wikilinks:
 
 ## See also
 
-- `05-categories-files.md` — categories and files (also wikilinks)
-- `07-external-links.md` — `[url text]` (different syntax)
-- `12-tree-navigation.md` — find a link's containing template/section
-- `references/reference.md` — full WikiLink API
+-   `05-categories-files.md` — categories and files (also wikilinks)
+-   `07-external-links.md` — `[url text]` (different syntax)
+-   `12-tree-navigation.md` — find a link's containing template/section
+-   `references/reference.md` — full WikiLink API

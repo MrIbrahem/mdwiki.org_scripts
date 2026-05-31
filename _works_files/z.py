@@ -8,7 +8,7 @@ def generate_domain_test_placeholders(src_root, test_root):
     test_base_unit = Path(test_root) / "unit"
     test_base_integration = Path(test_root) / "integration"
 
-    for root, dirs, files in os.walk(src_path):
+    for root, _dirs, files in os.walk(src_path):
         current_path = Path(root)
 
         # if "domain" not in current_path.parts: continue
@@ -19,7 +19,10 @@ def generate_domain_test_placeholders(src_root, test_root):
 
         for file in files:
             target_dir = test_base_unit / rel_path
-            if file.endswith(".py") and file != "__init__.py":
+            if file.endswith(".py"):
+                parent_name = current_path.stem
+                file_path = current_path / file
+
                 file_stem = Path(file).stem
                 if "routes" in current_path.parts or file_stem == "routes":
                     target_dir = test_base_integration / rel_path
@@ -31,11 +34,17 @@ def generate_domain_test_placeholders(src_root, test_root):
                     "routes",
                 ]
                 if file_stem in to_re:
-                    parent_name = current_path.stem
                     test_filename = f"test_{parent_name}_{file_stem}.py"
 
                 else:
                     test_filename = f"test_{file_stem}.py"
+
+                if file == "__init__.py":
+                    file_content = file_path.read_text(encoding="utf-8")
+                    if "def " not in file_content:
+                        continue
+                    else:
+                        test_filename = f"test_{parent_name}_init.py"
 
                 # إنشاء المجلد إذا لم يكن موجوداً
                 target_dir.mkdir(parents=True, exist_ok=True)
@@ -44,19 +53,28 @@ def generate_domain_test_placeholders(src_root, test_root):
                 # المسار الذي سيظهر في النص الوصفي (مثلاً domain/models/user.py)
                 # نبحث عن موقع word "domain" وما بعدها
                 parts = current_path.parts
-                internal_path = "/".join(parts[parts.index("flask_app") :])
+                try:
+                    internal_path = "/".join(parts[parts.index("flask_app") :])
+                except ValueError:
+                    internal_path = "/".join(parts)
 
-                content = f'"""\nUnit tests for {internal_path}/{file} module.\n"""\n'
-                content_new = f'"""\nUnit tests for {internal_path}/{file} module.\nTODO: write tests\n"""\n'
+                _new = [
+                    '"""',
+                    f"Unit tests for {internal_path}/{file} module.",
+                    "TODO: write tests",
+                    '"""',
+                    "\n",
+                ]
+                # ------------------------------------------------
+
+                content_new = "\n".join(_new)
 
                 if test_file_path.exists():
-                    text = test_file_path.read_text(encoding="utf-8")
-                    if content.strip() == text.strip() or not text.strip():
-                        with open(test_file_path, "w", encoding="utf-8") as f:
-                            f.write(content_new)
-                else:
-                    with open(test_file_path, "w", encoding="utf-8") as f:
-                        f.write(content_new)
+                    continue
+
+                # save content_new to the file
+                with open(test_file_path, "w", encoding="utf-8") as f:
+                    f.write(content_new)
 
 
 if __name__ == "__main__":

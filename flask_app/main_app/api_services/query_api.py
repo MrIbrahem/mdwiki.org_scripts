@@ -8,6 +8,7 @@ import mwclient
 
 logger = logging.getLogger(__name__)
 
+
 def get_template_pages(
     title,
     namespace="*",

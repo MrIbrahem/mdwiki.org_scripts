@@ -8,8 +8,8 @@ python3 core8/pwb.py md_core/mdpy/fixred
 """
 import functools
 import logging
-import re
 import sys
+import wikitextparser as wtp
 
 from python.mdwiki_page import NewApi, md_MainPage
 
@@ -19,6 +19,70 @@ logger = logging.getLogger(__name__)
 
 from_to = {}
 normalized = {}
+
+
+
+def _normalize_mediawiki_title(title: str) -> str:
+    """
+    Normalizes a MediaWiki page title for accurate comparison.
+    Handles spaces, underscores, and first-letter capitalization.
+    """
+    if not title:
+        return title
+
+    # Strip whitespaces and treat underscores as spaces
+    title = title.strip().replace("_", " ")
+
+    # Capitalize only the first character (MediaWiki standard)
+    if title:
+        title = title[0].upper() + title[1:]
+
+    return title
+
+
+def replace_wikilink_destinations(text: str, redirect_to: str, final_target: str, set_text: bool = False) -> str:
+    """
+    Parses wikitext to find links pointing to a specific redirect
+    and updates their title to point to the final target.
+    Relies on wikitextparser native properties to preserve fragments and display text.
+
+    Default:
+        - ``[[old]]`` becomes ``[[new]]``.
+        - ``[[old|...]]`` becomes ``[[new|...]]``.
+
+    With `set_text=True`:
+        - ``[[old]]`` becomes ``[[new|old]]`` (preserve the original display text)
+    """
+    parsed_text = wtp.parse(text)
+
+    # Normalize the target we are searching for
+    normalized_redirect = _normalize_mediawiki_title(redirect_to)
+
+    for link in parsed_text.wikilinks:
+        # Use native 'title' property instead of manually splitting the target
+        if link.title is None:
+            continue
+
+        normalized_title = _normalize_mediawiki_title(link.title)
+
+        # Compare the normalized titles
+        if normalized_title == normalized_redirect:
+            # Updating link.title automatically preserves link.fragment and link.text
+            old_target = link.target
+            old_title = link.title
+            link.title = final_target
+
+            if set_text and not link.text:
+                # preserve the original display text
+                link.text = old_target
+
+            logger.debug(f"Replaced link title '{old_title}' with '{final_target}'")
+    # Return the updated wikitext as a string
+    return parsed_text.string
+
+def replace_links2(text, oldlink, newlink):
+    return replace_wikilink_destinations(text, oldlink, newlink, set_text=True)
+
 
 
 @functools.lru_cache(maxsize=1)
@@ -97,33 +161,6 @@ def find_redirects(links):
     logger.info(f"def : find {nn} length")
     # logger.info( "def find_redirects: find %d for normalized" % normalized_numb )
 
-
-def replace_links2(text, oldlink, newlink):
-    # ---
-    oldlink2 = normalized.get(oldlink, oldlink)
-    # ---
-    while (
-        text.find(f"[[{oldlink}]]") != -1
-        or text.find(f"[[{oldlink}|") != -1
-        or text.find(f"[[{oldlink2}]]") != -1
-        or text.find(f"[[{oldlink2}|") != -1
-    ):
-        # ---
-        logger.info(f"text.replace( '[[{oldlink}]]' , '[[{newlink}|{oldlink}]]' )")
-        # ---
-        text = text.replace(f"[[{oldlink}]]", f"[[{newlink}|{oldlink}]]")
-        text = text.replace(f"[[{oldlink}|", f"[[{newlink}|")
-        # ---
-        text = re.sub(r"\[\[%s(\|\]\])" % oldlink, r"[[%s\g<1>" % newlink, text, flags=re.IGNORECASE)
-        # ---
-        if oldlink != oldlink2:
-            text = re.sub(r"\[\[%s(\|\]\])" % oldlink2, r"[[%s\g<1>" % newlink, text, flags=re.IGNORECASE)
-            text = text.replace(f"[[{oldlink2}]]", f"[[{newlink}|{oldlink2}]]")
-            text = text.replace(f"[[{oldlink2}|", f"[[{newlink}|")
-    # ---
-    return text
-
-
 def Get_page_links(title, namespace="0", limit="max"):
     # ---
     logger.info(f' for title:"{title}", limit:"{limit}",namespace:"{namespace}"')
@@ -197,8 +234,14 @@ def treat_page(title):
         tit = page["title"]
         tit2 = normalized.get(page["title"], page["title"])
         # ---
-        if fixed_tit := from_to.get(tit) or from_to.get(tit2):
+        fixed_tit = from_to.get(tit) or from_to.get(tit2)
+        if fixed_tit:
             newtext = replace_links2(newtext, tit, fixed_tit)
+
+            oldlink2 = normalized.get(tit, tit)
+            if oldlink2 != tit:
+                newtext = replace_links2(newtext, tit, fixed_tit)
+
         elif tit not in nonredirects:
             if tit2 != tit:
                 logger.info(f'<<red>> tit:["{tit}"] and tit:["{tit2}"] not in from_to')

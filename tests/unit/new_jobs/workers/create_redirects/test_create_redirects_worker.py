@@ -1,4 +1,6 @@
-"""Unit tests for flask_app/main_app/new_jobs/workers/create_redirects/worker.py."""
+"""
+Unit tests for flask_app/main_app/new_jobs/workers/create_redirects/worker.py
+"""
 
 from __future__ import annotations
 

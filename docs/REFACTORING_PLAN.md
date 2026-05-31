@@ -53,10 +53,10 @@ This is a well-architected Flask application with a clean layered structure (Con
 
 #### Recommendations:
 
-1. Create proper service modules in `su_services/` to wrap all `db.services` calls used by controllers
-2. Move `load_auth_payload()` to `su_services/`
-3. Remove all `from ..db.models import ...` statements from route files
-4. Extract `active_coordinators()` usage from the factory into a lazy-loading pattern
+1. [ ] Create proper service modules in `su_services/` to wrap all `db.services` calls used by controllers
+2. [ ] Move `load_auth_payload()` to `su_services/`
+3. [ ] Remove all `from ..db.models import ...` statements from route files
+4. [ ] Extract `active_coordinators()` usage from the factory into a lazy-loading pattern
 
 ---
 
@@ -79,12 +79,12 @@ This is a well-architected Flask application with a clean layered structure (Con
 
 #### Recommendations:
 
-1. Remove `get_template_pages_newapi()` from `query_api.py`
-2. Either implement the two stub workers or remove them from `workers_list.py`
-3. Remove commented-out blueprint registrations
-4. Either implement the teardown logic or remove the handler entirely
-5. Clean up commented template code
-6. Remove or implement the commented filter logic
+1. [ ] Remove `get_template_pages_newapi()` from `query_api.py`
+2. [ ] Either implement the two stub workers or remove them from `workers_list.py`
+3. [ ] Remove commented-out blueprint registrations
+4. [ ] Either implement the teardown logic or remove the handler entirely
+5. [ ] Clean up commented template code
+6. [ ] Remove or implement the commented filter logic
 
 ---
 
@@ -102,10 +102,10 @@ This is a well-architected Flask application with a clean layered structure (Con
 
 #### Recommendations:
 
-1. Consolidate bytes-coercion into a single utility module (keep `decode_bytes.py`, remove from `wiki_client.py`)
-2. Combine `app.py` and `app1.py` into a single entry point that detects environment
-3. Consider a shared error-handling decorator for routes to replace the repetitive try/except patterns
-4. Refactor template inheritance to reduce duplication in job list templates
+1. [ ] Consolidate bytes-coercion into a single utility module (keep `decode_bytes.py`, remove from `wiki_client.py`)
+2. [ ] Combine `app.py` and `app1.py` into a single entry point that detects environment
+3. [ ] Consider a shared error-handling decorator for routes to replace the repetitive try/except patterns
+4. [ ] Refactor template inheritance to reduce duplication in job list templates
 
 ---
 
@@ -125,12 +125,12 @@ This is a well-architected Flask application with a clean layered structure (Con
 
 #### Recommendations:
 
-1. Rename `su_services/` to `auth_services/` or `user_services/` with a deprecation alias
-2. Rename `new_jobs/` to `jobs/` (update all imports accordingly)
-3. Consolidate `admin/` and `admin_routes/` into a single structure
-4. Split `shared/` into more focused packages (e.g., `wikitext/`, `redirects/`)
-5. Consolidate cookie-related code
-6. Reduce the number of `utils/` packages — aim for one or two at most
+1. [ ] Rename `su_services/` to `auth_services/` or `user_services/` with a deprecation alias
+2. [ ] Rename `new_jobs/` to `jobs/` (update all imports accordingly)
+3. [ ] Consolidate `admin/` and `admin_routes/` into a single structure
+4. [ ] Split `shared/` into more focused packages (e.g., `wikitext/`, `redirects/`)
+5. [ ] Consolidate cookie-related code
+6. [ ] Reduce the number of `utils/` packages — aim for one or two at most
 
 ---
 
@@ -151,11 +151,11 @@ This is a well-architected Flask application with a clean layered structure (Con
 
 #### Recommendations:
 
-1. Write unit tests for each worker's core logic, mocking the MW API calls
-2. Add unit tests for `api_services/` functions (especially `category.py`, `pages_api.py`, `query_api.py`)
-3. Remove `# pragma: no cover` from route handlers and write tests for those error paths
-4. Use the `stub_service` fixture to test job lifecycle end-to-end
-5. Add property-based or golden-file tests for wikitext processing logic
+1. [ ] Write unit tests for each worker's core logic, mocking the MW API calls
+2. [ ] Add unit tests for `api_services/` functions (especially `category.py`, `pages_api.py`, `query_api.py`)
+3. [ ] Remove `# pragma: no cover` from route handlers and write tests for those error paths
+4. [ ] Use the `stub_service` fixture to test job lifecycle end-to-end
+5. [ ] Add property-based or golden-file tests for wikitext processing logic
 
 ---
 
@@ -169,15 +169,15 @@ This is a well-architected Flask application with a clean layered structure (Con
 -   [ ] **`MedWorkNew.py` uses complex regexes** — Multiple multi-line regex patterns with minimal explanation of what they match.
 -   [ ] **Mixed language comments** — Some files in `shared/new_updater/` mix Arabic and English comments, reducing accessibility.
 -   [ ] **No tests for `work_on_text_md()`** — The core function of the medical updater has zero test coverage.
--   [ ] **`fixred_worker.py` uses string replacement for wikilink correction** — The `_replace_links()` function uses `str.replace()` and `re.sub()` instead of `wikitextparser`, despite the project depending on `wikitextparser`. There's even a TODO in `duplicate_redirect/worker.py` (line 195) suggesting this migration.
+-   [x] **`fixred_worker.py` uses string replacement for wikilink correction** — The `_replace_links()` function uses `str.replace()` and `re.sub()` instead of `wikitextparser`, despite the project depending on `wikitextparser`. There's even a TODO in `duplicate_redirect/worker.py` (line 195) suggesting this migration.
 -   [ ] **`drugbox_work()` has deeply nested logic** — Multiple regex passes with opaque transformations.
 
 #### Recommendations:
 
-1. Refactor wikitext processing to use `wikitextparser` library (already a dependency) instead of raw regex
-2. Add comprehensive tests for all wikitext transformations using golden-file testing
-3. Document the regex patterns with inline comments explaining what wiki markup they match
-4. Add a migration path to unify `fixred_worker.py` with `wikitextparser`
+1. [ ] Refactor wikitext processing to use `wikitextparser` library (already a dependency) instead of raw regex
+2. [ ] Add comprehensive tests for all wikitext transformations using golden-file testing
+3. [ ] Document the regex patterns with inline comments explaining what wiki markup they match
+4. [ ] Add a migration path to unify `fixred_worker.py` with `wikitextparser`
 
 ---
 
@@ -195,9 +195,9 @@ This is a well-architected Flask application with a clean layered structure (Con
 
 #### Recommendations:
 
-1. Fix `pyproject.toml` — remove or correct `src_paths` and `known_first_party`
-2. Add `mypy` configuration if it's used, or remove references to it
-3. Audit `.env.example` against `main_settings.py` to ensure all env vars are documented
+1. [ ] Fix `pyproject.toml` — remove or correct `src_paths` and `known_first_party`
+2. [ ] Add `mypy` configuration if it's used, or remove references to it
+3. [ ] Audit `.env.example` against `main_settings.py` to ensure all env vars are documented
 
 ---
 
@@ -216,11 +216,11 @@ This is a well-architected Flask application with a clean layered structure (Con
 
 #### Recommendations:
 
-1. Fix `_edit_with_retry()` to skip the sleep on the first attempt
-2. Clarify the category filtering logic with better variable names or comments
-3. Change `raise e` to `raise` in `jobs_worker.py`
-4. Audit `resolve_redirects()` return type alignment with its consumers
-5. Consider passing the Flask app reference more safely to background threads
+1. [ ] Fix `_edit_with_retry()` to skip the sleep on the first attempt
+2. [ ] Clarify the category filtering logic with better variable names or comments
+3. [ ] Change `raise e` to `raise` in `jobs_worker.py`
+4. [ ] Audit `resolve_redirects()` return type alignment with its consumers
+5. [ ] Consider passing the Flask app reference more safely to background threads
 
 ---
 
@@ -239,10 +239,10 @@ This is a well-architected Flask application with a clean layered structure (Con
 
 #### Recommendations:
 
-1. Consider using SRI hashes for CDN resources, or bundle locally
-2. Consolidate icon libraries (pick Bootstrap Icons or Font Awesome, not both)
-3. Remove redundant checks in navbar template
-4. Defer Ace editor loading to only the pages that need it
+1. [ ] Consider using SRI hashes for CDN resources, or bundle locally
+2. [ ] Consolidate icon libraries (pick Bootstrap Icons or Font Awesome, not both)
+3. [ ] Remove redundant checks in navbar template
+4. [ ] Defer Ace editor loading to only the pages that need it
 
 ---
 
@@ -261,9 +261,9 @@ This is a well-architected Flask application with a clean layered structure (Con
 ### Phase 2: Structural Improvements
 
 -   [ ] **Fix layering violations in controllers**:
-    -   Remove `JobRecord` imports from `new_jobs.py`
-    -   Move `load_auth_payload()` to `su_services/`
-    -   Replace direct `db.services` imports in routes with service-layer calls
+    -   [ ] Remove `JobRecord` imports from `new_jobs.py`
+    -   [ ] Move `load_auth_payload()` to `su_services/`
+    -   [ ] Replace direct `db.services` imports in routes with service-layer calls
 -   [ ] **Rename `su_services/`** to `user_services/` (add deprecation shim)
 -   [ ] **Rename `new_jobs/`** to `jobs/` (update all imports)
 -   [ ] **Consolidate admin blueprints** — merge `admin/` and `admin_routes/`
@@ -274,23 +274,23 @@ This is a well-architected Flask application with a clean layered structure (Con
 ### Phase 3: Major Refactoring (2+ weeks)
 
 -   [ ] **Refactor wikitext processing**:
-    -   Migrate `fixred_worker.py` to use `wikitextparser` instead of `str.replace()`
-    -   Add comprehensive tests for all wikitext transformation functions
-    -   Document regex patterns in `MedWorkNew.py` and related files
-    -   Consider extracting `shared/new_updater/` into a standalone package
+    -   [x] Migrate `fixred_worker.py` to use `wikitextparser` instead of `str.replace()`
+    -   [ ] Add comprehensive tests for all wikitext transformation functions
+    -   [ ] Document regex patterns in `MedWorkNew.py` and related files
+    -   [ ] Consider extracting `shared/new_updater/` into a standalone package
 -   [ ] **Add test coverage**:
-    -   Unit tests for all 8 workers
-    -   Unit tests for `api_services/` functions
-    -   Integration tests for job lifecycle (using `stub_service`)
-    -   Remove unnecessary `# pragma: no cover` annotations
-    -   Golden-file tests for wikitext processing
+    -   [ ] Unit tests for all 8 workers
+    -   [ ] Unit tests for `api_services/` functions
+    -   [ ] Integration tests for job lifecycle (using `stub_service`)
+    -   [ ] Remove unnecessary `# pragma: no cover` annotations
+    -   [ ] Golden-file tests for wikitext processing
 -   [ ] **Refactor error handling**:
-    -   Create a shared `@route_error_handler` decorator to reduce repetitive try/except patterns
-    -   Standardize error responses across all routes
+    -   [ ] Create a shared `@route_error_handler` decorator to reduce repetitive try/except patterns
+    -   [ ] Standardize error responses across all routes
 -   [ ] **Frontend modernization**:
-    -   Consolidate icon libraries
-    -   Add SRI hashes to CDN resources or bundle locally
-    -   Conditional loading of Ace editor
+    -   [ ] Consolidate icon libraries
+    -   [ ] Add SRI hashes to CDN resources or bundle locally
+    -   [ ] Conditional loading of Ace editor
 
 ---
 
