@@ -7,21 +7,15 @@ from typing import Callable, TypeVar, cast
 
 from flask import (
     abort,
-    g,
     redirect,
     url_for,
 )
 from flask.typing import ResponseReturnValue
 
 from ...db.services import active_coordinators
+from ..auth.utils import load_user
 
 FuncType = TypeVar("FuncType", bound=Callable[..., ResponseReturnValue])
-
-
-def load_user():
-    user = getattr(g, "_current_user", None)
-    return user
-
 
 def admin_required(view: FuncType) -> FuncType:  # noqa: UP047
     """Decorator enforcing that the current user is an administrator."""

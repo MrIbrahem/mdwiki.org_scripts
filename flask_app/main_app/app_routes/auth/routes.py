@@ -210,7 +210,7 @@ def callback() -> Response:
     )
 
     if not user_record:
-        logger.exception("Failed to upsert user credentials")
+        logger.error("Failed to upsert user credentials")
         flash("Failed to process user credentials", "danger")
         return redirect(url_for("main.index"))
 

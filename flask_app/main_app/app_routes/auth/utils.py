@@ -23,6 +23,14 @@ def load_user():
     return user
 
 
+def _resolve_user_id(uid) -> int | None:
+    if isinstance(uid, int):
+        return uid
+    try:
+        return int(uid) if uid is not None else None
+    except (TypeError, ValueError):
+        return None
+
 def load_logged_in_user() -> None:
     """Automatically load the user from session or cookie before each request.
 
@@ -44,7 +52,8 @@ def load_logged_in_user() -> None:
 
     # 3. Fetch from Service Layer if user_id exists
     if user_id is not None:
-        user = UserService.get_authenticated_user(int(user_id))
+        user_id = _resolve_user_id(user_id)
+        user = UserService.get_authenticated_user(user_id)
         g._current_user = user
         if user and session.get("username") != user.username:
             session["username"] = user.username
