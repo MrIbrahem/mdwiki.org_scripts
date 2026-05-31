@@ -57,7 +57,6 @@ def test_replace_wikilink_destinations(description, input_text, redirect_to, fin
 
 
 class TestReplaceWikilinkDestinations:
-
     def test_underscore_in_text_space_in_target(self):
         # Test converting an underscore in the source text to a space in the target
         input_text = "هذا رابط إلى [[الصفحة_الرئيسية]] هنا."
