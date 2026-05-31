@@ -12,8 +12,36 @@ from ...shared.decode_bytes import coerce_bytes
 logger = logging.getLogger(__name__)
 
 
-class AdminUserRecord(db.Model):
+class UsersRecord(db.Model):
+    """Stable user identity — source of truth for user_id and username.
+
+    CREATE TABLE `users` (
+        `user_id` int NOT NULL,
+        `username` varchar(255) NOT NULL,
+        `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (`user_id`),
+        UNIQUE KEY `uq_users_username` (`username`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     """
+
+    __tablename__ = "users"
+
+    user_id = Column(Integer, primary_key=True)
+    username = Column(String(255), unique=True, nullable=False)
+
+    created_at = Column(DateTime, nullable=False, server_default=func.current_timestamp())
+    updated_at = Column(
+        DateTime,
+        nullable=False,
+        server_default=func.current_timestamp(),
+        server_onupdate=func.current_timestamp(),
+    )
+
+
+class AdminUserRecord(db.Model):
+    """Coordinator/admin role — username references users.username.
+
     CREATE TABLE `admin_users` (
         `id` int NOT NULL AUTO_INCREMENT,
         `username` varchar(255) NOT NULL,
@@ -22,16 +50,20 @@ class AdminUserRecord(db.Model):
         `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (`id`),
         UNIQUE KEY `username` (`username`),
+        CONSTRAINT `admin_users_ibfk_1` FOREIGN KEY (`username`)
+            REFERENCES `users` (`username`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-    NOTE: db.ForeignKey("user_tokens.username") removed to solve: issue: Failed to delete user token during logout.
-        sqlalchemy.exc.IntegrityError: (pymysql.err.IntegrityError) (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`mdwiki_scripts`.`admin_users`, CONSTRAINT `admin_users_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user_tokens` (`username`))')
     """
 
     __tablename__ = "admin_users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String(255), unique=True, nullable=False)
+    username = Column(
+        String(255),
+        db.ForeignKey("users.username", ondelete="CASCADE"),
+        unique=True,
+        nullable=False,
+    )
     is_active = Column(Boolean, nullable=False, default=True, server_default="1")
 
     created_at = Column(DateTime, nullable=False, server_default=func.current_timestamp())
@@ -44,10 +76,10 @@ class AdminUserRecord(db.Model):
 
 
 class UserTokenRecord(db.Model):
-    """
+    """OAuth credentials — child of users table.
+
     CREATE TABLE IF NOT EXISTS user_tokens (
         user_id int NOT NULL,
-        username varchar(255) NOT NULL,
         access_token varbinary(1024) NOT NULL,
         access_secret varbinary(1024) NOT NULL,
         created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -55,14 +87,18 @@ class UserTokenRecord(db.Model):
         last_used_at datetime DEFAULT NULL,
         rotated_at datetime DEFAULT NULL,
         PRIMARY KEY (user_id),
-        UNIQUE KEY uq_user_tokens_username (username)
+        CONSTRAINT `user_tokens_ibfk_1` FOREIGN KEY (`user_id`)
+            REFERENCES `users` (`user_id`) ON DELETE CASCADE
     )
     """
 
     __tablename__ = "user_tokens"
 
-    user_id = Column(Integer, primary_key=True)
-    username = Column(String(255), unique=True, nullable=False)
+    user_id = Column(
+        Integer,
+        db.ForeignKey("users.user_id", ondelete="CASCADE"),
+        primary_key=True,
+    )
     access_token = Column(LargeBinary(1024), nullable=False)
     access_secret = Column(LargeBinary(1024), nullable=False)
 
@@ -72,10 +108,11 @@ class UserTokenRecord(db.Model):
         nullable=False,
         server_default=func.current_timestamp(),
         server_onupdate=func.current_timestamp(),
-        # server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"),
     )
     last_used_at = Column(DateTime, nullable=True, server_default=func.current_timestamp())
     rotated_at = Column(DateTime, nullable=True)
+
+    user = db.relationship("UsersRecord", backref=db.backref("token", uselist=False))
 
     @validates("access_token", "access_secret")
     def validate_bytes(self, key, value):
@@ -83,13 +120,13 @@ class UserTokenRecord(db.Model):
 
     def decrypted(self) -> tuple[str, str]:
         """Return the decrypted access token and secret."""
-
         access_key = decrypt_value(self.access_token)
         access_secret = decrypt_value(self.access_secret)
         return access_key, access_secret
 
 
 __all__ = [
-    "UserTokenRecord",
     "AdminUserRecord",
+    "UsersRecord",
+    "UserTokenRecord",
 ]

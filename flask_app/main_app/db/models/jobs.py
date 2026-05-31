@@ -21,13 +21,10 @@ class JobRecord(db.Model):
         `result_file` varchar(500) DEFAULT NULL,
         `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (`id`),
-        KEY `username` (`username`),
-        CONSTRAINT `jobs_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user_tokens` (`username`)
+        PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-    NOTE: db.ForeignKey("user_tokens.username") removed to solve: issue: Failed to delete user token during logout.
-        sqlalchemy.exc.IntegrityError: (pymysql.err.IntegrityError) (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`mdwiki_scripts`.`jobs`, CONSTRAINT `jobs_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user_tokens` (`username`))')
+    NOTE: username has no FK — jobs persist independently of user accounts.
     """
 
     __tablename__ = "jobs"
