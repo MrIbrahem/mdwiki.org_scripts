@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from flask_app.main_app.shared.new_updater import work_on_text
+from flask_app.main_app.shared.new_updater import med_updater_one
 
 
 def test_1():
@@ -15,7 +15,7 @@ def test_1():
     text = text_file.read_text(encoding="utf-8")
     expected = expected_file.read_text(encoding="utf-8")
 
-    newtext = work_on_text("test", text)
+    newtext = med_updater_one("test", text)
 
     with open(Dir / "texts/test1/work_on_text_result.wiki", "w", encoding="utf-8") as f:
         f.write(newtext)
@@ -33,7 +33,7 @@ def test_2():
     text = text_file.read_text(encoding="utf-8")
     expected = expected_file.read_text(encoding="utf-8")
 
-    newtext = work_on_text("test", text)
+    newtext = med_updater_one("test", text)
 
     with open(Dir / "texts/test2/work_on_text_result.wiki", "w", encoding="utf-8") as f:
         f.write(newtext)
@@ -51,7 +51,7 @@ def test_3():
     text = text_file.read_text(encoding="utf-8")
     expected = expected_file.read_text(encoding="utf-8")
 
-    newtext = work_on_text("test", text)
+    newtext = med_updater_one("test", text)
 
     with open(Dir / "texts/test3/work_on_text_result.wiki", "w", encoding="utf-8") as f:
         f.write(newtext)

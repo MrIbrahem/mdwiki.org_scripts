@@ -17,7 +17,7 @@ import logging
 from ..api_services.clients.wiki_client import get_user_site
 from ..api_services.pages_api import edit_page, get_page_text
 from ..su_services.current_user import CurrentUser
-from .new_updater import work_on_text
+from .new_updater import med_updater_one
 from .shared_classes import UpdaterTextOutcome
 
 logger = logging.getLogger(__name__)
@@ -47,7 +47,7 @@ def newupdater_one_title(
         return UpdaterTextOutcome(kind="notext", old_text=old_text)
 
     try:
-        new_text = work_on_text(title, old_text)
+        new_text = med_updater_one(title, old_text)
     except Exception:
         logger.exception("work_on_text failed for %s", title)
         raise

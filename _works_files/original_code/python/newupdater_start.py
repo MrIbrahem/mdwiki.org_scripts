@@ -4,7 +4,7 @@ python3 I:/MD_TOOLS/mdwiki.toolforge.org/PYTHON_REPOS/pybot/src/newupdater.py -p
 """
 import sys
 
-from flask_app.main_app.shared.new_updater import work_on_text
+from flask_app.main_app.shared.new_updater import med_updater_one
 from mdapi import GetPageText, page_put
 
 
@@ -16,7 +16,7 @@ def get_new_text(title):
     newtext = text
     # ---
     if newtext != "":
-        newtext = work_on_text(title, newtext)
+        newtext = med_updater_one(title, newtext)
     # ---
     return text, newtext
 
