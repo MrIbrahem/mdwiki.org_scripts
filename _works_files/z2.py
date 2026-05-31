@@ -1,6 +1,7 @@
-import os
 import ast
+import os
 from pathlib import Path
+
 
 def extract_classes_and_functions(file_path):
     """Parse the file and extract only the top-level class and function names."""
@@ -15,12 +16,12 @@ def extract_classes_and_functions(file_path):
         for node in tree.body:
             if isinstance(node, ast.ClassDef):
                 # Ignore classes starting with _
-                if not node.name.startswith('_'):
+                if not node.name.startswith("_"):
                     classes.append(node.name)
 
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 # Ignore functions starting with _
-                if not node.name.startswith('_'):
+                if not node.name.startswith("_"):
                     functions.append(node.name)
 
     except SyntaxError:
@@ -124,22 +125,22 @@ def generate_domain_test_placeholders(src_root, test_root):
 
                 _new = [
                     '"""',
-                    f'Unit tests for {internal_path}/{file} module.',
-                    '',
+                    f"Unit tests for {internal_path}/{file} module.",
+                    "",
                     "\n".join(methods_parts),
-                    '',
-                    'TODO: write tests',
+                    "",
+                    "TODO: write tests",
                     '"""',
-                    '\n',
+                    "\n",
                     import_statement,
                 ]
                 # ------------------------------------------------
                 _old = [
                     '"""',
-                    f'Unit tests for {internal_path}/{file} module.',
-                    'TODO: write tests',
+                    f"Unit tests for {internal_path}/{file} module.",
+                    "TODO: write tests",
                     '"""',
-                    '\n',
+                    "\n",
                 ]
                 content_old = "\n".join(_old)
                 # ------------------------------------------------

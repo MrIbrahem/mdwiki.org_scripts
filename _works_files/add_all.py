@@ -1,5 +1,5 @@
-import os
 import ast
+import os
 from pathlib import Path
 
 
@@ -17,17 +17,17 @@ def extract_exportable_items(file_path):
             # Check if __all__ is already defined in the file
             if isinstance(node, ast.Assign):
                 for target in node.targets:
-                    if isinstance(target, ast.Name) and target.id == '__all__':
+                    if isinstance(target, ast.Name) and target.id == "__all__":
                         has_all = True
 
             # Extract top-level classes
             elif isinstance(node, ast.ClassDef):
-                if not node.name.startswith('_'):
+                if not node.name.startswith("_"):
                     classes.append(node.name)
 
             # Extract top-level functions and async functions
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                if not node.name.startswith('_'):
+                if not node.name.startswith("_"):
                     functions.append(node.name)
 
     except SyntaxError:
@@ -68,7 +68,7 @@ def add_all_to_source_files(src_root):
             formatted_items = ",\n    ".join(f'"{item}"' for item in items_to_export)
 
             # Create the __all__ statement block
-            all_statement = f'\n\n__all__ = [\n    {formatted_items},\n]\n'
+            all_statement = f"\n\n__all__ = [\n    {formatted_items},\n]\n"
 
             # Append the __all__ block to the end of the original file
             # Appending to the end is the safest approach programmatically

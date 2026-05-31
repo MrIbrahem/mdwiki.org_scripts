@@ -60,10 +60,10 @@ def generate_domain_test_placeholders(src_root, test_root):
 
                 _new = [
                     '"""',
-                    f'Unit tests for {internal_path}/{file} module.',
-                    'TODO: write tests',
+                    f"Unit tests for {internal_path}/{file} module.",
+                    "TODO: write tests",
                     '"""',
-                    '\n',
+                    "\n",
                 ]
                 # ------------------------------------------------
 
@@ -75,6 +75,7 @@ def generate_domain_test_placeholders(src_root, test_root):
                 # save content_new to the file
                 with open(test_file_path, "w", encoding="utf-8") as f:
                     f.write(content_new)
+
 
 if __name__ == "__main__":
     main_path = Path(__file__).parent.parent

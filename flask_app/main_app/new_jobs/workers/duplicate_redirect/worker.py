@@ -25,7 +25,7 @@ from ....api_services.pages_api import (
 )
 from ....api_services.query_api import get_double_redirects
 from ....new_jobs.base_worker_object import BaseObjectsJobWorker
-from ....shared.replace_duplicate_redirect import replace_redirect_link
+from ....shared.replace_wikilink import replace_wikilink_destinations
 from ...shared_objects import SharedworkerObject, UpdaterOutcome
 
 logger = logging.getLogger(__name__)
@@ -207,7 +207,7 @@ class DuplicateRedirectWorker(BaseObjectsJobWorker):
         return UpdaterOutcome(kind="error", msg=result.get("error", "Unknown error"))
 
     def make_new_text(self, text: str, redirect_to: str, final_target: str) -> tuple[str, str]:
-        new_text = replace_redirect_link(text, redirect_to, final_target)
+        new_text = replace_wikilink_destinations(text, redirect_to, final_target)
         summary = f"fix duplicate redirect to [[{final_target}]]"
 
         return new_text, summary

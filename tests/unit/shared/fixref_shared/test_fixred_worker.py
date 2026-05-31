@@ -54,6 +54,7 @@ class TestRunStateIsolation:
         assert b.from_to == {}
         assert b.normalized == {}
 
+
 class TestRunState:
     def test_default_empty(self):
         state = RunState()
