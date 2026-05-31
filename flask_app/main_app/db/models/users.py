@@ -5,7 +5,6 @@ import logging
 from sqlalchemy import Boolean, Column, DateTime, Integer, LargeBinary, String, func
 from sqlalchemy.orm import validates
 
-from ...core.crypto import decrypt_value
 from ...extensions import db
 from ...shared.decode_bytes import coerce_bytes
 
@@ -110,12 +109,6 @@ class UserTokenRecord(db.Model):
     @validates("access_token", "access_secret")
     def validate_bytes(self, key, value):
         return coerce_bytes(value)
-
-    def decrypted(self) -> tuple[str, str]:
-        """Return the decrypted access token and secret."""
-        access_key = decrypt_value(self.access_token)
-        access_secret = decrypt_value(self.access_secret)
-        return access_key, access_secret
 
 
 __all__ = [
