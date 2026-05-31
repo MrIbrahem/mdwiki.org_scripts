@@ -6,7 +6,6 @@ import logging
 
 from flask import Blueprint, flash, g, render_template, request
 
-from ...db.models import UserTokenRecord
 from ...shared import newupdater_service as svc
 from ..auth.utils import oauth_required
 
@@ -30,7 +29,7 @@ def newupdater() -> str:
             save=save,
         )
 
-    user: UserTokenRecord = getattr(g, "_current_user", None)
+    user = getattr(g, "_current_user", None)
 
     try:
         outcome = svc.newupdater_one_title(

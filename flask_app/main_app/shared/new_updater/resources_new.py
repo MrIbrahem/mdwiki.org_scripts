@@ -13,14 +13,12 @@ from .lists.identifier_params import identifiers_params
 logger = logging.getLogger(__name__)
 
 # ---
-page_identifier_params = {}
-# ---
 _lkj_ = r"<!--\s*(Monoclonal antibody data|External links|Names*|Clinical data|Legal data|Legal status|Pharmacokinetic data|Chemical and physical data|Definition and medical uses|Chemical data|Chemical and physical data|index_label\s*=\s*Free Base|\w+ \w+ data|\w+ \w+ \w+ data|\w+ data|\w+ status|Identifiers)\s*-->"
 # ---
 _lkj2_ = r"(<!--\s*(?:Monoclonal antibody data|External links|Names*|Clinical data|Legal data|Legal status|Pharmacokinetic data|Chemical and physical data|Definition and medical uses|Chemical data|Chemical and physical data|index_label\s*=\s*Free Base|\w+ \w+ data|\w+ \w+ \w+ data|\w+ data|\w+ status|Identifiers)\s*-->)"
 
 
-def add_resources(new_text, drug_resources):
+def add_resources(new_text, drug_resources, page_identifier_params):
     # ---
     logger.debug("add_resources")
     # ---
@@ -92,8 +90,7 @@ def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
     # ---
     new_text = text
     # ---
-    # drugbox_old = ""
-    # drugbox_params = {}
+    page_identifier_params = {}
     # ---
     drug_resources = ""
     resources_params = {}
@@ -189,7 +186,7 @@ def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
         # ---
     elif page_identifier_params != {}:
         # نقل المعرفات لأسفل
-        new_text, line = add_resources(new_text, drug_resources)
+        new_text, line = add_resources(new_text, drug_resources, page_identifier_params)
         # ---
     resources_get_nlm = False
     # ---

@@ -6,7 +6,6 @@ import logging
 
 from flask import Blueprint, flash, g, render_template, request
 
-from ..db.models import UserTokenRecord
 from ..shared import fixred_one
 from .auth.utils import oauth_required
 
@@ -47,7 +46,7 @@ def fixred_post():
             save=save,
         )
 
-    user: UserTokenRecord = getattr(g, "_current_user", None)
+    user = getattr(g, "_current_user", None)
 
     try:
         outcome = fixred_one.work_on_title(

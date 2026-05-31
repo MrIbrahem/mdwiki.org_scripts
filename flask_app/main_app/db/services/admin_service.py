@@ -10,9 +10,16 @@ from __future__ import annotations
 import logging
 from typing import List
 
+from sqlalchemy.exc import IntegrityError
+
 from ...extensions import db
 from ..models import AdminUserRecord
 from .utils import db_guard
+
+
+class UserNotFoundError(Exception):
+    """Raised when a referenced user does not exist in user_tokens."""
+
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +63,13 @@ def add_coordinator(username: str) -> AdminUserRecord:
 
     record = AdminUserRecord(username=username, is_active=True)
     db.session.add(record)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError as exc:
+        db.session.rollback()
+        if "a foreign key constraint fails" in str(exc):
+            raise UserNotFoundError(f"User '{username}' does not exist in user_tokens") from exc
+        raise
     db.session.refresh(record)
     return record
 
@@ -86,6 +99,7 @@ def delete_coordinator(coordinator_id: int) -> bool:
 
 
 __all__ = [
+    "UserNotFoundError",
     "get_coordinator_by_id",
     "list_coordinators",
     "active_coordinators",

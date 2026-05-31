@@ -13,9 +13,9 @@ from flask import (
     url_for,
 )
 from flask.typing import ResponseReturnValue
-from sqlalchemy.exc import IntegrityError
 
 from ...db.services import admin_service
+from ...db.services.admin_service import UserNotFoundError
 from ..admin.admins_required import admin_required
 
 logger = logging.getLogger(__name__)
@@ -52,13 +52,9 @@ def _add_coordinator() -> ResponseReturnValue:
 
     try:
         record = admin_service.add_coordinator(username)
-    except IntegrityError as exc:  # pragma: no cover - defensive guard
-        if "a foreign key constraint fails" in str(exc):
-            logger.error("IntegrityError: %s", exc)
-            flash(f"Can't add coordinator. User: {username} does not exist.", "warning")
-        else:
-            logger.error("Unable to add coordinator.")
-            flash("Unable to add coordinator.", "danger")
+    except UserNotFoundError as exc:
+        logger.error("IntegrityError: %s", exc)
+        flash(str(exc), "warning")
     except (LookupError, ValueError) as exc:
         logger.exception("Unable to Add coordinator.")
         flash(str(exc), "warning")

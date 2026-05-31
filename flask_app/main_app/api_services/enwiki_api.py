@@ -24,7 +24,15 @@ def _enwiki_session() -> requests.Session:
 
 
 def get_redirects_for(title: str, *, timeout: int = 10) -> list[str]:
-    """Mainspace redirect titles pointing to *title* on enwiki."""
+    """Fetch mainspace redirect titles pointing to *title* on enwiki.
+
+    Args:
+        title: The page title to look up redirects for.
+        timeout: Request timeout in seconds.
+
+    Returns:
+        List of redirect titles (namespace 0 only).
+    """
     session = _enwiki_session()
     params = {
         "action": "query",

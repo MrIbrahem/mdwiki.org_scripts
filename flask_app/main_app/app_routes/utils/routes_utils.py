@@ -2,11 +2,10 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from flask import g, url_for
 
-from ...db.models import UserTokenRecord
 from ...db.services.admin_service import active_coordinators
 from ...new_jobs.workers_list import jobs_data
 
@@ -32,7 +31,7 @@ def context_user(wiki_domain: str, static_server: str) -> dict[str, Any]:
     }
 
 
-def load_auth_payload(user: Optional[UserTokenRecord] | None) -> Dict[str, Any]:
+def load_auth_payload(user: Any | None) -> Dict[str, Any]:
     auth_payload: Dict[str, Any] = {}
     if user:
         # returns (access_key, access_secret) and marks token used
