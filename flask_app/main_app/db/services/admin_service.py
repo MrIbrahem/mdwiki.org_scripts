@@ -20,9 +20,6 @@ from .utils import db_guard
 logger = logging.getLogger(__name__)
 
 
-logger = logging.getLogger(__name__)
-
-
 @db_guard(default_return=[], msg="Failed to active coordinators")
 def active_coordinators() -> list[str]:
     """Get a list of active coordinator usernames from the database."""
@@ -98,7 +95,6 @@ def delete_coordinator(coordinator_id: int) -> bool:
 
 
 __all__ = [
-    "UserNotFoundError",
     "get_coordinator_by_id",
     "list_coordinators",
     "active_coordinators",
