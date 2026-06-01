@@ -7,7 +7,7 @@ stubbed to avoid network access and thread complexity.
 
 from __future__ import annotations
 
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 from flask.app import Flask
@@ -37,18 +37,19 @@ def _clean_db(app: Flask):
                 conn.execute(table.delete())
 
 
-def _seed_user(app, user_id=1, username="JobUser"):
-    """Create a user token record for job ownership."""
+def _seed_user(app, username="JobUser") -> int:
+    """Create a user token record for job ownership. Returns the auto-generated user_id."""
     with app.app_context():
-        create_user(user_id, username)
+        user = create_user(username)
         upsert_user_token(
-            user_id=user_id,
+            user_id=user.user_id,
             access_key="k",
             access_secret="s",
         )
+        return user.user_id
 
 
-def _login_user(mock_client, user_id=1, username="JobUser"):
+def _login_user(mock_client, user_id, username="JobUser"):
     """Set session to a specific user."""
     with mock_client.session_transaction() as sess:
         sess["uid"] = user_id
@@ -143,20 +144,20 @@ class TestStartJob:
 
     def test_start_invalid_job_type_404(self, app, mock_client):
         """Starting a job with invalid type should return 404."""
-        _seed_user(app)
-        _login_user(mock_client)
+        uid = _seed_user(app)
+        _login_user(mock_client, uid)
         resp = mock_client.post("/new_jobs/nonexistent_type/start")
         assert resp.status_code == 404
 
     def test_start_creates_job_and_redirects(self, app, mock_client):
         """Starting a valid job should create a DB record and redirect."""
-        _seed_user(app)
-        _login_user(mock_client)
+        uid = _seed_user(app)
+        _login_user(mock_client, uid)
 
         with (
             patch(
                 "flask_app.main_app.app_routes.new_jobs.load_auth_payload",
-                return_value={"id": 1, "username": "JobUser"},
+                return_value={"id": uid, "username": "JobUser"},
             ),
             patch(
                 "flask_app.main_app.app_routes.new_jobs.jobs_worker.start_job",
@@ -172,13 +173,13 @@ class TestStartJob:
 
     def test_start_creates_job(self, app, mock_client):
         """Starting a job with args should succeed."""
-        _seed_user(app)
-        _login_user(mock_client)
+        uid = _seed_user(app)
+        _login_user(mock_client, uid)
 
         with (
             patch(
                 "flask_app.main_app.app_routes.new_jobs.load_auth_payload",
-                return_value={"id": 1, "username": "JobUser"},
+                return_value={"id": uid, "username": "JobUser"},
             ),
             patch(
                 "flask_app.main_app.app_routes.new_jobs.jobs_worker.start_job",
@@ -207,16 +208,16 @@ class TestCancelJob:
 
     def test_cancel_invalid_job_type_404(self, app, mock_client):
         """Cancelling with invalid job type should return 404."""
-        _seed_user(app)
-        _login_user(mock_client)
+        uid = _seed_user(app)
+        _login_user(mock_client, uid)
         job_id = _seed_job(app, VALID_JOB_TYPE)
         resp = mock_client.post(f"/new_jobs/nonexistent/{job_id}/cancel")
         assert resp.status_code == 404
 
     def test_cancel_nonexistent_job_redirects(self, app, mock_client):
         """Cancelling a non-existent job should redirect."""
-        _seed_user(app)
-        _login_user(mock_client)
+        uid = _seed_user(app)
+        _login_user(mock_client, uid)
         resp = mock_client.post(
             f"/new_jobs/{VALID_JOB_TYPE}/99999/cancel",
             follow_redirects=False,
@@ -225,8 +226,8 @@ class TestCancelJob:
 
     def test_cancel_own_job(self, app, mock_client):
         """Job owner should be able to cancel their own job."""
-        _seed_user(app, user_id=1, username="Owner")
-        _login_user(mock_client, user_id=1, username="Owner")
+        owner_uid = _seed_user(app, username="Owner")
+        _login_user(mock_client, owner_uid, username="Owner")
         job_id = _seed_job(app, VALID_JOB_TYPE, username="Owner")
 
         with patch(
@@ -240,30 +241,32 @@ class TestCancelJob:
 
         assert resp.status_code == 200
 
-    def test_cancel_other_user_job_blocked(self, app, mock_client):
+    def test_cancel_other_user_job_blocked(self, app, mock_client, monkeypatch):
         """Non-owner, non-admin should not be able to cancel another user's job."""
-        _seed_user(app, user_id=1, username="Owner")
-        _seed_user(app, user_id=2, username="Other")
+        mock_flash = Mock()
+        monkeypatch.setattr("flask_app.main_app.app_routes.new_jobs.flash", mock_flash)
+
+        _seed_user(app, username="Owner")
+        other_uid = _seed_user(app, username="Other")
         job_id = _seed_job(app, VALID_JOB_TYPE, username="Owner")
-        _login_user(mock_client, user_id=2, username="Other")
+        _login_user(mock_client, other_uid, username="Other")
 
         resp = mock_client.post(
             f"/new_jobs/{VALID_JOB_TYPE}/{job_id}/cancel",
             follow_redirects=True,
         )
         assert resp.status_code == 200
-        # The flash message uses HTML entity for apostrophe
-        assert b"permission" in resp.data
+        mock_flash.assert_called_once_with("You don't have permission to cancel this job.", "danger")
 
     def test_admin_can_cancel_any_job(self, app, mock_client):
         """An admin (coordinator) should be able to cancel any job."""
-        _seed_user(app, user_id=1, username="Owner")
-        _seed_user(app, user_id=2, username="AdminCancel")
+        _seed_user(app, username="Owner")
+        admin_uid = _seed_user(app, username="AdminCancel")
         with app.app_context():
             add_coordinator("AdminCancel")
 
         job_id = _seed_job(app, VALID_JOB_TYPE, username="Owner")
-        _login_user(mock_client, user_id=2, username="AdminCancel")
+        _login_user(mock_client, admin_uid, username="AdminCancel")
 
         with patch(
             "flask_app.main_app.app_routes.new_jobs.jobs_worker.cancel_job_worker",
@@ -283,15 +286,15 @@ class TestDeleteJob:
 
     def test_delete_invalid_job_type_404(self, app, mock_client):
         """Deleting with invalid job type should return 404."""
-        _seed_user(app)
-        _login_user(mock_client)
+        uid = _seed_user(app)
+        _login_user(mock_client, uid)
         resp = mock_client.post("/new_jobs/nonexistent/1/delete")
         assert resp.status_code == 404
 
     def test_delete_own_job(self, app, mock_client):
         """Job owner should be able to delete their own job."""
-        _seed_user(app, user_id=1, username="Owner")
-        _login_user(mock_client, user_id=1, username="Owner")
+        owner_uid = _seed_user(app, username="Owner")
+        _login_user(mock_client, owner_uid, username="Owner")
         job_id = _seed_job(app, VALID_JOB_TYPE, username="Owner")
 
         with patch(
@@ -311,8 +314,8 @@ class TestDeleteJob:
 
     def test_delete_nonexistent_job(self, app, mock_client):
         """Deleting a non-existent job should not error."""
-        _seed_user(app)
-        _login_user(mock_client)
+        uid = _seed_user(app)
+        _login_user(mock_client, uid)
 
         with patch(
             "flask_app.main_app.app_routes.new_jobs.jobs_worker.cancel_job_worker",
@@ -332,8 +335,8 @@ class TestJobsRouteIntegration:
 
     def test_job_lifecycle_through_routes(self, app, mock_client):
         """Full lifecycle: create -> view detail -> cancel."""
-        _seed_user(app, user_id=1, username="LifecycleUser")
-        _login_user(mock_client, user_id=1, username="LifecycleUser")
+        uid = _seed_user(app, username="LifecycleUser")
+        _login_user(mock_client, uid, username="LifecycleUser")
 
         # Create job in DB
         with app.app_context():
@@ -377,8 +380,8 @@ class TestJobsRouteIntegration:
 
     def test_delete_then_list_shows_remaining(self, app, mock_client):
         """After deleting one job, the list should show remaining jobs."""
-        _seed_user(app, user_id=1, username="Owner")
-        _login_user(mock_client, user_id=1, username="Owner")
+        owner_uid = _seed_user(app, username="Owner")
+        _login_user(mock_client, owner_uid, username="Owner")
 
         with app.app_context():
             job1 = create_job(VALID_JOB_TYPE, "Owner")

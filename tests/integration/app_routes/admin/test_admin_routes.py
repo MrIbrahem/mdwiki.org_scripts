@@ -18,9 +18,6 @@ from flask_app.main_app.db.services.admin_service import (
 )
 from flask_app.main_app.db.services.users_service import create_user
 
-_ADMIN_USER_ID: int | None = None
-
-
 def _upsert_user_token(username: str, access_key: str, access_secret: str) -> int:
     user = create_user(username)
     upsert_user_token(
@@ -30,13 +27,10 @@ def _upsert_user_token(username: str, access_key: str, access_secret: str) -> in
     )
     return user.user_id
 
-
-@pytest.fixture(autouse=True)
 def _seed_admin(app, username="AdminUser"):
     """Create a user token + active coordinator record for testing admin routes."""
-    global _ADMIN_USER_ID
     with app.app_context():
-        _ADMIN_USER_ID = _upsert_user_token(
+        uid = _upsert_user_token(
             username=username,
             access_key="admin-key",
             access_secret="admin-secret",
@@ -47,14 +41,16 @@ def _seed_admin(app, username="AdminUser"):
             pass
         except Exception:
             raise
+        return uid
 
 
-def _login_admin(mock_client, username="AdminUser"):
+def _login_admin(app, mock_client, username="AdminUser"):
     """Set session to an admin user (DB record must already exist)."""
+    uid = _seed_admin(app, username="AdminUser")
     with mock_client.session_transaction() as sess:
-        sess["uid"] = _ADMIN_USER_ID
+        sess["uid"] = uid
         sess["username"] = username
-
+    return uid
 
 @pytest.mark.usefixtures("app")
 class TestAdminDashboard:
@@ -84,7 +80,7 @@ class TestAdminDashboard:
 
     def test_admin_dashboard_loads(self, app, mock_client):
         """An admin user should see the dashboard."""
-        _login_admin(mock_client)
+        _login_admin(app, mock_client)
         resp = mock_client.get("/admin/")
         assert resp.status_code == 200
 
@@ -137,14 +133,14 @@ class TestAdminUsersPage:
                 access_secret="s",
             )
 
-        _login_admin(mock_client)
+        _login_admin(app, mock_client)
         resp = mock_client.get("/admin/users")
         assert resp.status_code == 200
 
     def test_users_page_empty_list(self, app, mock_client):
         """Users page should load even with no regular users."""
 
-        _login_admin(mock_client)
+        _login_admin(app, mock_client)
         resp = mock_client.get("/admin/users")
         assert resp.status_code == 200
 
@@ -172,7 +168,7 @@ class TestCoordinatorRoutes:
     def test_coordinators_dashboard_loads(self, app, mock_client):
         """Admin should see the coordinators dashboard."""
 
-        _login_admin(mock_client)
+        _login_admin(app, mock_client)
         resp = mock_client.get("/admin/coordinators/")
         assert resp.status_code == 200
 
@@ -186,7 +182,7 @@ class TestCoordinatorRoutes:
                 access_secret="s",
             )
 
-        _login_admin(mock_client)
+        _login_admin(app, mock_client)
         resp = mock_client.post(
             "/admin/coordinators/add",
             data={"username": "NewCoord"},
@@ -201,7 +197,7 @@ class TestCoordinatorRoutes:
     def test_add_coordinator_empty_username_flash(self, app, mock_client):
         """Adding coordinator with empty username should flash error."""
 
-        _login_admin(mock_client)
+        _login_admin(app, mock_client)
         resp = mock_client.post(
             "/admin/coordinators/add",
             data={"username": ""},
@@ -213,7 +209,7 @@ class TestCoordinatorRoutes:
     def test_add_duplicate_coordinator_flash(self, app, mock_client):
         """Adding a duplicate coordinator should flash warning."""
 
-        _login_admin(mock_client)
+        _login_admin(app, mock_client)
         mock_client.post(
             "/admin/coordinators/add",
             data={"username": "AdminUser"},
@@ -238,7 +234,7 @@ class TestCoordinatorRoutes:
             )
             coord = add_coordinator("ToggleCoord")
 
-        _login_admin(mock_client)
+        _login_admin(app, mock_client)
         resp = mock_client.post(
             f"/admin/coordinators/{coord.id}/active",
             data={"active": "0"},
@@ -262,7 +258,7 @@ class TestCoordinatorRoutes:
             coord = add_coordinator("ReactivateCoord")
             set_coordinator_active(coord.id, False)
 
-        _login_admin(mock_client)
+        _login_admin(app, mock_client)
         resp = mock_client.post(
             f"/admin/coordinators/{coord.id}/active",
             data={"active": "1"},
@@ -285,7 +281,7 @@ class TestCoordinatorRoutes:
             )
             coord = add_coordinator("DeleteCoord")
 
-        _login_admin(mock_client)
+        _login_admin(app, mock_client)
         resp = mock_client.post(
             f"/admin/coordinators/{coord.id}/delete",
             follow_redirects=True,
@@ -300,7 +296,7 @@ class TestCoordinatorRoutes:
     def test_delete_nonexistent_coordinator_flash(self, app, mock_client):
         """Deleting a non-existent coordinator should flash warning."""
 
-        _login_admin(mock_client)
+        _login_admin(app, mock_client)
         resp = mock_client.post(
             "/admin/coordinators/9999/delete",
             follow_redirects=True,
@@ -323,7 +319,7 @@ class TestAdminRouteIntegration:
                 access_secret="s",
             )
 
-        _login_admin(mock_client)
+        _login_admin(app, mock_client)
 
         # Add
         mock_client.post(
@@ -397,6 +393,6 @@ class TestAdminRouteIntegration:
     def test_sidebar_context_injected(self, app, mock_client):
         """Admin pages should have the sidebar context variable injected."""
 
-        _login_admin(mock_client)
+        _login_admin(app, mock_client)
         resp = mock_client.get("/admin/")
         assert resp.status_code == 200
