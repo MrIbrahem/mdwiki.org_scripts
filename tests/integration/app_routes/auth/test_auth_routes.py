@@ -12,7 +12,7 @@ from unittest.mock import MagicMock, Mock, patch
 import pytest
 from flask.app import Flask
 from flask_app.main_app.config import settings
-from flask_app.main_app.db.services import get_user_by_username, get_user_token, upsert_user_token
+from flask_app.main_app.db.services import get_user_by_username, get_user_token, update_user_token
 from flask_app.main_app.db.services.users_service import create_user
 from flask_app.main_app.extensions import db
 
@@ -273,7 +273,7 @@ class TestLogoutRoute:
         """After logout, session uid and username should be gone."""
         with app.app_context():
             user = create_user("LogoutUser")
-            upsert_user_token(
+            update_user_token(
                 user_id=user.user_id,
                 access_key="k",
                 access_secret="s",
@@ -313,7 +313,7 @@ class TestLogoutRoute:
         """Logout should delete the user token record from DB."""
         with app.app_context():
             user = create_user("TokenDelete")
-            upsert_user_token(
+            update_user_token(
                 user_id=user.user_id,
                 access_key="k",
                 access_secret="s",

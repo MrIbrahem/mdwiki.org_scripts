@@ -16,7 +16,7 @@ from .user_token_service import (
     get_authenticated_user_token,
     get_user_token,
     get_user_token_by_username,
-    upsert_user_token,
+    update_user_token,
 )
 from .users_service import (
     create_user,
@@ -34,7 +34,7 @@ __all__ = [
     "get_user_by_username",
     "delete_user",
     # user_token_service
-    "upsert_user_token",
+    "update_user_token",
     "get_user_token",
     "delete_user_token",
     "get_user_token_by_username",

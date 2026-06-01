@@ -57,10 +57,9 @@ def get_user_token_by_username(username: str) -> Optional[UserTokenRecord]:
     return db.session.query(UserTokenRecord).join(UsersRecord).filter(UsersRecord.username == username).first()
 
 
-def upsert_user_token(*, user_id: int, access_key: str, access_secret: str) -> None:
-    """Insert or update the encrypted OAuth credentials for a user.
-
-    Automatically creates the ``users`` row if it does not exist.
+def update_user_token(user_id: int, access_key: str, access_secret: str) -> UserTokenRecord:
+    """
+    update the encrypted OAuth credentials for a user.
     """
     encrypted_token = encrypt_value(access_key)
     encrypted_secret = encrypt_value(access_secret)
@@ -73,20 +72,10 @@ def upsert_user_token(*, user_id: int, access_key: str, access_secret: str) -> N
         orm_obj.updated_at = now
         orm_obj.last_used_at = now
         orm_obj.rotated_at = now
-    else:
-        orm_obj = UserTokenRecord(
-            user_id=user_id,
-            access_token=encrypted_token,
-            access_secret=encrypted_secret,
-            created_at=now,
-            updated_at=now,
-            last_used_at=now,
-            rotated_at=None,
-        )
-        db.session.add(orm_obj)
 
-    db.session.commit()
-
+        db.session.commit()
+        db.session.refresh(orm_obj)
+    return orm_obj
 
 def delete_user_token(user_id: int) -> bool:
     """Delete the stored OAuth token only. User identity row persists."""
@@ -104,5 +93,5 @@ __all__ = [
     "delete_user_token",
     "get_user_token",
     "get_user_token_by_username",
-    "upsert_user_token",
+    "update_user_token",
 ]

@@ -83,6 +83,7 @@ def is_job_cancelled_file_exist(filename: str) -> bool:
 __all__ = [
     "get_jobs_data_dir",
     "create_job_cancelled_file",
+    "is_job_cancelled_file_exist",
     "save_job_result_by_name",
     "load_job_result",
 ]

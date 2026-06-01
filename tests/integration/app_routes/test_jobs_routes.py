@@ -15,7 +15,7 @@ from flask_app.main_app.db.services import (
     create_job,
     get_job,
     list_jobs,
-    upsert_user_token,
+    update_user_token,
 )
 from flask_app.main_app.db.services.admin_service import add_coordinator
 from flask_app.main_app.db.services.users_service import create_user
@@ -45,7 +45,7 @@ def _seed_user(app, username="JobUser", *, can_run_bg_jobs=False) -> int:
             from flask_app.main_app.db.services.users_service import toggle_can_run_bg_jobs
 
             toggle_can_run_bg_jobs(user.user_id, True)
-        upsert_user_token(
+        update_user_token(
             user_id=user.user_id,
             access_key="k",
             access_secret="s",
