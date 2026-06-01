@@ -21,7 +21,10 @@ class JobRecord(db.Model):
         `result_file` varchar(500) DEFAULT NULL,
         `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (`id`)
+        `is_running` tinyint DEFAULT NULL,
+        PRIMARY KEY (`id`),
+        UNIQUE KEY `idx_unique_active_job` (`job_type`,`is_running`),
+        KEY `username` (`username`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
     NOTE: username has no FK — jobs persist independently of user accounts.
@@ -44,6 +47,7 @@ class JobRecord(db.Model):
         server_default=func.current_timestamp(),
         server_onupdate=func.current_timestamp(),
     )
+    is_running = Column(Integer, nullable=True)
 
 
 __all__ = [
