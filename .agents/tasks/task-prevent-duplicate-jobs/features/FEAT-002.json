@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "fix",
   "description": "Address review feedback: add application-level duplicate check for MySQL compatibility, make IntegrityError catch more specific, and add integration test for DuplicateJobError route handling.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "1. Add has_active_job(job_type) function in jobs_service.py that checks for existing active jobs before insert.",
     "2. Update create_job to call has_active_job before insert and raise DuplicateJobError if active.",
@@ -22,5 +22,5 @@
     "python -m pytest tests/ -v"
   ],
   "blocked_reason": null,
-  "findings": null
+  "findings": "All 585 tests pass. The has_active_job check provides MySQL-compatible enforcement, while the partial index remains as a safety net for SQLite (tests) and any future PostgreSQL migration. The IntegrityError catch now only converts to DuplicateJobError when the constraint name matches."
 }
