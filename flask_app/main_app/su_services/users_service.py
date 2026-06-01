@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 class UserService:
     @staticmethod
     def save_and_get_user(
-        user_id: int,
         username: str,
         access_key: str,
         access_secret: str,
