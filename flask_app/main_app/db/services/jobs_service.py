@@ -32,10 +32,14 @@ def _update_status(job_id: int, status: str, result_file: str | None, job_type: 
         raise LookupError(f"Job id {job_id} was not found")
 
     job.status = status
+
     if status in ("completed", "failed", "cancelled"):
         job.completed_at = datetime.now(UTC)
+        job.is_running = None
+
     if result_file:
         job.result_file = result_file
+
     db.session.commit()
     db.session.refresh(job)
 

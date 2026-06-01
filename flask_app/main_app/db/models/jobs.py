@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from sqlalchemy import Column, DateTime, Integer, String, func
+from sqlalchemy import Column, DateTime, Index, Integer, String, UniqueConstraint, func
 
 from ...extensions import db
 
@@ -31,6 +31,12 @@ class JobRecord(db.Model):
     """
 
     __tablename__ = "jobs"
+    __table_args__ = (
+        # Unique constraint combining job_type and is_running
+        UniqueConstraint("job_type", "is_running", name="idx_unique_active_job"),
+        # Keep the standard index for username if needed
+        Index("username", "username"),
+    )
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     job_type = Column(String(255), nullable=False)
