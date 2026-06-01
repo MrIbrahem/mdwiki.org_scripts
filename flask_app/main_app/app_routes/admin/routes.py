@@ -6,14 +6,13 @@ import logging
 
 from flask import (
     Blueprint,
-    flash,
     render_template,
     request,
 )
 
-from ...db.services import list_users
 from ..admin_routes import (
     coordinators_module,
+    users_module,
 )
 from .admins_required import admin_required
 from .sidebar import create_side
@@ -23,6 +22,7 @@ logger = logging.getLogger(__name__)
 bp_admin = Blueprint("admin", __name__, url_prefix="/admin")
 
 bp_admin.register_blueprint(coordinators_module.bp)
+bp_admin.register_blueprint(users_module.bp)
 
 
 @bp_admin.app_context_processor
@@ -38,26 +38,6 @@ def inject_sidebar():
 @admin_required
 def admin_dashboard():
     return render_template("admins.html")
-
-
-@bp_admin.get("/users")
-@admin_required
-def users_dashboard() -> str:
-    """Render the coordinator management dashboard."""
-    try:
-        users = list_users()
-    except Exception as e:
-        logger.error(f"Error listing users: {e}")
-        flash("Error listing users", "error")
-        users = []
-
-    total = len(users)
-
-    return render_template(
-        "admins/users.html",
-        users=users,
-        total_users=total,
-    )
 
 
 __all__ = [
