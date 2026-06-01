@@ -22,7 +22,7 @@ def _normalize_title(raw: str) -> str:
 @oauth_required
 def index():
     title = _normalize_title(request.args.get("title", ""))
-    save = int(request.args.get("save", "0")) or 0
+    save = 1 if request.form.get("save") == "1" else 0
     return render_template(
         "fixred_one.html",
         title="Fix redirects in page text",
@@ -36,7 +36,7 @@ def index():
 @oauth_required
 def fixred_post():
     title = _normalize_title(request.form.get("title", ""))
-    save = int(request.form.get("save", "0")) or 0
+    save = 1 if request.form.get("save") == "1" else 0
 
     if not title:
         return render_template(

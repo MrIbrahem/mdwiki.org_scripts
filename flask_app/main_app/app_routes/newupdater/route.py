@@ -19,8 +19,7 @@ logger = logging.getLogger(__name__)
 def _parse_title(title: str) -> str:
     title = title.replace("+", " ").replace("_", " ").strip()
     title = urllib.parse.unquote(title)
-    while title.endswith("/"):
-        title = title.removesuffix("/")
+    title = title.rstrip("/")
     return title
 
 
@@ -102,7 +101,7 @@ def auto_save(title: str) -> str:
 @oauth_required
 def newupdater() -> str:
     title = _parse_title(request.args.get("title") or "")
-    save = int(request.args.get("save", "0")) == 1
+    save = request.args.get("save") == "1"
 
     # If the title is empty, just render the default page without redirecting
     if not title:
