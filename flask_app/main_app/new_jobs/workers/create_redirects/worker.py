@@ -103,13 +103,16 @@ class CreateRedirectsWorker(BaseObjectsJobWorker):
             self.result_object.summary.errors += counts.get("errors", 0)
 
             status = "created" if counts.get("created") else "skipped"
-            self.result_object.pages_processed.append(
-                {
-                    "title": title,
-                    "status": status,
-                    "msg": f"created={counts.get('created', 0)} exists={counts.get('already_exists', 0)}",
-                }
-            )
+
+            msg = counts["msg"] or f"created={counts.get('created', 0)} exists={counts.get('already_exists', 0)}"
+
+            page_record = {
+                "title": title,
+                "status": status,
+                "msg": msg,
+            }
+
+            self.result_object.pages_processed.append(page_record)
 
             if i == 1 or i % per_item == 0:
                 self._save_progress()
@@ -135,15 +138,17 @@ class CreateRedirectsWorker(BaseObjectsJobWorker):
 
     def _process_one(self, title: str) -> dict[str, int]:
         """Copy missing redirects for one source title; return per-title counts."""
-        counts = {"target_missing": 0, "created": 0, "already_exists": 0, "skipped": 0, "errors": 0}
+        counts = {"target_missing": 0, "created": 0, "already_exists": 0, "skipped": 0, "errors": 0, "msg": ""}
 
         if not is_page_exists(title, self.site):
             logger.info(f"Job {self.job_id}: {title!r}: missing!")
+            counts["msg"] = "target page missing"
             counts["target_missing"] = 1
             return counts
 
         redirect_titles = get_redirects_for(title)
         if not redirect_titles:
+            counts["msg"] = "no redirects on enwiki"
             logger.info(f"Job {self.job_id}: {title!r}: no redirects on enwiki")
             return counts
 
