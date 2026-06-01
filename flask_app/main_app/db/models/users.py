@@ -43,7 +43,7 @@ class AdminUserRecord(db.Model):
         PRIMARY KEY (`id`),
         UNIQUE KEY `username` (`username`),
         CONSTRAINT `admin_users_ibfk_1` FOREIGN KEY (`username`)
-            REFERENCES `users` (`username`) ON DELETE CASCADE
+            REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     """
 
@@ -80,7 +80,7 @@ class UserTokenRecord(db.Model):
         rotated_at datetime DEFAULT NULL,
         PRIMARY KEY (user_id),
         CONSTRAINT `user_tokens_ibfk_1` FOREIGN KEY (`user_id`)
-            REFERENCES `users` (`user_id`) ON DELETE CASCADE
+            REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
     )
     """
 
