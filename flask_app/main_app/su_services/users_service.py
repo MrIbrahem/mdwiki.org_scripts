@@ -5,7 +5,13 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from ..db.services import create_user, get_authenticated_user_token, get_user_token, upsert_user_token
+from ..db.services import (
+    create_user,
+    get_authenticated_user_token,
+    get_user_by_username,
+    get_user_token,
+    upsert_user_token,
+)
 from ..db.services.users_service import UsersRecord
 from .current_user import CurrentUser
 
@@ -25,7 +31,10 @@ class UserService:
             username = (username or "").strip()
 
             # Ensure user identity row exists
-            user: UsersRecord = create_user(username)
+            user: UsersRecord = get_user_by_username(username)
+
+            if not user:
+                user: UsersRecord = create_user(username)
 
             user_id = user.user_id
 
