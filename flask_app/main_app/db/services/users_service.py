@@ -15,24 +15,12 @@ from ..models import UsersRecord
 
 logger = logging.getLogger(__name__)
 
-# ── User CRUD ───────────────────────────────────────────────
+# ── SELECT ───────────────────────────────────────────────
 
 
-def create_user(username: str) -> UsersRecord:
-    """Create a user identity row. Idempotent — returns existing if present."""
-    existing = db.session.query(UsersRecord).filter(UsersRecord.username == username).first()
-    if existing:
-        return existing
-
-    record = UsersRecord(username=username)
-    db.session.add(record)
-    try:
-        db.session.commit()
-        db.session.refresh(record)
-    except Exception:
-        db.session.rollback()
-        raise
-    return record
+def list_users() -> list[UsersRecord]:
+    """Return all user identity records."""
+    return db.session.query(UsersRecord).all()
 
 
 def get_user(user_id: int) -> Optional[UsersRecord]:
@@ -50,18 +38,24 @@ def get_user_by_username(username: str) -> Optional[UsersRecord]:
     return db.session.query(UsersRecord).filter(UsersRecord.username == username).first()
 
 
-def delete_user(user_id: int) -> bool:
-    """Delete user row. Cascades to user_tokens and admin_users via FK."""
-    if not user_id:
-        return False
-    affected = db.session.query(UsersRecord).filter(UsersRecord.user_id == user_id).delete()
-    db.session.commit()
-    return affected > 0
+# ── INSERT, UPDATE, SET ───────────────────────────────────────────────
 
 
-def list_users() -> list[UsersRecord]:
-    """Return all user identity records."""
-    return db.session.query(UsersRecord).all()
+def create_user(username: str) -> UsersRecord:
+    """Create a user identity row. Idempotent — returns existing if present."""
+    existing = db.session.query(UsersRecord).filter(UsersRecord.username == username).first()
+    if existing:
+        return existing
+
+    record = UsersRecord(username=username)
+    db.session.add(record)
+    try:
+        db.session.commit()
+        db.session.refresh(record)
+    except Exception:
+        db.session.rollback()
+        raise
+    return record
 
 
 def toggle_can_run_jobs(user_id: int, value: bool) -> UsersRecord:
@@ -90,6 +84,18 @@ def toggle_can_run_bg_jobs(user_id: int, value: bool) -> UsersRecord:
     db.session.refresh(record)
 
     return record
+
+
+# ── DELETE ───────────────────────────────────────────────
+
+
+def delete_user(user_id: int) -> bool:
+    """Delete user row. Cascades to user_tokens and admin_users via FK."""
+    if not user_id:
+        return False
+    affected = db.session.query(UsersRecord).filter(UsersRecord.user_id == user_id).delete()
+    db.session.commit()
+    return affected > 0
 
 
 __all__ = [

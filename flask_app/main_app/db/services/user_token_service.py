@@ -19,6 +19,9 @@ from ..models import UsersRecord, UserTokenRecord
 logger = logging.getLogger(__name__)
 
 
+# ── SELECT ───────────────────────────────────────────────
+
+
 def get_authenticated_user_token(user_id: int) -> None | UserTokenRecord:
     """Fetch the CurrentUser composite for session restoration."""
     try:
@@ -34,6 +37,30 @@ def get_authenticated_user_token(user_id: int) -> None | UserTokenRecord:
     except Exception as e:
         logger.error("Error loading user for ID %s: %s", user_id, e)
         return None
+
+
+def get_user_token(user_id: str | int) -> Optional[UserTokenRecord]:
+    """Fetch the encrypted OAuth credentials for a user."""
+    if not user_id:
+        return None
+
+    user_id = int(user_id)
+    return db.session.query(UserTokenRecord).filter(UserTokenRecord.user_id == user_id).first()
+
+
+def get_user_token_by_username(username: str) -> Optional[UserTokenRecord]:
+    """Fetch the encrypted OAuth credentials for a user by username.
+
+    Joins through the ``users`` table since username lives there.
+    """
+    username = (username or "").strip()
+    if not username:
+        return None
+
+    return db.session.query(UserTokenRecord).join(UsersRecord).filter(UsersRecord.username == username).first()
+
+
+# ── INSERT, UPDATE, SET ───────────────────────────────────────────────
 
 
 def upsert_user_token(*, user_id: int, access_key: str, access_secret: str) -> None:
@@ -67,13 +94,7 @@ def upsert_user_token(*, user_id: int, access_key: str, access_secret: str) -> N
     db.session.commit()
 
 
-def get_user_token(user_id: str | int) -> Optional[UserTokenRecord]:
-    """Fetch the encrypted OAuth credentials for a user."""
-    if not user_id:
-        return None
-
-    user_id = int(user_id)
-    return db.session.query(UserTokenRecord).filter(UserTokenRecord.user_id == user_id).first()
+# ── DELETE ───────────────────────────────────────────────
 
 
 def delete_user_token(user_id: int) -> bool:
@@ -86,18 +107,6 @@ def delete_user_token(user_id: int) -> bool:
     )
     db.session.commit()
     return affected_rows > 0
-
-
-def get_user_token_by_username(username: str) -> Optional[UserTokenRecord]:
-    """Fetch the encrypted OAuth credentials for a user by username.
-
-    Joins through the ``users`` table since username lives there.
-    """
-    username = (username or "").strip()
-    if not username:
-        return None
-
-    return db.session.query(UserTokenRecord).join(UsersRecord).filter(UsersRecord.username == username).first()
 
 
 __all__ = [
