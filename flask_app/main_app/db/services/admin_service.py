@@ -19,6 +19,8 @@ from .utils import db_guard
 
 logger = logging.getLogger(__name__)
 
+# ── SELECT ───────────────────────────────────────────────
+
 
 @db_guard(default_return=[], msg="Failed to active coordinators")
 def active_coordinators() -> list[str]:
@@ -44,6 +46,9 @@ def get_coordinator_by_id(coordinator_id: int) -> AdminUserRecord:
     if not record:
         raise LookupError(f"Coordinator id {coordinator_id} was not found")
     return record
+
+
+# ── INSERT, UPDATE, SET ──────────────────────────────────
 
 
 def add_coordinator(username: str) -> AdminUserRecord:
@@ -79,6 +84,9 @@ def set_coordinator_active(coordinator_id: int, is_active: bool) -> AdminUserRec
         db.session.commit()
         db.session.refresh(record)
         return record
+
+
+# ── DELETE ───────────────────────────────────────────────
 
 
 def delete_coordinator(coordinator_id: int) -> bool:
