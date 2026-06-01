@@ -209,7 +209,8 @@ class TestCallbackRoute:
 
         set_cookie_headers = resp.headers.getlist("Set-Cookie")
         cookie_names = [h.split("=")[0] for h in set_cookie_headers]
-        assert settings.cookie.name in cookie_names
+        name = settings.cookie.name
+        assert name in cookie_names
 
     def test_callback_success_redirects_to_index(self, app, mock_client):
         """After successful login, redirect should go to index."""
