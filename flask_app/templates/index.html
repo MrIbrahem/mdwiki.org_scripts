@@ -6,8 +6,8 @@
         <h3>{{ title or "mdwiki.org Tools (UNDER TESTING)" }}</h3>
     </div>
     <div class="card-body">
-        {% if current_user and current_user.is_authenticated %}
-        <p>Signed in as <strong>{{ current_user.username }}</strong>.</p>
+        {% if current_username and is_authenticated %}
+        <p>Signed in as <strong>{{ current_username }}</strong>.</p>
         {% endif %}
         <p>Jobs for all pages:</p>
         <ul class="list-group mb-4">

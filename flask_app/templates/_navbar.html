@@ -41,12 +41,12 @@
                 </ul>
                 <hr class="d-lg-none text-dark-subtle text-50">
                 <div class="d-flex align-items-center">
-                    {% if current_user or is_authenticated %}
+                    {% if current_username or is_authenticated %}
                     <a class="nav-link d-inline-block me-3"
-                        href="{{ url_for('profile.user_dashboard', user_name=current_user.username) }}">
+                        href="{{ url_for('profile.user_dashboard', user_name=current_username) }}">
                         <i class="bi bi-person-circle me-1"></i>
                         <span class="navbar-text">
-                            {{ current_user.username }}
+                            {{ current_username }}
                         </span>
                     </a>
                     <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('auth.logout') }}">Logout</a>
