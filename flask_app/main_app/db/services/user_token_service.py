@@ -64,8 +64,7 @@ def get_user_token_by_username(username: str) -> Optional[UserTokenRecord]:
 
 
 def create_user_token(user_id: int, access_key: str, access_secret: str) -> UserTokenRecord:
-    """
-    """
+    """ """
     encrypted_token = encrypt_value(access_key)
     encrypted_secret = encrypt_value(access_secret)
 
@@ -80,6 +79,7 @@ def create_user_token(user_id: int, access_key: str, access_secret: str) -> User
     db.session.refresh(orm_obj)
 
     return orm_obj
+
 
 def update_user_token(user_id: int, access_key: str, access_secret: str) -> UserTokenRecord:
     """
@@ -100,6 +100,7 @@ def update_user_token(user_id: int, access_key: str, access_secret: str) -> User
         db.session.commit()
         db.session.refresh(orm_obj)
     return orm_obj
+
 
 def upsert_user_token(user_id: int, access_key: str, access_secret: str) -> UserTokenRecord:
     """
