@@ -14,7 +14,7 @@ from flask import (
 )
 from flask.typing import ResponseReturnValue
 
-from ...db.services import users_service, users_permissions_service
+from ...db.services import users_service
 from ..admin.admins_required import admin_required
 
 logger = logging.getLogger(__name__)
@@ -43,7 +43,7 @@ def _update_can_run_jobs(user_id: int) -> ResponseReturnValue:
 
     desired = request.form.get("can_run", "0") == "1"
     try:
-        record = users_permissions_service.toggle_can_run_jobs(user_id, desired)
+        record = users_service.toggle_can_run_jobs(user_id, desired)
     except LookupError as exc:
         logger.exception("Unable to update user permissions.")
         flash(str(exc), "warning")
@@ -60,7 +60,7 @@ def _update_can_run_bg_jobs(user_id: int) -> ResponseReturnValue:
 
     desired = request.form.get("can_run", "0") == "1"
     try:
-        record = users_permissions_service.toggle_can_run_bg_jobs(user_id, desired)
+        record = users_service.toggle_can_run_bg_jobs(user_id, desired)
     except LookupError as exc:
         logger.exception("Unable to update user permissions.")
         flash(str(exc), "warning")
