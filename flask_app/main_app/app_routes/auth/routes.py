@@ -209,7 +209,6 @@ def logout() -> Response:
     else:
         flash("Session cleared.", "info")
 
-    flash("Logout successful.", "success")
     response = make_response(redirect(url_for("main.index")))
     response.delete_cookie(settings.cookie.name, path="/")
 
