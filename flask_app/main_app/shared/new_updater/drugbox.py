@@ -215,6 +215,8 @@ class TextProcessor:
             if p in sec_params:
                 sec_params.remove(p)
         # ---
+        sec_text = sec_text.removesuffix(" ")
+        # ---
         return sec_text, sec_params
 
     def create_section(self, sectionname):
@@ -272,7 +274,7 @@ class TextProcessor:
                 # ---
                 p_v = f"\n| {p2}= {p_value}" if p_value.strip() else f"\n| {p2}="
                 # ---
-                sec_text += p_v
+                sec_text += p_v.removesuffix(" ")
         # ---
         # if sec_text != '' and section_title != '': sec_text = f'{section_title}\n{sec_text}'
         # ---

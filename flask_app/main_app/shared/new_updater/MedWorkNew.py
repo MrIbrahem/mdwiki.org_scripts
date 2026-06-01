@@ -80,9 +80,7 @@ def _work_on_text_md(title, text):
     return new_text
 
 
-def work_on_text(title, text):
-    # ---
-    logger.debug("work_on_text")
+def med_updater_one(title, text):
     # ---
     newtext = text
     # ---
@@ -106,5 +104,5 @@ def work_on_text(title, text):
 
 
 __all__ = [
-    "work_on_text",
+    "med_updater_one",
 ]

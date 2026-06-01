@@ -1,0 +1,129 @@
+{{#unlinkedwikibase:id=Q2736873}}{{Drugbox
+| Watchedfields = changed
+| verifiedrevid = 477247048
+| image = Alfuzosin.svg
+| width = 275
+
+<!--Names-->
+| pronounce = {{IPAc-en|æ|l|ˈ|f|juː|z|oʊ|s|ɪ|n}} {{respell|al|FEW|zoh-sin}}
+| tradename = Uroxatral, others
+| synonyms =
+| IUPAC_name = (''RS'')-''N''-[3-[(4-Amino-6,7-dimethoxy-quinazolin-2-yl)- methyl-amino]propyl] tetrahydrofuran- 2-carboxamide
+
+<!--External links-->
+| Drugs.com = {{drugs.com|monograph|alfuzosin-hydrochloride}}
+| MedlinePlus = a64002
+
+<!--Clinical data-->
+| class             = [[Alpha-1 adrenergic receptor|α<sub>1</sub> adrenergic receptor]] [[receptor antagonist|blocker]]<ref name=AHSF2021/>
+| uses              = [[Benign prostatic hyperplasia]] (BPH)<ref name=AHSF2021/>
+| side_effects      = Lightheadedness, tiredness, headache<ref name=AHSF2021/>
+| interactions      = <!-- notable interactions -->
+
+| pregnancy_AU = B2
+| pregnancy_US = B
+| routes_of_administration = [[Oral administration|By mouth]] ([[Tablet (pharmacy)|tablets]])
+| onset =
+| duration_of_action =
+| defined_daily_dose =
+
+<!-- Legal status -->
+| legal_UK = POM
+| legal_US = Rx-only
+
+<!-- Pharmacokinetic data -->
+| bioavailability = 49%
+| protein_bound = 82–90%
+| metabolism = [[Liver]] ([[CYP3A4]]-mediated)
+| elimination_half-life = 10 hours
+| excretion = [[Feces]] (69%) and [[Urine]] (24%)
+
+<!--Chemical data-->
+| C=19 | H=27 | N=5 | O=4
+| smiles = O=C(NCCCN(c2nc1cc(OC)c(OC)cc1c(n2)N)C)C3OCCC3
+| StdInChI_Ref = {{stdinchicite|correct|chemspider}}
+| StdInChI = 1S/C19H27N5O4/c1-24(8-5-7-21-18(25)14-6-4-9-28-14)19-22-13-11-16(27-3)15(26-2)10-12(13)17(20)23-19/h10-11,14H,4-9H2,1-3H3,(H,21,25)(H2,20,22,23)
+| StdInChIKey_Ref = {{stdinchicite|correct|chemspider}}
+| StdInChIKey = WNMJYKCGWZFFKR-UHFFFAOYSA-N
+}}
+<!-- Definition and medical uses -->
+'''Alfuzosin''', sold under the brand name '''Uroxatral''' among others, is a medication used to treat [[benign prostatic hyperplasia]] (BPH).<ref name=AHSF2021>{{cite web |title=Alfuzosin Monograph for Professionals |url=https://www.drugs.com/monograph/alfuzosin.html |website=Drugs.com |accessdate=14 July 2021 |language=en |archive-date=19 January 2021 |archive-url=https://web.archive.org/web/20210119205317/https://www.drugs.com/monograph/alfuzosin.html |url-status=live }}</ref> It may be less effective than other medications in its class.<ref name=Lep2016>{{cite journal | vauthors = Lepor H | title = Alpha-blockers for the Treatment of Benign Prostatic Hyperplasia | journal = The Urologic Clinics of North America | volume = 43 | issue = 3 | pages = 311–23 | date = August 2016 | pmid = 27476124 | pmc = 2213889 | doi = 10.1016/j.ucl.2016.04.009 }}</ref> It may be used together with a [[5α-Reductase inhibitor|5α-reductase inhibitor]]s.<ref name=AHSF2021/> It is taken by mouth once per day.<ref name=AHSF2021/>
+
+<!-- Side effects and mechanisms -->
+Common side effects include lightheadedness, tiredness, and headache.<ref name=AHSF2021/> Other side effects include [[low blood pressure]] and [[Long QT syndrome|QT prolongation]].<ref name=AHSF2021/> Use is not recommended in those with significant liver problems.<ref name=AHSF2021/> It is a [[Alpha-1 adrenergic receptor|α<sub>1</sub> adrenergic receptor]] [[receptor antagonist|blocker]] and works by relaxing the muscles in the [[prostate]] and [[Urinary bladder|bladder]] neck.<ref name=AHSF2021/>
+
+<!-- Society and culture -->
+Alfuzosin was patented in 1978 and approved for medical use in 1988.<ref>{{cite book |vauthors=Fischer J, Ganellin CR |title=Analogue-based Drug Discovery |date=2006 |publisher=John Wiley & Sons |isbn=9783527607495 |page=455 |url=https://books.google.com/books?id=FjKfqkaKkAAC&pg=PA455 |language=en |access-date=2020-09-19 |archive-date=2020-10-05 |archive-url=https://web.archive.org/web/20201005002628/https://books.google.com/books?id=FjKfqkaKkAAC&pg=PA455%2F |url-status=live }}</ref> It was approved for medical use in the United States in 2003.<ref name=AHSF2021/> In the United States it costs about 18 USD for 3 months.<ref>{{cite web |title=Alfuzosin Prices, Coupons & Patient Assistance Programs |url=https://www.drugs.com/price-guide/alfuzosin |website=Drugs.com |accessdate=14 July 2021 |language=en |archive-date=5 July 2017 |archive-url=https://web.archive.org/web/20170705114714/https://www.drugs.com/price-guide/alfuzosin |url-status=live }}</ref> In 2017, it was the 266th most commonly prescribed medication in the United States, with more than one million prescriptions.<ref name=Pop2017>{{cite web | title = The Top 300 of 2020 | url = https://clincalc.com/DrugStats/Top300Drugs.aspx | website = ClinCalc | access-date = 11 April 2020 | archive-date = 18 March 2020 | archive-url = https://web.archive.org/web/20200318234059/https://clincalc.com/DrugStats/Top300Drugs.aspx | url-status = live }}</ref><ref name=Use2017>{{cite web | title = Alfuzosin Hydrochloride - Drug Usage Statistics | website = ClinCalc | url = https://clincalc.com/DrugStats/Drugs/AlfuzosinHydrochloride | access-date = 11 April 2020 | archive-date = 12 April 2020 | archive-url = https://web.archive.org/web/20200412020051/https://clincalc.com/DrugStats/Drugs/AlfuzosinHydrochloride | url-status = dead }}</ref>
+
+==Medical uses==
+It is used to treat [[benign prostatic hyperplasia]] (BPH).<ref name=AHSF2021/> It may be less effective than other medications in its class.<ref name=Lep2016/> It may be used together with a [[5α-Reductase inhibitor|5α-reductase inhibitor]]s.<ref name=AHSF2021/> It is taken by mouth once per day.<ref name=AHSF2021/>
+
+Use is not recommended for high blood pressure.<ref name=AHSF2021/>
+
+== Side effects ==
+The most common side effects are [[dizziness]] (due to [[Orthostatic hypotension|postural hypotension]]), [[upper respiratory tract infection]], [[headache]], [[Fatigue|fatigue]], and abdominal disturbances. Side effects include stomach pain, heartburn, and congested nose.<ref>{{cite web|url=https://medlineplus.gov/druginfo/meds/a604002.html#side-effects|title=Alfuzosin|publisher=[[MedlinePlus]]|agency=[[United States National Library of Medicine]]|date=April 15, 2016|access-date=January 16, 2018|archive-date=August 24, 2019|archive-url=https://web.archive.org/web/20190824075206/https://medlineplus.gov/druginfo/meds/a604002.html#side-effects|url-status=live}}</ref> Adverse effects of alfuzosin are similar to that of [[tamsulosin]] with the exception of retrograde ejaculation.<ref name=HillsLiu2015>{{cite journal | vauthors = Liu C, Zeng G, Kang R, Wu W, Li J, Chen K, Wan SP | title = Efficacy and Safety of Alfuzosin as Medical Expulsive Therapy for Ureteral Stones: A Systematic Review and Meta-Analysis | journal = PLOS ONE | volume = 10 | issue = 8 | pages = e0134589 | year = 2015 | pmid = 26244843 | pmc = 4526635 | doi = 10.1371/journal.pone.0134589 | bibcode = 2015PLoSO..1034589L }}{{CC-notice|cc=by4|url=http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0134589|authors=Chenli Liu, Guohua Zeng, Ran Kang, Wenqi Wu, Jiasheng Li, Kang Chen and Show P. Wan}}</ref>
+
+== Contraindications ==
+Alfuzosin should be used with caution in people with severe [[chronic kidney disease]], and should not be prescribed to patients with a known history of [[Long QT syndrome|QT prolongation]] or those who are taking medications known to prolong the [[QT interval]].
+
+== Chemistry ==
+Alfuzosin contains a [[stereocenter]] and is therefore [[chirality (chemistry)|chiral]]. There are two [[enantiomer]]ic forms, (''R'')-alfuzosin and (''S'')-alfuzosin. The drug is used as a [[racemate]], (''RS'')-alfuzosin, a 1: 1 mixture of the (''R'')- and (''S'')-forms.<ref name="Rote Liste">Rote Liste Service GmbH (Hrsg.): ''Rote Liste 2017 - Arzneimittelverzeichnis für Deutschland (einschließlich EU-Zulassungen und bestimmter Medizinprodukte)''. Rote Liste Service GmbH, Frankfurt/Main, 2017, Aufl. 57, S. 159, {{ISBN|978-3-946057-10-9}}.</ref>
+{| class="wikitable" style="text-align:center"
+|- class="hintergrundfarbe6"
+! colspan="2"| Enantiomers of alfuzosin
+|-
+| [[File:(R)-Alfuzosin Structural Formula V2.svg|250 px|Strukturformel des (''R'')-Enantiomers]]<br /><small>[[CAS Registry Number|CAS number]]: 123739-69-5</small>
+| [[File:(S)-Alfuzosin Structural Formula V2.svg|250 px|Strukturformel des (''S'')-Enantiomers]]<br /><small>CAS number.: 123739-70-8</small>
+|}
+
+It is provided as the [[hydrochloride]] salt.
+
+==Society and culture==
+===Cost===
+In 2017, it was the 266th most commonly prescribed medication in the United States, with more than one million prescriptions.<ref name=Pop2017/><ref name=Use2017/>
+<gallery widths="250px" heights="200px">
+File:AlfuzosinHydrochloride costs (DrugStats).svg|Alfuzosin costs (US)
+File:AlfuzosinHydrochloride prescriptions (DrugStats).svg|Alfuzosin prescriptions (US)
+</gallery>
+
+===Brand names===
+It is marketed under the brand name Uroxatral, Xat, Xatral, Prostetrol and Alfural.
+
+== References ==
+{{reflist}}
+
+== External links ==
+{{drug resources
+<!--Identifiers-->
+| KEGG_Ref = {{keggcite|correct|kegg}}
+| ChEBI_Ref = {{ebicite|correct|EBI}}
+| ATC_prefix = G04
+| ChEBI = 51141
+| DrugBank_Ref = {{drugbankcite|correct|drugbank}}
+| CAS_number = 81403-80-7
+| IUPHAR_ligand = 7109
+| ChemSpiderID_Ref = {{chemspidercite|correct|chemspider}}
+| UNII_Ref = {{fdacite|correct|FDA}}
+| DrugBank = DB00346
+| PubChem = 2092
+| UNII = 90347YTW5F
+| ChemSpiderID = 2008
+| ChEMBL = 709
+| KEGG = D07124
+| CAS_number_Ref = {{cascite|correct|??}}
+| ATC_suffix = CA01
+| ChEMBL_Ref = {{ebicite|correct|EBI}}
+}}
+* [http://products.sanofi.us/uroxatral/uroxatral.html Uroxatral (alfuzosin HCl) Extended-Release Tablets Prescribing Information] {{Webarchive|url=https://web.archive.org/web/20160722094349/http://products.sanofi.us/uroxatral/uroxatral.html |date=2016-07-22 }}
+* [https://www.nlm.nih.gov/medlineplus/druginfo/meds/a604002.html Alfuzosin] {{Webarchive|url=https://web.archive.org/web/20160705111542/https://www.nlm.nih.gov/medlineplus/druginfo/meds/a604002.html |date=2016-07-05 }} (General information from the [[National Institutes of Health|NIH]])
+
+{{Drugs used in benign prostatic hypertrophy}}
+{{Adrenergics}}
+
+[[Category:Alpha blockers]]
+[[Category:Carboxamides]]
+[[Category:Quinazolines]]
+[[Category:Tetrahydrofurans]]
+[[Category:RTT]]
+[[or:ଆଲଫୁଜୋସିନ]]
+[[es:Alfuzosin]]

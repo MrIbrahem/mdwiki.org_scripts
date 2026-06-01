@@ -1,6 +1,6 @@
 """ """
 
-from flask_app.main_app.shared.new_updater import MoveExternalLinksSection
+from flask_app.main_app.shared.new_updater.mv_section import MoveExternalLinksSection
 
 text = """"""
 

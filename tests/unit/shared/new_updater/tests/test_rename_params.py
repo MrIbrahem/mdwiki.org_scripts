@@ -1,6 +1,6 @@
 """ """
 
-from flask_app.main_app.shared.new_updater import rename_params
+from flask_app.main_app.shared.new_updater.bots.old_params import rename_params
 
 old = """{{drugbox
 |side effects=test
