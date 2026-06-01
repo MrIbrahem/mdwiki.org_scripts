@@ -17,21 +17,13 @@ logger = logging.getLogger(__name__)
 # ── User CRUD ───────────────────────────────────────────────
 
 
-def create_user(user_id: int, username: str) -> UsersRecord:
+def create_user(username: str) -> UsersRecord:
     """Create a user identity row. Idempotent — returns existing if present."""
-    existing = db.session.query(UsersRecord).filter(UsersRecord.user_id == user_id).first()
+    existing = db.session.query(UsersRecord).filter(UsersRecord.username == username).first()
     if existing:
-        if existing.username != username:
-            existing.username = username
-            try:
-                db.session.commit()
-                db.session.refresh(existing)
-            except Exception:
-                db.session.rollback()
-                raise
         return existing
 
-    record = UsersRecord(user_id=user_id, username=username)
+    record = UsersRecord(username=username)
     db.session.add(record)
     try:
         db.session.commit()

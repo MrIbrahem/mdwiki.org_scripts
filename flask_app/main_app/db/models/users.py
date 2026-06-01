@@ -15,7 +15,7 @@ class UsersRecord(db.Model):
     """Stable user identity — source of truth for user_id and username.
 
     CREATE TABLE `users` (
-        `user_id` int NOT NULL,
+        `user_id` int NOT NULL AUTO_INCREMENT,
         `username` varchar(255) NOT NULL,
         `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (`user_id`),
@@ -25,7 +25,7 @@ class UsersRecord(db.Model):
 
     __tablename__ = "users"
 
-    user_id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(255), unique=True, nullable=False)
 
     created_at = Column(DateTime, nullable=False, server_default=func.current_timestamp())

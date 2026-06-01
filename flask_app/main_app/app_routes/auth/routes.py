@@ -156,7 +156,7 @@ def callback() -> Response:
     # ------------------
     # access_token, identity
     try:
-        user_id, username, user_record = complete_oauth_callback(request_token, urlencode(request.args))
+        user_record = complete_oauth_callback(request_token, urlencode(request.args))
     except OAuthIdentityError:
         logger.exception("OAuth identity verification failed")
         flash("Failed to verify OAuth identity", "danger")
@@ -166,9 +166,11 @@ def callback() -> Response:
         flash(str(exc), exc.flash_category)
         return redirect(url_for("main.index"))
 
+    user_id = user_record.user_id
+
     # Set sessions
     session["uid"] = user_id
-    session["username"] = username
+    session["username"] = user_record.username
 
     # Set response and cookies
     response = make_response(redirect(session.pop("post_login_redirect", url_for("main.index"))))

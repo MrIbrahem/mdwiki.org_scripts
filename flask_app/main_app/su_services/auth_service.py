@@ -35,32 +35,7 @@ def extract_token_credentials(access_token: Any) -> Tuple[str, str]:
     return str(token_key), str(token_secret)
 
 
-def extract_identity_fields(identity: dict[str, Any]) -> Tuple[int, str]:
-    """Extract user_id and username from an OAuth identity dict."""
-    user_identifier = None
-    user_identifier_keys = {"sub", "id", "central_id", "user_id"}
-    for key in user_identifier_keys:
-        user_identifier = identity.get(key)
-        if user_identifier:
-            logger.debug("Found user identifier in OAuth identity: %s", key)
-            break
-
-    if not user_identifier:
-        raise OAuthCallbackError("Missing user id")
-
-    try:
-        user_id = int(user_identifier)
-    except (TypeError, ValueError) as exc:
-        raise OAuthCallbackError("Invalid user identifier") from exc
-
-    username = identity.get("username") or identity.get("name")
-    if not username:
-        raise OAuthCallbackError("Missing username")
-
-    return user_id, username
-
-
-def complete_oauth_callback(request_token: Any, query_string: str) -> Tuple[int, str, Any]:
+def complete_oauth_callback(request_token: Any, query_string: str) -> Any:
     """Complete the OAuth handshake and persist credentials.
 
     Returns:
@@ -69,13 +44,29 @@ def complete_oauth_callback(request_token: Any, query_string: str) -> Tuple[int,
     Raises:
         OAuthIdentityError: If identity verification fails.
         OAuthCallbackError: If token extraction or user persistence fails.
+
+    identity example: for references: {
+        "iss": "https://meta.wikimedia.org",
+        "sub": "4327653",
+        "username": "username",
+        "editcount": 1182,
+        "email_verified": true, "confirmed_email": true,
+        "blocked": false,
+        "registered": "20110101133631",
+        "groups": [ "autopatrolled", "*", "user", "autoconfirmed" ],
+        "rights": [ "read", "edit" ],
+        "grants": [ "basic", "editpage", "createeditmovepage", "uploadfile", "uploadeditmovefile", "editmywatchlist" ],
+        "nonce": ""
+    }
     """
     access_token, identity = complete_login(request_token, query_string)
     token_key, token_secret = extract_token_credentials(access_token)
-    user_id, username = extract_identity_fields(identity)
+
+    username = identity.get("username")
+    if not username:
+        raise OAuthCallbackError("Missing username")
 
     user_record = UserService.save_and_get_user(
-        user_id=user_id,
         username=username,
         access_key=token_key,
         access_secret=token_secret,
@@ -84,12 +75,11 @@ def complete_oauth_callback(request_token: Any, query_string: str) -> Tuple[int,
     if not user_record:
         raise OAuthCallbackError("Failed to process user credentials")
 
-    return user_id, username, user_record
+    return user_record
 
 
 __all__ = [
     "OAuthCallbackError",
     "complete_oauth_callback",
     "extract_token_credentials",
-    "extract_identity_fields",
 ]

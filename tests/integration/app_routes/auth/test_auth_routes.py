@@ -267,7 +267,6 @@ class TestLogoutRoute:
                 access_key="k",
                 access_secret="s",
             )
-
         with mock_client.session_transaction() as sess:
             sess["uid"] = 42
             sess["username"] = "LogoutUser"

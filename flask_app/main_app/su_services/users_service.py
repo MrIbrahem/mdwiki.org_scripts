@@ -25,7 +25,9 @@ class UserService:
             username = (username or "").strip()
 
             # Ensure user identity row exists
-            user: UsersRecord = create_user(user_id, username)
+            user: UsersRecord = create_user(username)
+
+            user_id = user.user_id
 
             # 1. Update or insert into database via repository
             upsert_user_token(
