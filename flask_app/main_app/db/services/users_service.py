@@ -1,0 +1,79 @@
+"""
+SQLAlchemy-based service for managing users and user tokens.
+
+Users table is the stable identity layer. Tokens are a child of users.
+"""
+
+from __future__ import annotations
+
+import logging
+from typing import Optional
+
+from ...extensions import db
+from ..models import UsersRecord
+
+logger = logging.getLogger(__name__)
+
+# ── User CRUD ───────────────────────────────────────────────
+
+
+def create_user(user_id: int, username: str) -> UsersRecord:
+    """Create a user identity row. Idempotent — returns existing if present."""
+    existing = db.session.query(UsersRecord).filter(UsersRecord.user_id == user_id).first()
+    if existing:
+        if existing.username != username:
+            existing.username = username
+            try:
+                db.session.commit()
+                db.session.refresh(existing)
+            except Exception:
+                db.session.rollback()
+                raise
+        return existing
+
+    record = UsersRecord(user_id=user_id, username=username)
+    db.session.add(record)
+    try:
+        db.session.commit()
+        db.session.refresh(record)
+    except Exception:
+        db.session.rollback()
+        raise
+    return record
+
+
+def get_user(user_id: int) -> Optional[UsersRecord]:
+    """Fetch a user by user_id."""
+    if not user_id:
+        return None
+    return db.session.query(UsersRecord).filter(UsersRecord.user_id == int(user_id)).first()
+
+
+def get_user_by_username(username: str) -> Optional[UsersRecord]:
+    """Fetch a user by username."""
+    username = (username or "").strip()
+    if not username:
+        return None
+    return db.session.query(UsersRecord).filter(UsersRecord.username == username).first()
+
+
+def delete_user(user_id: int) -> bool:
+    """Delete user row. Cascades to user_tokens and admin_users via FK."""
+    if not user_id:
+        return False
+    affected = db.session.query(UsersRecord).filter(UsersRecord.user_id == user_id).delete()
+    db.session.commit()
+    return affected > 0
+
+
+def list_users() -> list[UsersRecord]:
+    """Return all user identity records."""
+    return db.session.query(UsersRecord).all()
+
+__all__ = [
+    "create_user",
+    "delete_user",
+    "get_user",
+    "get_user_by_username",
+    "list_users",
+]
