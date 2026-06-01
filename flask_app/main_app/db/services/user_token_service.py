@@ -36,7 +36,7 @@ def get_authenticated_user_token(user_id: int) -> None | UserTokenRecord:
         return None
 
 
-def upsert_user_token(*, user_id: int, username: str, access_key: str, access_secret: str) -> None:
+def upsert_user_token(*, user_id: int, access_key: str, access_secret: str) -> None:
     """Insert or update the encrypted OAuth credentials for a user.
 
     Automatically creates the ``users`` row if it does not exist.

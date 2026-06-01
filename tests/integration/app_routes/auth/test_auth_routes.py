@@ -13,6 +13,7 @@ import pytest
 from flask.app import Flask
 from flask_app.main_app.config import settings
 from flask_app.main_app.db.services import upsert_user_token
+from flask_app.main_app.db.services.users_service import create_user
 
 # Session key names from settings
 _STATE_KEY = settings.sessions.state_key  # "oauth_state_nonce"
@@ -260,9 +261,9 @@ class TestLogoutRoute:
     def test_logout_clears_session(self, app, mock_client):
         """After logout, session uid and username should be gone."""
         with app.app_context():
+            create_user(42, "LogoutUser")
             upsert_user_token(
                 user_id=42,
-                username="LogoutUser",
                 access_key="k",
                 access_secret="s",
             )
@@ -297,9 +298,9 @@ class TestLogoutRoute:
     def test_logout_deletes_user_token_from_db(self, app, mock_client):
         """Logout should delete the user token record from DB."""
         with app.app_context():
+            create_user(50, "TokenDelete")
             upsert_user_token(
                 user_id=50,
-                username="TokenDelete",
                 access_key="k",
                 access_secret="s",
             )

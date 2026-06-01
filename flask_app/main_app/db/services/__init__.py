@@ -26,6 +26,14 @@ from .users_service import (
     list_users,
 )
 
+def upsert_user_token_with_username(user_id: int, username: str, access_key: str, access_secret: str) -> None:
+    create_user(user_id, username)
+    upsert_user_token(
+        user_id=user_id,
+        access_key=access_key,
+        access_secret=access_secret,
+    )
+
 __all__ = [
     # users_service
     "get_authenticated_user_token",

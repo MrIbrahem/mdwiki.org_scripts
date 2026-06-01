@@ -29,7 +29,6 @@ class UserService:
             # 1. Update or insert into database via repository
             upsert_user_token(
                 user_id=user_id,
-                username=username,
                 access_key=access_key,
                 access_secret=access_secret,
             )

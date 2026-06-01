@@ -16,13 +16,22 @@ from flask_app.main_app.db.services.admin_service import (
     list_coordinators,
     set_coordinator_active,
 )
+from flask_app.main_app.db.services.users_service import create_user
 
+
+def upsert_user_token_with_username(user_id: int, username: str, access_key: str, access_secret: str) -> None:
+    create_user(user_id, username)
+    upsert_user_token(
+        user_id=user_id,
+        access_key=access_key,
+        access_secret=access_secret,
+    )
 
 @pytest.fixture(autouse=True)
 def _seed_admin(app, user_id=1, username="AdminUser"):
     """Create a user token + active coordinator record for testing admin routes."""
     with app.app_context():
-        upsert_user_token(
+        upsert_user_token_with_username(
             user_id=user_id,
             username=username,
             access_key="admin-key",
@@ -56,7 +65,7 @@ class TestAdminDashboard:
     def test_admin_requires_coordinator_role(self, app, mock_client):
         """A regular user (not coordinator) should get 403."""
         with app.app_context():
-            upsert_user_token(
+            upsert_user_token_with_username(
                 user_id=2,
                 username="RegularUser",
                 access_key="k",
@@ -79,7 +88,7 @@ class TestAdminDashboard:
     def test_admin_inactive_coordinator_gets_403(self, app, mock_client):
         """A deactivated coordinator should get 403."""
         with app.app_context():
-            upsert_user_token(
+            upsert_user_token_with_username(
                 user_id=3,
                 username="InactiveAdmin",
                 access_key="k",
@@ -103,7 +112,7 @@ class TestAdminUsersPage:
     def test_users_page_requires_admin(self, app, mock_client):
         """Non-admin user should get 403."""
         with app.app_context():
-            upsert_user_token(
+            upsert_user_token_with_username(
                 user_id=10,
                 username="NonAdmin",
                 access_key="k",
@@ -121,7 +130,7 @@ class TestAdminUsersPage:
         """Admin should see the users list with seeded users."""
 
         with app.app_context():
-            upsert_user_token(
+            upsert_user_token_with_username(
                 user_id=20,
                 username="SomeUser",
                 access_key="k",
@@ -147,7 +156,7 @@ class TestCoordinatorRoutes:
     def test_coordinators_dashboard_requires_admin(self, app, mock_client):
         """Non-admin should get 403 on coordinators page."""
         with app.app_context():
-            upsert_user_token(
+            upsert_user_token_with_username(
                 user_id=10,
                 username="NonAdmin",
                 access_key="k",
@@ -172,7 +181,7 @@ class TestCoordinatorRoutes:
         """Admin should be able to add a new coordinator."""
 
         with app.app_context():
-            upsert_user_token(
+            upsert_user_token_with_username(
                 user_id=30,
                 username="NewCoord",
                 access_key="k",
@@ -224,7 +233,7 @@ class TestCoordinatorRoutes:
         """Admin should be able to deactivate a coordinator."""
 
         with app.app_context():
-            upsert_user_token(
+            upsert_user_token_with_username(
                 user_id=31,
                 username="ToggleCoord",
                 access_key="k",
@@ -248,7 +257,7 @@ class TestCoordinatorRoutes:
         """Admin should be able to reactivate a coordinator."""
 
         with app.app_context():
-            upsert_user_token(
+            upsert_user_token_with_username(
                 user_id=32,
                 username="ReactivateCoord",
                 access_key="k",
@@ -273,7 +282,7 @@ class TestCoordinatorRoutes:
         """Admin should be able to delete a coordinator."""
 
         with app.app_context():
-            upsert_user_token(
+            upsert_user_token_with_username(
                 user_id=33,
                 username="DeleteCoord",
                 access_key="k",
@@ -313,7 +322,7 @@ class TestAdminRouteIntegration:
         """Full lifecycle: add -> deactivate -> reactivate -> delete coordinator."""
 
         with app.app_context():
-            upsert_user_token(
+            upsert_user_token_with_username(
                 user_id=50,
                 username="LifecycleCoord",
                 access_key="k",
@@ -367,7 +376,7 @@ class TestAdminRouteIntegration:
     def test_non_admin_cannot_access_any_admin_route(self, app, mock_client):
         """A regular user should be blocked from all admin endpoints."""
         with app.app_context():
-            upsert_user_token(
+            upsert_user_token_with_username(
                 user_id=60,
                 username="BlockedUser",
                 access_key="k",

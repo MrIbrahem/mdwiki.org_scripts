@@ -18,6 +18,7 @@ from flask_app.main_app.db.services import (
     upsert_user_token,
 )
 from flask_app.main_app.db.services.admin_service import add_coordinator
+from flask_app.main_app.db.services.users_service import create_user
 
 VALID_JOB_TYPE = "fixref"
 ANOTHER_VALID_JOB_TYPE = "create_redirects"
@@ -39,9 +40,9 @@ def _clean_db(app: Flask):
 def _seed_user(app, user_id=1, username="JobUser"):
     """Create a user token record for job ownership."""
     with app.app_context():
+        create_user(user_id, username)
         upsert_user_token(
             user_id=user_id,
-            username=username,
             access_key="k",
             access_secret="s",
         )
