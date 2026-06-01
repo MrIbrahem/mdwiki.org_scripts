@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from flask.app import Flask
+
 from flask_app.main_app.db.services.users_service import create_user
 from flask_app.main_app.db.services.user_token_service import (
     delete_user_token,
@@ -8,14 +10,14 @@ from flask_app.main_app.db.services.user_token_service import (
     upsert_user_token,
 )
 
-def test_delete_user_cascades(app):
+def test_delete_user_cascades(app: Flask) -> None:
     with app.app_context():
         create_user(1030, "svc_dave")
         upsert_user_token(user_id=1030, access_key="k", access_secret="s")
         assert get_user_token(1030) is not None
 
 
-def test_upsert_get_delete_user_token(app):
+def test_upsert_get_delete_user_token(app: Flask) -> None:
     with app.app_context():
         # Test insert
         create_user(1040, "svc_eve")
@@ -40,7 +42,7 @@ def test_upsert_get_delete_user_token(app):
         delete_user_token(1040)
         assert get_user_token(1040) is None
 
-def test_get_user_token_non_existent(app):
+def test_get_user_token_non_existent(app: Flask) -> None:
     with app.app_context():
         assert get_user_token(999999) is None
         assert get_user_token_by_username("non_existent") is None
