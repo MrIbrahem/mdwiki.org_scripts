@@ -83,8 +83,7 @@ def create_user_token(user_id: int, access_key: str, access_secret: str) -> User
 
 def update_user_token(user_id: int, access_key: str, access_secret: str) -> UserTokenRecord:
     """
-    Upsert the encrypted OAuth credentials for a user.
-    Creates a new token row if one does not exist.
+    update the encrypted OAuth credentials for a user.
     """
     encrypted_token = encrypt_value(access_key)
     encrypted_secret = encrypt_value(access_secret)
