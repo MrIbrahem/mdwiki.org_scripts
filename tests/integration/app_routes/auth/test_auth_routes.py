@@ -15,6 +15,9 @@ from flask_app.main_app.config import settings
 from flask_app.main_app.db.services import upsert_user_token
 from flask_app.main_app.db.services.users_service import create_user
 
+from flask_app.main_app.extensions import db
+from flask_app.main_app.db.services import get_user_by_username, get_user_token
+
 # Session key names from settings
 _STATE_KEY = settings.sessions.state_key  # "oauth_state_nonce"
 _REQ_TOKEN_KEY = settings.sessions.request_token_key  # "state"
@@ -25,7 +28,6 @@ def _clean_db(app: Flask):
     """Clean all tables after each test to prevent state leaking."""
     yield
     with app.app_context():
-        from flask_app.main_app.extensions import db
 
         meta = db.metadata
         with db.engine.begin() as conn:
@@ -141,7 +143,7 @@ class TestCallbackRoute:
         assert resp.status_code == 302
 
         with mock_client.session_transaction() as sess:
-            assert sess.get("uid") == 42
+            assert sess.get("uid") is not None
             assert sess.get("username") == "TestUser"
 
     def test_callback_success_persists_user_token(self, app, mock_client):
@@ -167,12 +169,11 @@ class TestCallbackRoute:
             )
 
         with app.app_context():
-            from flask_app.main_app.db.services import get_user, get_user_token
 
-            token = get_user_token(99)
+            user = get_user_by_username("DbUser")
+            assert user is not None
+            token = get_user_token(user.user_id)
             assert token is not None
-            user = get_user(99)
-            assert user.username == "DbUser"
 
     def test_callback_success_sets_cookie(self, app, mock_client):
         """Successful callback should set the auth cookie in response headers."""
@@ -261,14 +262,14 @@ class TestLogoutRoute:
     def test_logout_clears_session(self, app, mock_client):
         """After logout, session uid and username should be gone."""
         with app.app_context():
-            create_user(42, "LogoutUser")
+            user = create_user("LogoutUser")
             upsert_user_token(
-                user_id=42,
+                user_id=user.user_id,
                 access_key="k",
                 access_secret="s",
             )
         with mock_client.session_transaction() as sess:
-            sess["uid"] = 42
+            sess["uid"] = user.user_id
             sess["username"] = "LogoutUser"
 
         mock_client.get("/logout", follow_redirects=True)
@@ -297,24 +298,22 @@ class TestLogoutRoute:
     def test_logout_deletes_user_token_from_db(self, app, mock_client):
         """Logout should delete the user token record from DB."""
         with app.app_context():
-            create_user(50, "TokenDelete")
+            user = create_user("TokenDelete")
             upsert_user_token(
-                user_id=50,
+                user_id=user.user_id,
                 access_key="k",
                 access_secret="s",
             )
-            from flask_app.main_app.db.services import get_user_token
 
-            assert get_user_token(50) is not None
+            assert get_user_token(user.user_id) is not None
 
         with mock_client.session_transaction() as sess:
-            sess["uid"] = 50
+            sess["uid"] = user.user_id
             sess["username"] = "TokenDelete"
 
         mock_client.get("/logout", follow_redirects=True)
 
         with app.app_context():
-            from flask_app.main_app.db.services import get_user_token
 
             assert get_user_token(50) is None
 
@@ -361,12 +360,11 @@ class TestAuthRouteIntegration:
 
         # Step 4: Verify user is in the database
         with app.app_context():
-            from flask_app.main_app.db.services import get_user, get_user_token
 
-            token = get_user_token(77)
+            user = get_user_by_username("FlowUser")
+            assert user is not None
+            token = get_user_token(user.user_id)
             assert token is not None
-            user = get_user(77)
-            assert user.username == "FlowUser"
 
     def test_authenticated_user_can_access_profile(self, mock_client, login):
         """A logged-in user should be able to access /profile/."""

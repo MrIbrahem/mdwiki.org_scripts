@@ -12,35 +12,34 @@ from flask_app.main_app.db.services.users_service import create_user
 
 def test_delete_user_cascades(app: Flask) -> None:
     with app.app_context():
-        create_user(1030, "svc_dave")
-        upsert_user_token(user_id=1030, access_key="k", access_secret="s")
-        assert get_user_token(1030) is not None
+        user = create_user("svc_dave")
+        upsert_user_token(user_id=user.user_id, access_key="k", access_secret="s")
+        assert get_user_token(user.user_id) is not None
 
 
 def test_upsert_get_delete_user_token(app: Flask) -> None:
     with app.app_context():
         # Test insert
-        create_user(1040, "svc_eve")
-        upsert_user_token(user_id=1040, access_key="key", access_secret="secret")
+        user = create_user("svc_eve")
+        upsert_user_token(user_id=user.user_id, access_key="key", access_secret="secret")
 
-        token_record = get_user_token(1040)
+        token_record = get_user_token(user.user_id)
         assert token_record is not None
         assert token_record.access_token is not None
         assert token_record.access_secret is not None
 
         # Test update
-        create_user(1040, "svc_eve_updated")
-        upsert_user_token(user_id=1040, access_key="new_key", access_secret="new_secret")
-        token_record = get_user_token(1040)
+        upsert_user_token(user_id=user.user_id, access_key="new_key", access_secret="new_secret")
+        token_record = get_user_token(user.user_id)
 
         # Test get by username
-        token_record = get_user_token_by_username("svc_eve_updated")
+        token_record = get_user_token_by_username("svc_eve")
         assert token_record is not None
-        assert token_record.user_id == 1040
+        assert token_record.user_id == user.user_id
 
         # Test delete token only
-        delete_user_token(1040)
-        assert get_user_token(1040) is None
+        delete_user_token(user.user_id)
+        assert get_user_token(user.user_id) is None
 
 
 def test_get_user_token_non_existent(app: Flask) -> None:

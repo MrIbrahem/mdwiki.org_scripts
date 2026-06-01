@@ -13,41 +13,41 @@ from flask_app.main_app.extensions import db
 
 def test_create_user(app: Flask) -> None:
     with app.app_context():
-        user = create_user(1001, "svc_alice")
-        assert user.user_id == 1001
+        user = create_user("svc_alice")
+        assert user.user_id is not None
         assert user.username == "svc_alice"
 
         # Idempotent — returns existing
-        user2 = create_user(1001, "svc_alice_renamed")
-        assert user2.user_id == 1001
-        assert user2.username == "svc_alice_renamed"
+        user2 = create_user("svc_alice")
+        assert user2.user_id == user.user_id
+        assert user2.username == "svc_alice"
 
 
 def test_get_user(app: Flask) -> None:
     with app.app_context():
-        create_user(1010, "svc_bob")
-        user = get_user(1010)
-        assert user is not None
-        assert user.username == "svc_bob"
+        user = create_user("svc_bob")
+        fetched = get_user(user.user_id)
+        assert fetched is not None
+        assert fetched.username == "svc_bob"
 
         assert get_user(999999) is None
 
 
 def test_get_user_by_username(app: Flask) -> None:
     with app.app_context():
-        create_user(1020, "svc_charlie")
-        user = get_user_by_username("svc_charlie")
-        assert user is not None
-        assert user.user_id == 1020
+        user = create_user("svc_charlie")
+        fetched = get_user_by_username("svc_charlie")
+        assert fetched is not None
+        assert fetched.user_id == user.user_id
 
         assert get_user_by_username("nonexistent_svc_user") is None
 
 
 def test_delete_user_cascades(app: Flask) -> None:
     with app.app_context():
-        create_user(1030, "svc_dave")
-        delete_user(1030)
-        assert get_user(1030) is None
+        user = create_user("svc_dave")
+        delete_user(user.user_id)
+        assert get_user(user.user_id) is None
 
 
 def test_list_users(app: Flask) -> None:
@@ -57,8 +57,8 @@ def test_list_users(app: Flask) -> None:
         db.session.execute(db.text("DELETE FROM users"))
         db.session.commit()
 
-        create_user(2001, "list_user1")
-        create_user(2002, "list_user2")
+        create_user("list_user1")
+        create_user("list_user2")
         users = list_users()
         assert len(users) == 2
         usernames = {u.username for u in users}
