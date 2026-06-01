@@ -38,10 +38,9 @@ def _dashboard() -> str:
     )
 
 
-def _update_can_run_jobs(user_id: int) -> ResponseReturnValue:
+def _update_can_run_jobs(user_id: int, desired: int) -> ResponseReturnValue:
     """Toggle the can_run_jobs column for a user."""
 
-    desired = request.form.get("can_run", "0") == "1"
     try:
         record = users_service.toggle_can_run_jobs(user_id, desired)
     except LookupError as exc:
@@ -55,10 +54,9 @@ def _update_can_run_jobs(user_id: int) -> ResponseReturnValue:
 
     return redirect(url_for("admin.users.dashboard"))
 
-def _update_can_run_bg_jobs(user_id: int) -> ResponseReturnValue:
+def _update_can_run_bg_jobs(user_id: int, desired: int) -> ResponseReturnValue:
     """Toggle the can_run_bg_jobs column for a user."""
 
-    desired = request.form.get("can_run", "0") == "1"
     try:
         record = users_service.toggle_can_run_bg_jobs(user_id, desired)
     except LookupError as exc:
@@ -89,12 +87,14 @@ class UsersRoutes:
         @self.bp.post("/<int:user_id>/can_run_jobs")
         @admin_required
         def update_can_run_jobs(user_id: int) -> ResponseReturnValue:
-            return _update_can_run_jobs(user_id)
+            desired = 1 if request.form.get("can_run", "0") == "1" else 0
+            return _update_can_run_jobs(user_id, desired)
 
         @self.bp.post("/<int:user_id>/can_run_bg_jobs")
         @admin_required
         def update_can_run_bg_jobs(user_id: int) -> ResponseReturnValue:
-            return _update_can_run_bg_jobs(user_id)
+            desired = 1 if request.form.get("can_run", "0") == "1" else 0
+            return _update_can_run_bg_jobs(user_id, desired)
 
 
 users_module = UsersRoutes()
