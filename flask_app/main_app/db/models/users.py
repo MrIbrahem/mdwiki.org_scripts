@@ -10,6 +10,7 @@ from ...shared.decode_bytes import coerce_bytes
 
 logger = logging.getLogger(__name__)
 
+
 class UsersRecord(db.Model):
     """Stable user identity — source of truth for user_id and username.
 
@@ -28,8 +29,8 @@ class UsersRecord(db.Model):
 
     user_id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(255), unique=True, nullable=False)
-    can_run_jobs = Column(Boolean, nullable=False, default="0", server_default="0")
-    can_run_bg_jobs = Column(Boolean, nullable=False, default="0", server_default="0")
+    can_run_jobs = Column(Boolean, nullable=False, default=False, server_default="0")
+    can_run_bg_jobs = Column(Boolean, nullable=False, default=False, server_default="0")
 
     created_at = Column(DateTime, nullable=False, server_default=func.current_timestamp())
 

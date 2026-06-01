@@ -9,6 +9,7 @@ from flask import Blueprint, flash, g, redirect, render_template, request, url_f
 
 from ...shared import newupdater_service as svc
 from ..auth.utils import oauth_required
+from ..utils.routes_utils import can_run_jobs
 
 bp_newupdater = Blueprint("newupdater", __name__, url_prefix="/newupdater")
 
@@ -34,6 +35,16 @@ def _newupdater(title: str, save: bool) -> str:
         )
 
     user = getattr(g, "_current_user", None)
+
+    if not can_run_jobs(user):
+        flash("You do not have permission to run synchronous edit jobs.", "danger")
+        return render_template(
+            "newupdater.html",
+            title="Medical content updater",
+            form_title=title,
+            outcome=None,
+            save=save,
+        )
 
     try:
         outcome = svc.newupdater_one_title(

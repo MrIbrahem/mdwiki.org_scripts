@@ -9,9 +9,8 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from ..exceptions import UserNotFoundError
-
 from ...extensions import db
+from ..exceptions import UserNotFoundError
 from ..models import UsersRecord
 
 logger = logging.getLogger(__name__)
@@ -65,7 +64,6 @@ def list_users() -> list[UsersRecord]:
     return db.session.query(UsersRecord).all()
 
 
-
 def toggle_can_run_jobs(user_id: int, value: bool) -> UsersRecord:
     """Toggle can_run_jobs."""
     record = get_user(user_id)
@@ -79,6 +77,7 @@ def toggle_can_run_jobs(user_id: int, value: bool) -> UsersRecord:
 
     return record
 
+
 def toggle_can_run_bg_jobs(user_id: int, value: bool) -> UsersRecord:
     """Toggle can_run_bg_jobs."""
     record = get_user(user_id)
@@ -91,6 +90,7 @@ def toggle_can_run_bg_jobs(user_id: int, value: bool) -> UsersRecord:
     db.session.refresh(record)
 
     return record
+
 
 __all__ = [
     "create_user",

@@ -12,7 +12,6 @@ from ...new_jobs.workers_list import jobs_data
 logger = logging.getLogger(__name__)
 
 
-
 def _is_admin(user: Any) -> bool:
     """Check if user is an active coordinator (admin)."""
     return bool(user and user.username in active_coordinators())
@@ -49,6 +48,7 @@ def load_auth_payload(user: Any | None) -> Dict[str, Any]:
             "access_secret": access_secret,
         }
     return {}
+
 
 def can_run_jobs(user: Any) -> bool:
     """Return True if user may run synchronous edit jobs.

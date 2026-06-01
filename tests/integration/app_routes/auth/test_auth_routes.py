@@ -12,11 +12,9 @@ from unittest.mock import MagicMock, Mock, patch
 import pytest
 from flask.app import Flask
 from flask_app.main_app.config import settings
-from flask_app.main_app.db.services import upsert_user_token
+from flask_app.main_app.db.services import get_user_by_username, get_user_token, upsert_user_token
 from flask_app.main_app.db.services.users_service import create_user
-
 from flask_app.main_app.extensions import db
-from flask_app.main_app.db.services import get_user_by_username, get_user_token
 
 # Session key names from settings
 _STATE_KEY = settings.sessions.state_key  # "oauth_state_nonce"

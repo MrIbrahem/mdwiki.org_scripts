@@ -54,6 +54,8 @@ class UserService:
                 username=username,
                 access_token=token.access_token,
                 access_secret=token.access_secret,
+                can_run_jobs=user.can_run_jobs,
+                can_run_bg_jobs=user.can_run_bg_jobs,
             )
         except Exception as e:
             logger.exception("Failed to upsert or fetch user credentials: %s", e)
@@ -71,6 +73,8 @@ class UserService:
                 username=token.user.username,
                 access_token=token.access_token,
                 access_secret=token.access_secret,
+                can_run_jobs=token.user.can_run_jobs,
+                can_run_bg_jobs=token.user.can_run_bg_jobs,
             )
         except Exception as e:
             logger.error("Error loading user for ID %s: %s", user_id, e)

@@ -55,6 +55,7 @@ def _update_can_run_jobs(user_id: int, desired: int) -> ResponseReturnValue:
 
     return redirect(url_for("admin.users.dashboard"))
 
+
 def _update_can_run_bg_jobs(user_id: int, desired: int) -> ResponseReturnValue:
     """Toggle the can_run_bg_jobs column for a user."""
 
