@@ -20,7 +20,6 @@ from flask.typing import ResponseReturnValue
 from werkzeug.wrappers.response import Response
 
 from ..db.services import (
-    active_coordinators,
     delete_job,
     get_job,
     list_jobs,
@@ -28,7 +27,7 @@ from ..db.services import (
 from ..new_jobs import jobs_worker
 from ..new_jobs.workers_list import jobs_data
 from ..su_services import load_job_result
-from .utils.routes_utils import load_auth_payload
+from .utils.routes_utils import can_run_bg_jobs, load_auth_payload
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +40,7 @@ def _can_manage_job(job: Any, user: Any) -> bool:
     """
     if not user:
         return False
-    if user.username in active_coordinators():
+    if getattr(user, "is_active_admin", False):
         return True
     if job.username and job.username == user.username:
         return True
@@ -96,6 +95,10 @@ def _start_job(job_type: str, args: dict[str, Any]) -> int | None:
 
     if not user:
         flash("You must be logged in to start this job.", "danger")
+        return None
+
+    if not can_run_bg_jobs(user):
+        flash("You do not have permission to run background jobs.", "danger")
         return None
 
     try:

@@ -19,12 +19,25 @@ from .utils import db_guard
 
 logger = logging.getLogger(__name__)
 
+# ── SELECT ───────────────────────────────────────────────
+
 
 @db_guard(default_return=[], msg="Failed to active coordinators")
 def active_coordinators() -> list[str]:
     """Get a list of active coordinator usernames from the database."""
     records = db.session.query(AdminUserRecord).filter(AdminUserRecord.is_active).all()
     return [u.username for u in records]
+
+
+@db_guard(default_return=False, msg="Failed to check coordinator status")
+def is_active_coordinator(username: str) -> bool:
+    """Check whether a single username is an active coordinator."""
+    return (
+        db.session.query(AdminUserRecord)
+        .filter(AdminUserRecord.username == username, AdminUserRecord.is_active)
+        .first()
+        is not None
+    )
 
 
 def list_coordinators() -> List[AdminUserRecord]:
@@ -44,6 +57,9 @@ def get_coordinator_by_id(coordinator_id: int) -> AdminUserRecord:
     if not record:
         raise LookupError(f"Coordinator id {coordinator_id} was not found")
     return record
+
+
+# ── INSERT, UPDATE, SET ──────────────────────────────────
 
 
 def add_coordinator(username: str) -> AdminUserRecord:
@@ -81,6 +97,9 @@ def set_coordinator_active(coordinator_id: int, is_active: bool) -> AdminUserRec
         return record
 
 
+# ── DELETE ───────────────────────────────────────────────
+
+
 def delete_coordinator(coordinator_id: int) -> bool:
     """
     Delete a coordinator efficiently.
@@ -95,10 +114,11 @@ def delete_coordinator(coordinator_id: int) -> bool:
 
 
 __all__ = [
-    "get_coordinator_by_id",
-    "list_coordinators",
     "active_coordinators",
     "add_coordinator",
-    "set_coordinator_active",
     "delete_coordinator",
+    "get_coordinator_by_id",
+    "is_active_coordinator",
+    "list_coordinators",
+    "set_coordinator_active",
 ]

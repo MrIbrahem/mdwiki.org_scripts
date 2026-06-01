@@ -10,6 +10,7 @@ from ..db.services import (
     get_authenticated_user_token,
     get_user_by_username,
     get_user_token,
+    is_active_coordinator,
     upsert_user_token,
 )
 from ..db.services.users_service import UsersRecord
@@ -54,6 +55,9 @@ class UserService:
                 username=username,
                 access_token=token.access_token,
                 access_secret=token.access_secret,
+                can_run_jobs=user.can_run_jobs,
+                can_run_bg_jobs=user.can_run_bg_jobs,
+                is_active_admin=is_active_coordinator(username),
             )
         except Exception as e:
             logger.exception("Failed to upsert or fetch user credentials: %s", e)
@@ -71,6 +75,9 @@ class UserService:
                 username=token.user.username,
                 access_token=token.access_token,
                 access_secret=token.access_secret,
+                can_run_jobs=token.user.can_run_jobs,
+                can_run_bg_jobs=token.user.can_run_bg_jobs,
+                is_active_admin=is_active_coordinator(token.user.username),
             )
         except Exception as e:
             logger.error("Error loading user for ID %s: %s", user_id, e)

@@ -12,11 +12,9 @@ from unittest.mock import MagicMock, Mock, patch
 import pytest
 from flask.app import Flask
 from flask_app.main_app.config import settings
-from flask_app.main_app.db.services import upsert_user_token
+from flask_app.main_app.db.services import get_user_by_username, get_user_token, upsert_user_token
 from flask_app.main_app.db.services.users_service import create_user
-
 from flask_app.main_app.extensions import db
-from flask_app.main_app.db.services import get_user_by_username, get_user_token
 
 # Session key names from settings
 _STATE_KEY = settings.sessions.state_key  # "oauth_state_nonce"
@@ -301,11 +299,15 @@ class TestLogoutRoute:
         resp = mock_client.get("/logout", follow_redirects=True)
         assert resp.status_code == 200
 
-    def test_logout_flash_messages(self, mock_client, login):
+    def test_logout_flash_messages(self, mock_client, login, monkeypatch):
         """Logout should display flash messages."""
+        mock_flash = Mock()
+        monkeypatch.setattr("flask_app.main_app.app_routes.auth.routes.flash", mock_flash)
+
         login("FlashLogout")
         resp = mock_client.get("/logout", follow_redirects=True)
-        assert b"You have been logged out successfully." in resp.data
+        assert resp.status_code == 200
+        mock_flash.assert_called_once_with("Session cleared.", "info")
 
     def test_logout_deletes_user_token_from_db(self, app, mock_client):
         """Logout should delete the user token record from DB."""

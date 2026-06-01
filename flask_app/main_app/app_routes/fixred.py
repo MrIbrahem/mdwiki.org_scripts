@@ -8,6 +8,7 @@ from flask import Blueprint, flash, g, render_template, request
 
 from ..shared import fixred_one
 from .auth.utils import oauth_required
+from .utils.routes_utils import can_run_jobs
 
 bp_fixred = Blueprint("fixred", __name__, url_prefix="/fixred")
 logger = logging.getLogger(__name__)
@@ -47,6 +48,16 @@ def fixred_post():
         )
 
     user = getattr(g, "_current_user", None)
+
+    if not can_run_jobs(user):
+        flash("You do not have permission to run synchronous edit jobs.", "danger")
+        return render_template(
+            "fixred_one.html",
+            title="Fix redirects in page text",
+            form_title=title,
+            outcome=None,
+            save=save,
+        )
 
     try:
         outcome = fixred_one.work_on_title(

@@ -63,19 +63,7 @@ def _update_running_status(job_id: int, result_file: str | None = None, *, job_t
 # ------------------
 
 
-def create_job(job_type: str, username: str | None = None) -> JobRecord:
-    """
-    Create a new job record.
-
-    Query to match:
-        INSERT INTO jobs (job_type, status, username) VALUES (%s, %s, %s)
-        (job_type, "pending", username),
-    """
-    job = JobRecord(job_type=job_type, username=username, status="pending")
-    db.session.add(job)
-    db.session.commit()
-    db.session.refresh(job)
-    return job
+# ── SELECT ───────────────────────────────────────────────
 
 
 def get_job(job_id: int, job_type: str) -> JobRecord:
@@ -104,19 +92,6 @@ def get_job(job_id: int, job_type: str) -> JobRecord:
     return job
 
 
-def update_job_status(job_id: int, status: str, result_file: str | None = None, *, job_type: str) -> JobRecord:
-    """
-    Update job status and optional result file.
-
-    Query to match:
-
-    """
-    if status == "running":
-        return _update_running_status(job_id, result_file, job_type=job_type)
-
-    return _update_status(job_id, status, result_file, job_type)
-
-
 def list_jobs(limit: int = 100, job_type: str | None = None) -> list[JobRecord]:
     """
     list recent jobs, optionally filtered by job_type.
@@ -138,51 +113,6 @@ def list_jobs(limit: int = 100, job_type: str | None = None) -> list[JobRecord]:
     if job_type:
         query = query.filter(JobRecord.job_type == job_type)
     return query.order_by(JobRecord.created_at.desc()).limit(limit).all()
-
-
-def delete_job(job_id: int, job_type: str) -> bool:
-    """Delete a job by ID and job type efficiently."""
-    affected_rows = (
-        db.session.query(JobRecord)
-        .filter(JobRecord.id == job_id, JobRecord.job_type == job_type)
-        .delete(synchronize_session=False)
-    )
-    db.session.commit()
-    return affected_rows > 0
-
-
-def cancel_job_db(job_id: int, job_type: str | None = None) -> bool:
-    """
-    Mark a job as cancelled.
-        query = "UPDATE jobs SET status = 'cancelled', completed_at = NOW() WHERE id = %s AND status IN ('pending', 'running')"
-        params = [job_id]
-        if job_type:
-            query += " AND job_type = %s"
-            params.append(job_type)
-
-        rowcount = self.db.execute_query_safe(query, tuple(params))
-        return rowcount > 0
-    """
-
-    try:
-        query = db.session.query(JobRecord).filter(JobRecord.id == job_id)
-        if job_type:
-            query = query.filter(JobRecord.job_type == job_type)
-
-        job = query.filter(JobRecord.status.in_(["pending", "running"])).first()
-
-        if job:
-            job.status = "cancelled"
-            job.completed_at = datetime.now(UTC)
-            db.session.commit()
-            db.session.refresh(job)
-            return True
-
-    except Exception:  # pragma: no cover - defensive guard
-        logger.exception("Failed to cancel job %s in database.", job_id)
-        db.session.rollback()
-
-    return False
 
 
 @db_guard(default_return=False)
@@ -234,6 +164,85 @@ def get_user_jobs_stats(username: str) -> dict[str, dict[str, int] | list[JobRec
     }
 
     return data
+
+
+# ── INSERT, UPDATE, SET ──────────────────────────────────
+
+
+def create_job(job_type: str, username: str | None = None) -> JobRecord:
+    """
+    Create a new job record.
+
+    Query to match:
+        INSERT INTO jobs (job_type, status, username) VALUES (%s, %s, %s)
+        (job_type, "pending", username),
+    """
+    job = JobRecord(job_type=job_type, username=username, status="pending")
+    db.session.add(job)
+    db.session.commit()
+    db.session.refresh(job)
+    return job
+
+
+def update_job_status(job_id: int, status: str, result_file: str | None = None, *, job_type: str) -> JobRecord:
+    """
+    Update job status and optional result file.
+
+    Query to match:
+
+    """
+    if status == "running":
+        return _update_running_status(job_id, result_file, job_type=job_type)
+
+    return _update_status(job_id, status, result_file, job_type)
+
+
+def cancel_job_db(job_id: int, job_type: str | None = None) -> bool:
+    """
+    Mark a job as cancelled.
+        query = "UPDATE jobs SET status = 'cancelled', completed_at = NOW() WHERE id = %s AND status IN ('pending', 'running')"
+        params = [job_id]
+        if job_type:
+            query += " AND job_type = %s"
+            params.append(job_type)
+
+        rowcount = self.db.execute_query_safe(query, tuple(params))
+        return rowcount > 0
+    """
+
+    try:
+        query = db.session.query(JobRecord).filter(JobRecord.id == job_id)
+        if job_type:
+            query = query.filter(JobRecord.job_type == job_type)
+
+        job = query.filter(JobRecord.status.in_(["pending", "running"])).first()
+
+        if job:
+            job.status = "cancelled"
+            job.completed_at = datetime.now(UTC)
+            db.session.commit()
+            db.session.refresh(job)
+            return True
+
+    except Exception:  # pragma: no cover - defensive guard
+        logger.exception("Failed to cancel job %s in database.", job_id)
+        db.session.rollback()
+
+    return False
+
+
+# ── DELETE ───────────────────────────────────────────────
+
+
+def delete_job(job_id: int, job_type: str) -> bool:
+    """Delete a job by ID and job type efficiently."""
+    affected_rows = (
+        db.session.query(JobRecord)
+        .filter(JobRecord.id == job_id, JobRecord.job_type == job_type)
+        .delete(synchronize_session=False)
+    )
+    db.session.commit()
+    return affected_rows > 0
 
 
 __all__ = [

@@ -104,7 +104,7 @@ class CreateRedirectsWorker(BaseObjectsJobWorker):
 
             status = "created" if counts.get("created") else "skipped"
 
-            msg = counts["msg"] or f"created={counts.get('created', 0)} exists={counts.get('already_exists', 0)}"
+            msg = counts.get("msg") or f"created={counts.get('created', 0)} exists={counts.get('already_exists', 0)}"
 
             page_record = {
                 "title": title,
@@ -136,7 +136,7 @@ class CreateRedirectsWorker(BaseObjectsJobWorker):
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _process_one(self, title: str) -> dict[str, int]:
+    def _process_one(self, title: str) -> dict[str, Any]:
         """Copy missing redirects for one source title; return per-title counts."""
         counts = {"target_missing": 0, "created": 0, "already_exists": 0, "skipped": 0, "errors": 0, "msg": ""}
 

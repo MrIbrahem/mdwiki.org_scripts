@@ -2,17 +2,16 @@
 
 {% block title %}Users · Mdwiki tools{% endblock %}
 
-{%- macro update_user_can_run(end_point, user_id, value) -%}
-<form method="post" action="{{ url_for(end_point, user_id=user_id) }}"
-    class="d-inline">
+{%- macro update_user_can_run(end_point, user_id, value, column_name) -%}
+<form method="post" action="{{ url_for(end_point, user_id=user_id) }}" class="d-inline">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <div class="form-check form-switch d-inline-flex align-items-center">
-        <input type="hidden" name="active" id="user-can-value-{{ user_id }}"
+        <input type="hidden" name="{{ column_name }}" id="{{ column_name }}-value-{{ user_id }}"
             value="{{ 1 if value else 0 }}">
-        <input class="form-check-input" type="checkbox" role="switch" id="user-can-{{ user_id }}"
+        <input class="form-check-input" type="checkbox" role="switch" id="{{ column_name }}-{{ user_id }}"
             {% if value %}checked{% endif %}
-            onchange="document.getElementById('user-can-value-{{ user_id }}').value = this.checked ? '1' : '0'; this.form.submit();">
-        <label class="visually-hidden" for="user-can-{{ user_id }}">Toggle
+            onchange="document.getElementById('{{ column_name }}-value-{{ user_id }}').value = this.checked ? '1' : '0'; this.form.submit();">
+        <label class="visually-hidden" for="{{ column_name }}-{{ user_id }}">Toggle
             user state</label>
     </div>
 </form>
@@ -58,9 +57,11 @@
                         </td>
                         <td class="text-center">{{ user.created_at }}</td>
                         <td class="text-center">
-                            {{ update_user_can_run('admin.users.update_can_run_jobs', user.user_id, user.can_run_jobs) }}
+                            {{ update_user_can_run('admin.users.update_can_run_jobs', user.user_id, user.can_run_jobs, "can_run_jobs") }}
                         </td>
-                            {{ update_user_can_run('admin.users.update_can_run_bg_jobs', user.user_id, user.can_run_bg_jobs) }}
+                        <td class="text-center">
+                            {{ update_user_can_run('admin.users.update_can_run_bg_jobs', user.user_id, user.can_run_bg_jobs, "can_run_bg_jobs") }}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

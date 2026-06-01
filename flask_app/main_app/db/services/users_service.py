@@ -10,11 +10,35 @@ import logging
 from typing import Optional
 
 from ...extensions import db
+from ..exceptions import UserNotFoundError
 from ..models import UsersRecord
 
 logger = logging.getLogger(__name__)
 
-# ── User CRUD ───────────────────────────────────────────────
+# ── SELECT ───────────────────────────────────────────────
+
+
+def list_users() -> list[UsersRecord]:
+    """Return all user identity records."""
+    return db.session.query(UsersRecord).all()
+
+
+def get_user(user_id: int) -> Optional[UsersRecord]:
+    """Fetch a user by user_id."""
+    if not user_id:
+        return None
+    return db.session.query(UsersRecord).filter(UsersRecord.user_id == int(user_id)).first()
+
+
+def get_user_by_username(username: str) -> Optional[UsersRecord]:
+    """Fetch a user by username."""
+    username = (username or "").strip()
+    if not username:
+        return None
+    return db.session.query(UsersRecord).filter(UsersRecord.username == username).first()
+
+
+# ── INSERT, UPDATE, SET ──────────────────────────────────
 
 
 def create_user(username: str) -> UsersRecord:
@@ -34,19 +58,35 @@ def create_user(username: str) -> UsersRecord:
     return record
 
 
-def get_user(user_id: int) -> Optional[UsersRecord]:
-    """Fetch a user by user_id."""
-    if not user_id:
-        return None
-    return db.session.query(UsersRecord).filter(UsersRecord.user_id == int(user_id)).first()
+def toggle_can_run_jobs(user_id: int, value: bool) -> UsersRecord:
+    """Toggle can_run_jobs."""
+    record = get_user(user_id)
+
+    if not record:
+        raise UserNotFoundError("User record not found")
+
+    record.can_run_jobs = value
+    db.session.commit()
+    db.session.refresh(record)
+
+    return record
 
 
-def get_user_by_username(username: str) -> Optional[UsersRecord]:
-    """Fetch a user by username."""
-    username = (username or "").strip()
-    if not username:
-        return None
-    return db.session.query(UsersRecord).filter(UsersRecord.username == username).first()
+def toggle_can_run_bg_jobs(user_id: int, value: bool) -> UsersRecord:
+    """Toggle can_run_bg_jobs."""
+    record = get_user(user_id)
+
+    if not record:
+        raise UserNotFoundError("User record not found")
+
+    record.can_run_bg_jobs = value
+    db.session.commit()
+    db.session.refresh(record)
+
+    return record
+
+
+# ── DELETE ───────────────────────────────────────────────
 
 
 def delete_user(user_id: int) -> bool:
@@ -56,11 +96,6 @@ def delete_user(user_id: int) -> bool:
     affected = db.session.query(UsersRecord).filter(UsersRecord.user_id == user_id).delete()
     db.session.commit()
     return affected > 0
-
-
-def list_users() -> list[UsersRecord]:
-    """Return all user identity records."""
-    return db.session.query(UsersRecord).all()
 
 
 __all__ = [

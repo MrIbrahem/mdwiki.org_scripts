@@ -20,6 +20,7 @@ from flask_app.main_app.db.services.admin_service import (
 )
 from flask_app.main_app.db.services.users_service import create_user
 
+
 def _upsert_user_token(username: str, access_key: str, access_secret: str) -> int:
     user = create_user(username)
     upsert_user_token(
@@ -28,6 +29,7 @@ def _upsert_user_token(username: str, access_key: str, access_secret: str) -> in
         access_secret=access_secret,
     )
     return user.user_id
+
 
 def _seed_admin(app, username="AdminUser"):
     """Create a user token + active coordinator record for testing admin routes."""
@@ -53,6 +55,7 @@ def _login_admin(app, mock_client, username="AdminUser"):
         sess["uid"] = uid
         sess["username"] = username
     return uid
+
 
 @pytest.mark.usefixtures("app")
 class TestAdminDashboard:

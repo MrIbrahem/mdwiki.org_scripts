@@ -9,7 +9,7 @@ class MaxUserConnectionsError(Exception):
     pass
 
 
-class UserNotFoundError(Exception):
+class UserNotFoundError(LookupError):
     """Raised when a referenced user does not exist in users."""
 
 

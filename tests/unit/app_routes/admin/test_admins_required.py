@@ -28,12 +28,10 @@ class TestAdminRequired:
         with app.test_request_context("/admin"):
             user = MagicMock()
             user.username = "regular_user"
+            user.is_active_admin = False
             with patch("flask_app.main_app.app_routes.admin.admins_required.load_user", return_value=user):
-                with patch(
-                    "flask_app.main_app.app_routes.admin.admins_required.active_coordinators", return_value=["admin"]
-                ):
-                    with pytest.raises(Exception):
-                        view()
+                with pytest.raises(Exception):
+                    view()
 
     def test_admin_passes_through(self, app):
         @admin_required
@@ -43,13 +41,10 @@ class TestAdminRequired:
         with app.test_request_context("/admin"):
             user = MagicMock()
             user.username = "admin_user"
+            user.is_active_admin = True
             with patch("flask_app.main_app.app_routes.admin.admins_required.load_user", return_value=user):
-                with patch(
-                    "flask_app.main_app.app_routes.admin.admins_required.active_coordinators",
-                    return_value=["admin_user"],
-                ):
-                    result = view()
-                    assert result == "ok"
+                result = view()
+                assert result == "ok"
 
     def test_preserves_function_name(self, app):
         @admin_required

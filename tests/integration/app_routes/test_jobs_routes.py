@@ -37,10 +37,14 @@ def _clean_db(app: Flask):
                 conn.execute(table.delete())
 
 
-def _seed_user(app, username="JobUser") -> int:
+def _seed_user(app, username="JobUser", *, can_run_bg_jobs=False) -> int:
     """Create a user token record for job ownership. Returns the auto-generated user_id."""
     with app.app_context():
         user = create_user(username)
+        if can_run_bg_jobs:
+            from flask_app.main_app.db.services.users_service import toggle_can_run_bg_jobs
+
+            toggle_can_run_bg_jobs(user.user_id, True)
         upsert_user_token(
             user_id=user.user_id,
             access_key="k",
@@ -151,7 +155,7 @@ class TestStartJob:
 
     def test_start_creates_job_and_redirects(self, app, mock_client):
         """Starting a valid job should create a DB record and redirect."""
-        uid = _seed_user(app)
+        uid = _seed_user(app, can_run_bg_jobs=True)
         _login_user(mock_client, uid)
 
         with (
@@ -173,7 +177,7 @@ class TestStartJob:
 
     def test_start_creates_job(self, app, mock_client):
         """Starting a job with args should succeed."""
-        uid = _seed_user(app)
+        uid = _seed_user(app, can_run_bg_jobs=True)
         _login_user(mock_client, uid)
 
         with (

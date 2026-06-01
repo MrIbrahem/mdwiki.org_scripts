@@ -6,10 +6,14 @@ from typing import Any, Dict
 
 from flask import g, url_for
 
-from ...db.services.admin_service import active_coordinators
 from ...new_jobs.workers_list import jobs_data
 
 logger = logging.getLogger(__name__)
+
+
+def _is_admin(user: Any) -> bool:
+    """Check if user is an active coordinator (admin)."""
+    return bool(user and getattr(user, "is_active_admin", False))
 
 
 def context_user(wiki_domain: str, static_server: str) -> dict[str, Any]:
@@ -25,7 +29,7 @@ def context_user(wiki_domain: str, static_server: str) -> dict[str, Any]:
         "current_user": user,
         "is_authenticated": user is not None,
         "username": username,
-        "is_admin": bool(user and user.username in active_coordinators()),
+        "is_admin": _is_admin(user),
         "wiki_domain": wiki_domain,
         "static_server": static_server,
     }
@@ -45,6 +49,26 @@ def load_auth_payload(user: Any | None) -> Dict[str, Any]:
     return {}
 
 
+def can_run_jobs(user: Any) -> bool:
+    """Return True if user may run synchronous edit jobs.
+
+    Admins (active coordinators) always pass.
+    """
+    if _is_admin(user):
+        return True
+    return bool(user and user.can_run_jobs)
+
+
+def can_run_bg_jobs(user: Any) -> bool:
+    """Return True if user may run background (daemon) jobs.
+
+    Admins (active coordinators) always pass.
+    """
+    if _is_admin(user):
+        return True
+    return bool(user and user.can_run_bg_jobs)
+
+
 def get_job_detail_url(job_id: int, job_type: str) -> str:
     """Returns the correct job detail URL based on job type."""
     if job_type in jobs_data:
@@ -53,6 +77,8 @@ def get_job_detail_url(job_id: int, job_type: str) -> str:
 
 
 __all__ = [
+    "can_run_bg_jobs",
+    "can_run_jobs",
     "context_user",
     "load_auth_payload",
     "get_job_detail_url",

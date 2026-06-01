@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 from flask_app.main_app.app_routes.new_jobs import _can_manage_job
@@ -18,32 +18,32 @@ class TestCanManageJob:
         job.username = "someone"
         user = MagicMock()
         user.username = "admin_user"
-        with patch("flask_app.main_app.app_routes.new_jobs.active_coordinators", return_value=["admin_user"]):
-            assert _can_manage_job(job, user) is True
+        user.is_active_admin = True
+        assert _can_manage_job(job, user) is True
 
     def test_job_owner(self):
         job = MagicMock()
         job.username = "owner"
         user = MagicMock()
         user.username = "owner"
-        with patch("flask_app.main_app.app_routes.new_jobs.active_coordinators", return_value=["admin"]):
-            assert _can_manage_job(job, user) is True
+        user.is_active_admin = False
+        assert _can_manage_job(job, user) is True
 
     def test_non_owner_non_admin(self):
         job = MagicMock()
         job.username = "someone_else"
         user = MagicMock()
         user.username = "regular_user"
-        with patch("flask_app.main_app.app_routes.new_jobs.active_coordinators", return_value=["admin"]):
-            assert _can_manage_job(job, user) is False
+        user.is_active_admin = False
+        assert _can_manage_job(job, user) is False
 
     def test_job_with_no_username(self):
         job = MagicMock()
         job.username = None
         user = MagicMock()
         user.username = "user"
-        with patch("flask_app.main_app.app_routes.new_jobs.active_coordinators", return_value=["admin"]):
-            assert _can_manage_job(job, user) is False
+        user.is_active_admin = False
+        assert _can_manage_job(job, user) is False
 
 
 @pytest.mark.usefixtures("app")
