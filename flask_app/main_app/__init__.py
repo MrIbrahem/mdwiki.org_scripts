@@ -73,6 +73,7 @@ def init_app_and_db(app, _db) -> bool:
 
     try:
         with app.app_context():
+            # Create database tables and views if they don't exist
             init_db(_db)
         return True
     except DatabaseInitError as exc:
