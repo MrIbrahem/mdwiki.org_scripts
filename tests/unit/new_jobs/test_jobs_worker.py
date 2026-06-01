@@ -57,30 +57,26 @@ class TestCancelEventRegistry:
 
 
 class TestStartJob:
-    @patch("flask_app.main_app.new_jobs.jobs_worker.has_running_job")
     @patch("flask_app.main_app.new_jobs.jobs_worker.create_job")
     @patch("flask_app.main_app.new_jobs.jobs_worker.jobs_data")
     @patch("threading.Thread")
     def test_start_job_raises_error_if_running(
-        self, mock_thread, mock_jobs_data, mock_create_job, mock_has_running_job
+        self, mock_thread, mock_jobs_data, mock_create_job
     ):
-        mock_has_running_job.return_value = True
+        mock_create_job.side_effect = JobAlreadyRunningError("A job of type 'test_type' is already running.")
         mock_jobs_data.get.return_value = MagicMock(job_callable=lambda: None)
 
         with pytest.raises(JobAlreadyRunningError) as excinfo:
             start_job(user={"username": "test"}, job_type="test_type", args={})
 
         assert "A job of type 'test_type' is already running." in str(excinfo.value)
-        mock_create_job.assert_not_called()
 
-    @patch("flask_app.main_app.new_jobs.jobs_worker.has_running_job")
     @patch("flask_app.main_app.new_jobs.jobs_worker.create_job")
     @patch("flask_app.main_app.new_jobs.jobs_worker.jobs_data")
     @patch("threading.Thread")
     def test_start_job_starts_if_none_running(
-        self, mock_thread, mock_jobs_data, mock_create_job, mock_has_running_job
+        self, mock_thread, mock_jobs_data, mock_create_job
     ):
-        mock_has_running_job.return_value = False
         mock_jobs_data.get.return_value = MagicMock(job_callable=lambda: None)
         mock_create_job.return_value = MagicMock(id=123)
 

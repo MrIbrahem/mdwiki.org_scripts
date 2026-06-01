@@ -3,9 +3,10 @@ from __future__ import annotations
 import logging
 from datetime import UTC, datetime
 
-from sqlalchemy import func
+from sqlalchemy import func, text
 
 from ...extensions import db
+from ..exceptions import JobAlreadyRunningError
 from ..models.jobs import JobRecord
 from .utils import db_guard
 
@@ -185,17 +186,54 @@ def get_user_jobs_stats(username: str) -> dict[str, dict[str, int] | list[JobRec
 
 def create_job(job_type: str, username: str | None = None) -> JobRecord:
     """
-    Create a new job record.
-
-    Query to match:
-        INSERT INTO jobs (job_type, status, username) VALUES (%s, %s, %s)
-        (job_type, "pending", username),
+    Create a new job record atomically.
+    Ensures that only one job of a given type can be in 'pending' or 'running' status.
     """
-    job = JobRecord(job_type=job_type, username=username, status="pending")
-    db.session.add(job)
+    # Determine the dialect to handle the "INSERT ... SELECT ... WHERE NOT EXISTS"
+    # which requires "FROM DUAL" in MySQL/MariaDB but not in SQLite.
+    dialect = db.engine.name
+
+    if dialect == "mysql":
+        sql = text(
+            """
+            INSERT INTO jobs (job_type, username, status)
+            SELECT :job_type, :username, 'pending'
+            FROM DUAL
+            WHERE NOT EXISTS (
+                SELECT 1 FROM jobs
+                WHERE job_type = :job_type AND status IN ('pending', 'running')
+            )
+        """
+        )
+    else:
+        # SQLite and others
+        sql = text(
+            """
+            INSERT INTO jobs (job_type, username, status)
+            SELECT :job_type, :username, 'pending'
+            WHERE NOT EXISTS (
+                SELECT 1 FROM jobs
+                WHERE job_type = :job_type AND status IN ('pending', 'running')
+            )
+        """
+        )
+
+    result = db.session.execute(sql, {"job_type": job_type, "username": username})
+
+    if result.rowcount == 0:
+        raise JobAlreadyRunningError(f"A job of type '{job_type}' is already running.")
+
+    # Get the inserted job record
+    # In some dialects/drivers result.lastrowid might be available
+    job_id = result.lastrowid
+
+    # If lastrowid is not available (e.g. some Postgres drivers, though not used here),
+    # we might need another way, but for MySQL and SQLite it should work.
+
     db.session.commit()
-    db.session.refresh(job)
-    return job
+
+    # Fetch the full record to return it
+    return get_job(job_id, job_type)
 
 
 def update_job_status(job_id: int, status: str, result_file: str | None = None, *, job_type: str) -> JobRecord:

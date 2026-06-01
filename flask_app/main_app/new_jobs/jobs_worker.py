@@ -100,12 +100,8 @@ def start_job(
 
     username = user.get("username") if user else None
 
-    if has_running_job(job_type):
-        logger.warning(f"Attempted to start job of type {job_type} but one is already running.")
-        raise JobAlreadyRunningError(f"A job of type '{job_type}' is already running.")
-
     try:
-        # Create job record
+        # Create job record atomically (includes check for running jobs)
         job = create_job(job_type, username)
     except Exception as e:
         logger.exception(f"Failed to create job record for job type {job_type}")

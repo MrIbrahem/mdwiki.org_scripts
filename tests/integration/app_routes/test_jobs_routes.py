@@ -397,7 +397,11 @@ class TestJobsRouteIntegration:
         """Multiple jobs of the same type should all appear in the list."""
         _seed_user(app)
         with app.app_context():
-            create_job(VALID_JOB_TYPE, "JobUser")
+            job1 = create_job(VALID_JOB_TYPE, "JobUser")
+            # Complete first job so second one can start
+            from flask_app.main_app.db.services import update_job_status
+            update_job_status(job1.id, "completed", job_type=VALID_JOB_TYPE)
+
             create_job(VALID_JOB_TYPE, "JobUser")
             create_job(ANOTHER_VALID_JOB_TYPE, "JobUser")
 
@@ -417,6 +421,10 @@ class TestJobsRouteIntegration:
 
         with app.app_context():
             job1 = create_job(VALID_JOB_TYPE, "Owner")
+            # Complete first job so second one can start
+            from flask_app.main_app.db.services import update_job_status
+            update_job_status(job1.id, "completed", job_type=VALID_JOB_TYPE)
+
             job2 = create_job(VALID_JOB_TYPE, "Owner")
             job1_id = job1.id
             job2_id = job2.id
