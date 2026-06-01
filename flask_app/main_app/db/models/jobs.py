@@ -2,11 +2,18 @@ from __future__ import annotations
 
 import logging
 
-from sqlalchemy import Column, DateTime, Index, Integer, String, func
-
+from sqlalchemy import Column, DateTime, Index, Integer, String, func, text
+from sqlalchemy.schema import CreateIndex
+from sqlalchemy.ext.compiler import compiles
 from ...extensions import db
 
 logger = logging.getLogger(__name__)
+
+@compiles(CreateIndex, "mysql")
+def _skip_unique_index_mysql(element, compiler, **kw):
+    if element.element.name == "idx_unique_active_job":
+        return ""
+    return compiler.visit_create_index(element, **kw)
 
 
 class JobRecord(db.Model):
