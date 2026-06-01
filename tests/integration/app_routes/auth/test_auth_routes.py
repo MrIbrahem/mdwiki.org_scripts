@@ -7,7 +7,7 @@ so no network access is required.
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from flask.app import Flask
@@ -63,15 +63,18 @@ class TestLoginRoute:
         with mock_client.session_transaction() as session:
             assert session.get(_REQ_TOKEN_KEY) is not None
 
-    def test_login_flash_on_failure(self, mock_client):
+    def test_login_flash_on_failure(self, mock_client, monkeypatch):
         """If start_login raises, a danger flash message should appear."""
+        mock_flash = Mock()
+        monkeypatch.setattr("flask_app.main_app.app_routes.auth.routes.flash", mock_flash)
+
         with patch(
             "flask_app.main_app.app_routes.auth.routes.start_login",
             side_effect=RuntimeError("OAuth down"),
         ):
             resp = mock_client.get("/login", follow_redirects=True)
         assert resp.status_code == 200
-        assert b"Failed to initiate OAuth login" in resp.data
+        mock_flash.assert_called_once_with("Failed to initiate OAuth login", "danger")
 
 
 @pytest.mark.usefixtures("app")
@@ -84,14 +87,20 @@ class TestCallbackRoute:
             sess[_STATE_KEY] = "my_nonce"
             sess[_REQ_TOKEN_KEY] = ["req_key", "req_secret"]
 
-    def test_callback_missing_state_flash(self, mock_client):
+    def test_callback_missing_state_flash(self, mock_client, monkeypatch):
         """Callback without state in session should flash error."""
+        mock_flash = Mock()
+        monkeypatch.setattr("flask_app.main_app.app_routes.auth.routes.flash", mock_flash)
+
         resp = mock_client.get("/callback", follow_redirects=True)
         assert resp.status_code == 200
-        assert b"Invalid OAuth state" in resp.data
+        mock_flash.assert_called_once_with("Invalid OAuth state", "danger")
 
-    def test_callback_state_mismatch_flash(self, mock_client):
+    def test_callback_state_mismatch_flash(self, mock_client, monkeypatch):
         """Callback with wrong state should flash mismatch error."""
+        mock_flash = Mock()
+        monkeypatch.setattr("flask_app.main_app.app_routes.auth.routes.flash", mock_flash)
+
         self._setup_session(mock_client)
         with patch(
             "flask_app.main_app.app_routes.auth.routes.verify_state_token",
@@ -102,7 +111,7 @@ class TestCallbackRoute:
                 follow_redirects=True,
             )
         assert resp.status_code == 200
-        assert b"OAuth state mismatch" in resp.data
+        mock_flash.assert_called_once_with("OAuth state mismatch", "danger")
 
     def test_callback_missing_verifier_flash(self, mock_client):
         """Callback without oauth_verifier should flash error."""
@@ -293,7 +302,7 @@ class TestLogoutRoute:
         """Logout should display flash messages."""
         login("FlashLogout")
         resp = mock_client.get("/logout", follow_redirects=True)
-        assert b"Logout successful" in resp.data
+        assert b"You have been logged out successfully." in resp.data
 
     def test_logout_deletes_user_token_from_db(self, app, mock_client):
         """Logout should delete the user token record from DB."""

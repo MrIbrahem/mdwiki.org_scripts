@@ -6,6 +6,8 @@ the Flask test client with a real SQLite database (via TestingConfig).
 
 from __future__ import annotations
 
+from unittest.mock import Mock
+
 import pytest
 from flask_app.main_app.db.services import (
     active_coordinators,
@@ -194,8 +196,10 @@ class TestCoordinatorRoutes:
             coords = active_coordinators()
             assert "NewCoord" in coords
 
-    def test_add_coordinator_empty_username_flash(self, app, mock_client):
+    def test_add_coordinator_empty_username_flash(self, app, mock_client, monkeypatch):
         """Adding coordinator with empty username should flash error."""
+        mock_flash = Mock()
+        monkeypatch.setattr("flask_app.main_app.app_routes.admin_routes.coordinators.flash", mock_flash)
 
         _login_admin(app, mock_client)
         resp = mock_client.post(
@@ -204,10 +208,12 @@ class TestCoordinatorRoutes:
             follow_redirects=True,
         )
         assert resp.status_code == 200
-        assert b"Username is required" in resp.data
+        mock_flash.assert_called_once_with("Username is required to add a coordinator.", "danger")
 
-    def test_add_duplicate_coordinator_flash(self, app, mock_client):
+    def test_add_duplicate_coordinator_flash(self, app, mock_client, monkeypatch):
         """Adding a duplicate coordinator should flash warning."""
+        mock_flash = Mock()
+        monkeypatch.setattr("flask_app.main_app.app_routes.admin_routes.coordinators.flash", mock_flash)
 
         _login_admin(app, mock_client)
         mock_client.post(
@@ -215,13 +221,16 @@ class TestCoordinatorRoutes:
             data={"username": "AdminUser"},
             follow_redirects=True,
         )
+        mock_flash.reset_mock()
         resp = mock_client.post(
             "/admin/coordinators/add",
             data={"username": "AdminUser"},
             follow_redirects=True,
         )
         assert resp.status_code == 200
-        assert b"already exists" in resp.data
+        mock_flash.assert_called_once()
+        assert "already exists" in mock_flash.call_args[0][0]
+        assert mock_flash.call_args[0][1] == "warning"
 
     def test_toggle_coordinator_active(self, app, mock_client):
         """Admin should be able to deactivate a coordinator."""
@@ -293,8 +302,10 @@ class TestCoordinatorRoutes:
             usernames = [c.username for c in coords]
             assert "DeleteCoord" not in usernames
 
-    def test_delete_nonexistent_coordinator_flash(self, app, mock_client):
+    def test_delete_nonexistent_coordinator_flash(self, app, mock_client, monkeypatch):
         """Deleting a non-existent coordinator should flash warning."""
+        mock_flash = Mock()
+        monkeypatch.setattr("flask_app.main_app.app_routes.admin_routes.coordinators.flash", mock_flash)
 
         _login_admin(app, mock_client)
         resp = mock_client.post(
@@ -302,7 +313,9 @@ class TestCoordinatorRoutes:
             follow_redirects=True,
         )
         assert resp.status_code == 200
-        assert b"was not found" in resp.data
+        mock_flash.assert_called_once()
+        assert "was not found" in mock_flash.call_args[0][0]
+        assert mock_flash.call_args[0][1] == "warning"
 
 
 @pytest.mark.usefixtures("app")
