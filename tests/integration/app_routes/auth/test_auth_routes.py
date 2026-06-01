@@ -113,8 +113,11 @@ class TestCallbackRoute:
         assert resp.status_code == 200
         mock_flash.assert_called_once_with("OAuth state mismatch", "danger")
 
-    def test_callback_missing_verifier_flash(self, mock_client):
+    def test_callback_missing_verifier_flash(self, mock_client, monkeypatch):
         """Callback without oauth_verifier should flash error."""
+        mock_flash = Mock()
+        monkeypatch.setattr("flask_app.main_app.app_routes.auth.routes.flash", mock_flash)
+
         self._setup_session(mock_client)
         with patch(
             "flask_app.main_app.app_routes.auth.routes.verify_state_token",
@@ -125,7 +128,7 @@ class TestCallbackRoute:
                 follow_redirects=True,
             )
         assert resp.status_code == 200
-        assert b"Invalid OAuth verifier" in resp.data
+        mock_flash.assert_called_once_with("Invalid OAuth verifier", "danger")
 
     def test_callback_success_sets_session(self, app, mock_client):
         """Successful callback should set session uid and username."""
