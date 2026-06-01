@@ -1,5 +1,5 @@
 from .jobs import JobRecord
-from .users import AdminUserRecord, UsersRecord, UserTokenRecord
+from .users import AdminUserRecord, UsersRecord, UserTokenRecord, UsersPermissionsRecord
 
 __all__ = [
     "AdminUserRecord",

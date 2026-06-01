@@ -7,7 +7,7 @@
     class="d-inline">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <div class="form-check form-switch d-inline-flex align-items-center">
-        <input type="hidden" name="active" id="user-can-value-{{ user_id }}"
+        <input type="hidden" name="can_run" id="user-can-value-{{ user_id }}"
             value="{{ 1 if value else 0 }}">
         <input class="form-check-input" type="checkbox" role="switch" id="user-can-{{ user_id }}"
             {% if value %}checked{% endif %}

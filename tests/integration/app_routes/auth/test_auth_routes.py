@@ -301,11 +301,15 @@ class TestLogoutRoute:
         resp = mock_client.get("/logout", follow_redirects=True)
         assert resp.status_code == 200
 
-    def test_logout_flash_messages(self, mock_client, login):
+    def test_logout_flash_messages(self, mock_client, login, monkeypatch):
         """Logout should display flash messages."""
+        mock_flash = Mock()
+        monkeypatch.setattr("flask_app.main_app.app_routes.auth.routes.flash", mock_flash)
+
         login("FlashLogout")
         resp = mock_client.get("/logout", follow_redirects=True)
-        assert b"You have been logged out successfully." in resp.data
+        assert resp.status_code == 200
+        mock_flash.assert_called_once_with("Session cleared.", "info")
 
     def test_logout_deletes_user_token_from_db(self, app, mock_client):
         """Logout should delete the user token record from DB."""

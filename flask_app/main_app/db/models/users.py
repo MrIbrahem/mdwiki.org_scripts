@@ -11,6 +11,25 @@ from ...shared.decode_bytes import coerce_bytes
 logger = logging.getLogger(__name__)
 
 
+class UsersPermissionsRecord(db.Model):
+    """
+    CREATE TABLE `users_permissions` (
+        `up_id` int NOT NULL AUTO_INCREMENT,
+        `username` varchar(255) NOT NULL,
+        `can_run_jobs` tinyint(1) NOT NULL DEFAULT '0',
+        `can_run_bg_jobs` tinyint(1) NOT NULL DEFAULT '0',
+        PRIMARY KEY (`up_id`),
+        UNIQUE KEY `username` (`username`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+    """
+
+    __tablename__ = "users_permissions"
+
+    up_id = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String(255), unique=True, nullable=False)
+    can_run_jobs = Column(Boolean, nullable=False, default=False, server_default="0")
+    can_run_bg_jobs = Column(Boolean, nullable=False, default=False, server_default="0")
+
 class UsersRecord(db.Model):
     """Stable user identity — source of truth for user_id and username.
 
@@ -112,6 +131,7 @@ class UserTokenRecord(db.Model):
 
 
 __all__ = [
+    "UsersPermissionsRecord",
     "AdminUserRecord",
     "UsersRecord",
     "UserTokenRecord",
