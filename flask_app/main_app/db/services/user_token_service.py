@@ -129,7 +129,7 @@ def delete_user_token(user_id: int) -> bool:
         That contradicts the docstring and can wipe identity/admin state instead of only clearing OAuth secrets.
         Clear the token fields in-place, or move credentials into a separate token table,
         but don't delete the user row here.
-        """
+    """
     if not user_id:
         return False
 

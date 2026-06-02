@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from sqlalchemy.exc import SQLAlchemyError
 from flask_app.main_app.db.services.utils import db_guard
+from sqlalchemy.exc import SQLAlchemyError
 
 
 class TestDbGuard:
