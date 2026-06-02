@@ -36,7 +36,8 @@ class UsersRecord(db.Model):
 
 
 class AdminUserRecord(db.Model):
-    """Coordinator/admin role — username references users.username.
+    """
+    Coordinator/admin role — username references users.username.
 
     CREATE TABLE `admin_users` (
         `id` int NOT NULL AUTO_INCREMENT,
@@ -72,7 +73,8 @@ class AdminUserRecord(db.Model):
 
 
 class UserTokenRecord(db.Model):
-    """OAuth credentials — child of users table.
+    """
+    OAuth credentials — child of users table.
 
     CREATE TABLE IF NOT EXISTS user_tokens (
         user_id int NOT NULL,
@@ -117,6 +119,6 @@ class UserTokenRecord(db.Model):
 
 __all__ = [
     "AdminUserRecord",
-    "UsersRecord",
     "UserTokenRecord",
+    "UsersRecord",
 ]

@@ -199,8 +199,10 @@ def create_job(job_type: str, username: str) -> JobRecord:
     Query to match:
         INSERT INTO jobs (job_type, status, username) VALUES (%s, %s, %s)
         (job_type, "pending", username),
-    """
 
+    Raises:
+        DuplicateJobError: If a job of the same type is already running.
+    """
     job = JobRecord(job_type=job_type, username=username, status="pending", is_running=1)
     db.session.add(job)
     try:
@@ -213,7 +215,6 @@ def create_job(job_type: str, username: str) -> JobRecord:
         raise  # Re-raise unexpected IntegrityError
     db.session.refresh(job)
     return job
-
 
 def update_job_status(job_id: int, status: str, result_file: str | None = None, *, job_type: str) -> JobRecord:
     """
@@ -250,8 +251,8 @@ def cancel_job_db(job_id: int, job_type: str | None = None) -> bool:
 
         if job:
             job.status = "cancelled"
-            job.is_running = None
             job.completed_at = datetime.now(UTC)
+            job.is_running = None
             db.session.commit()
             db.session.refresh(job)
             return True
