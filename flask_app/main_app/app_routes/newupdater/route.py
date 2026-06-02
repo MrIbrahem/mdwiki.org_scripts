@@ -9,6 +9,7 @@ from flask import Blueprint, flash, g, redirect, render_template, request, url_f
 
 from ...shared import newupdater_service as svc
 from ..auth.utils import oauth_required
+
 # from ..utils.routes_utils import can_run_jobs
 
 bp_newupdater = Blueprint("newupdater", __name__, url_prefix="/newupdater")

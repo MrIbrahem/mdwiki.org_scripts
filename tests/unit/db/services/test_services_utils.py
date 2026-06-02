@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-import sqlalchemy.exc
 from flask_app.main_app.db.services.utils import db_guard
+from sqlalchemy.exc import SQLAlchemyError
 
 
 class TestDbGuard:
@@ -21,7 +21,7 @@ class TestDbGuard:
 
             @db_guard(default_return=None)
             def my_func():
-                raise RuntimeError("boom")
+                raise SQLAlchemyError("boom")
 
             assert my_func() is None
             mock_db.session.rollback.assert_called_once()
@@ -29,7 +29,7 @@ class TestDbGuard:
     def test_returns_default_on_operational_error(self):
         @db_guard(default_return=False)
         def my_func():
-            raise sqlalchemy.exc.OperationalError("stmt", "params", Exception("db down"))
+            raise SQLAlchemyError("stmt", "params", Exception("db down"))
 
         with patch("flask_app.main_app.db.services.utils.db") as mock_db:
             assert my_func() is False
@@ -38,7 +38,7 @@ class TestDbGuard:
     def test_rollback_on_generic_exception(self):
         @db_guard(default_return="fallback")
         def my_func():
-            raise ValueError("something went wrong")
+            raise SQLAlchemyError("something went wrong")
 
         with patch("flask_app.main_app.db.services.utils.db") as mock_db:
             result = my_func()
@@ -64,6 +64,6 @@ class TestDbGuard:
 
             @db_guard(default_return={"error": True})
             def my_func():
-                raise RuntimeError("fail")
+                raise SQLAlchemyError("fail")
 
             assert my_func() == {"error": True}

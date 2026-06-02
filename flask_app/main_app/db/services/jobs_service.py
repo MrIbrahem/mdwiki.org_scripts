@@ -4,8 +4,10 @@ import logging
 from datetime import UTC, datetime
 
 from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 
 from ...extensions import db
+from ..exceptions import DuplicateJobError
 from ..models.jobs import JobRecord
 from .utils import db_guard
 
@@ -30,10 +32,14 @@ def _update_status(job_id: int, status: str, result_file: str | None, job_type: 
         raise LookupError(f"Job id {job_id} was not found")
 
     job.status = status
+
     if status in ("completed", "failed", "cancelled"):
         job.completed_at = datetime.now(UTC)
+        job.is_running = None
+
     if result_file:
         job.result_file = result_file
+
     db.session.commit()
     db.session.refresh(job)
 
@@ -64,6 +70,22 @@ def _update_running_status(job_id: int, result_file: str | None = None, *, job_t
 
 
 # ── SELECT ───────────────────────────────────────────────
+
+
+@db_guard(default_return=False)
+def is_job_cancelled(job_id: int, job_type: str) -> bool:
+    """
+    Check if a job is marked as cancelled.
+
+    Query to match:
+        SELECT status FROM jobs WHERE id = %s AND job_type = %s
+    """
+    record = db.session.query(JobRecord).filter(JobRecord.id == job_id, JobRecord.job_type == job_type).first()
+    if record:
+        # Refresh from database to ensure we don't use a stale cached status
+        db.session.refresh(record)
+        return record.status == "cancelled"
+    return False
 
 
 def get_job(job_id: int, job_type: str) -> JobRecord:
@@ -115,22 +137,6 @@ def list_jobs(limit: int = 100, job_type: str | None = None) -> list[JobRecord]:
     return query.order_by(JobRecord.created_at.desc()).limit(limit).all()
 
 
-@db_guard(default_return=False)
-def is_job_cancelled(job_id: int, job_type: str) -> bool:
-    """
-    Check if a job is marked as cancelled.
-
-    Query to match:
-        SELECT status FROM jobs WHERE id = %s AND job_type = %s
-    """
-    record = db.session.query(JobRecord).filter(JobRecord.id == job_id, JobRecord.job_type == job_type).first()
-    if record:
-        # Refresh from database to ensure we don't use a stale cached status
-        db.session.refresh(record)
-        return record.status == "cancelled"
-    return False
-
-
 def get_user_jobs_stats(username: str) -> dict[str, dict[str, int] | list[JobRecord]]:
     """
     Get user jobs
@@ -166,10 +172,27 @@ def get_user_jobs_stats(username: str) -> dict[str, dict[str, int] | list[JobRec
     return data
 
 
+def has_active_job(job_type: str) -> bool:
+    """
+    Check if there is an active (pending or running) job of the given type.
+
+    This is an auxiliary application-level check that works on all database backends
+    (MySQL, SQLite, PostgreSQL). Note that the primary enforcement mechanism for
+    preventing duplicate concurrent jobs is the database-level unique constraint
+    idx_unique_active_job.
+    """
+    result = (
+        db.session.query(JobRecord.id)
+        .filter(JobRecord.job_type == job_type, JobRecord.status.in_(["pending", "running"]))
+        .first()
+    )
+    return result is not None
+
+
 # ── INSERT, UPDATE, SET ──────────────────────────────────
 
 
-def create_job(job_type: str, username: str | None = None) -> JobRecord:
+def create_job(job_type: str, username: str) -> JobRecord:
     """
     Create a new job record.
 
@@ -177,9 +200,17 @@ def create_job(job_type: str, username: str | None = None) -> JobRecord:
         INSERT INTO jobs (job_type, status, username) VALUES (%s, %s, %s)
         (job_type, "pending", username),
     """
-    job = JobRecord(job_type=job_type, username=username, status="pending")
+
+    job = JobRecord(job_type=job_type, username=username, status="pending", is_running=1)
     db.session.add(job)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError as exc:
+        db.session.rollback()
+        if "idx_unique_active_job" in str(exc.orig) or "UNIQUE constraint failed" in str(exc.orig):
+            logger.warning("Duplicate active job detected for job_type=%s", job_type)
+            raise DuplicateJobError(f"A job of type '{job_type}' is already active (pending or running).") from exc
+        raise  # Re-raise unexpected IntegrityError
     db.session.refresh(job)
     return job
 
@@ -219,6 +250,7 @@ def cancel_job_db(job_id: int, job_type: str | None = None) -> bool:
 
         if job:
             job.status = "cancelled"
+            job.is_running = None
             job.completed_at = datetime.now(UTC)
             db.session.commit()
             db.session.refresh(job)
@@ -248,6 +280,7 @@ def delete_job(job_id: int, job_type: str) -> bool:
 __all__ = [
     "create_job",
     "get_job",
+    "has_active_job",
     "list_jobs",
     "update_job_status",
     "cancel_job_db",

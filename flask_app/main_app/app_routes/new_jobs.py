@@ -19,6 +19,7 @@ from flask import (
 from flask.typing import ResponseReturnValue
 from werkzeug.wrappers.response import Response
 
+from ..db.exceptions import DuplicateJobError
 from ..db.services import (
     delete_job,
     get_job,
@@ -104,9 +105,18 @@ def _start_job(job_type: str, args: dict[str, Any]) -> int | None:
     try:
         # Get auth payload for OAuth uploads
         auth_payload = load_auth_payload(user)
+    except Exception:
+        logger.exception("Failed to load auth payload")
+        flash("Failed to load auth payload. Please try again.", "danger")
+        return None
+
+    try:
         job_id = jobs_worker.start_job(auth_payload, job_type, args)
-        flash(f"Job {job_id} started to {job_type.replace('_', ' ')}.", "success")
+        flash(f"Job {job_id} started to {job_type}.", "success")
         return job_id
+    except DuplicateJobError:
+        logger.warning("User '%s' attempted to start duplicate job type '%s'", user.username, job_type)
+        flash("A job of this type is already running. Please wait for it to complete.", "warning")
     except Exception:
         logger.exception("Failed to start job")
         flash("Failed to start job. Please try again.", "danger")

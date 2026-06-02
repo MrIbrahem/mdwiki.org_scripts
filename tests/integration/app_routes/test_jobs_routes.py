@@ -198,6 +198,30 @@ class TestStartJob:
 
         assert resp.status_code == 302
 
+    def test_start_duplicate_job_flashes_warning(self, app, mock_client):
+        """Starting a duplicate job should flash a warning and redirect."""
+        from flask_app.main_app.db.exceptions import DuplicateJobError
+
+        uid = _seed_user(app, can_run_bg_jobs=True)
+        _login_user(mock_client, uid)
+
+        with (
+            patch(
+                "flask_app.main_app.app_routes.new_jobs.load_auth_payload",
+                return_value={"id": uid, "username": "JobUser"},
+            ),
+            patch(
+                "flask_app.main_app.app_routes.new_jobs.jobs_worker.start_job",
+                side_effect=DuplicateJobError("A job of type 'fixref' is already active"),
+            ),
+        ):
+            resp = mock_client.post(
+                f"/new_jobs/{VALID_JOB_TYPE}/start",
+                follow_redirects=True,
+            )
+
+        assert b"A job of this type is already running" in resp.data
+
 
 @pytest.mark.usefixtures("app")
 class TestCancelJob:
@@ -367,9 +391,13 @@ class TestJobsRouteIntegration:
 
     def test_multiple_jobs_listed_by_type(self, app, mock_client):
         """Multiple jobs of the same type should all appear in the list."""
+        from flask_app.main_app.db.services import update_job_status
+
         _seed_user(app)
         with app.app_context():
-            create_job(VALID_JOB_TYPE, "JobUser")
+            job1 = create_job(VALID_JOB_TYPE, "JobUser")
+            update_job_status(job1.id, "running", job_type=VALID_JOB_TYPE)
+            update_job_status(job1.id, "completed", job_type=VALID_JOB_TYPE)
             create_job(VALID_JOB_TYPE, "JobUser")
             create_job(ANOTHER_VALID_JOB_TYPE, "JobUser")
 
@@ -384,11 +412,15 @@ class TestJobsRouteIntegration:
 
     def test_delete_then_list_shows_remaining(self, app, mock_client):
         """After deleting one job, the list should show remaining jobs."""
+        from flask_app.main_app.db.services import update_job_status
+
         owner_uid = _seed_user(app, username="Owner")
         _login_user(mock_client, owner_uid, username="Owner")
 
         with app.app_context():
             job1 = create_job(VALID_JOB_TYPE, "Owner")
+            update_job_status(job1.id, "running", job_type=VALID_JOB_TYPE)
+            update_job_status(job1.id, "completed", job_type=VALID_JOB_TYPE)
             job2 = create_job(VALID_JOB_TYPE, "Owner")
             job1_id = job1.id
             job2_id = job2.id

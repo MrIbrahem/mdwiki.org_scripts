@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from sqlalchemy import Column, DateTime, Integer, String, func
+from sqlalchemy import Column, DateTime, Index, Integer, String, UniqueConstraint, func
 
 from ...extensions import db
 
@@ -14,20 +14,29 @@ class JobRecord(db.Model):
     CREATE TABLE `jobs` (
         `id` int NOT NULL AUTO_INCREMENT,
         `job_type` varchar(255) NOT NULL,
-        `username` varchar(255) DEFAULT NULL,
+        `username` varchar(255) NOT NULL,
         `status` varchar(50) NOT NULL DEFAULT 'pending',
         `started_at` datetime DEFAULT NULL,
         `completed_at` datetime DEFAULT NULL,
         `result_file` varchar(500) DEFAULT NULL,
         `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (`id`)
+        `is_running` tinyint DEFAULT NULL,
+        PRIMARY KEY (`id`),
+        UNIQUE KEY `idx_unique_active_job` (`job_type`,`is_running`),
+        KEY `username` (`username`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
     NOTE: username has no FK — jobs persist independently of user accounts.
     """
 
     __tablename__ = "jobs"
+    __table_args__ = (
+        # Unique constraint combining job_type and is_running
+        UniqueConstraint("job_type", "is_running", name="idx_unique_active_job"),
+        # Keep the standard index for username if needed
+        Index("username", "username"),
+    )
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     job_type = Column(String(255), nullable=False)
@@ -44,6 +53,7 @@ class JobRecord(db.Model):
         server_default=func.current_timestamp(),
         server_onupdate=func.current_timestamp(),
     )
+    is_running = Column(Integer, nullable=True)
 
 
 __all__ = [

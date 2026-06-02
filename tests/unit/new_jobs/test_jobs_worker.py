@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import threading
+from unittest.mock import patch
 
+import pytest
+from flask.app import Flask
+from flask_app.main_app.db.exceptions import DuplicateJobError
 from flask_app.main_app.new_jobs.jobs_worker import (
     JOBS_CANCEL_EVENTS,
     JOBS_CANCEL_EVENTS_LOCK,
@@ -50,3 +54,26 @@ class TestCancelEventRegistry:
         _register_cancel_event(20, evt_b)
         assert _get_jobs_cancel_event(10) is evt_a
         assert _get_jobs_cancel_event(20) is evt_b
+
+
+def test_start_job_raises_duplicate_job_error(app: Flask) -> None:
+    """start_job should propagate DuplicateJobError when create_job raises it."""
+    with app.app_context():
+        with (
+            patch(
+                "flask_app.main_app.new_jobs.jobs_worker.create_job",
+                side_effect=DuplicateJobError("A job of type 'test' is already active"),
+            ),
+            patch(
+                "flask_app.main_app.new_jobs.jobs_worker.jobs_data",
+                {"test_type": type("JobData", (), {"job_callable": lambda: None})()},
+            ),
+        ):
+            from flask_app.main_app.new_jobs.jobs_worker import start_job
+
+            with pytest.raises(DuplicateJobError):
+                start_job(
+                    user={"username": "testuser"},
+                    job_type="test_type",
+                    args={},
+                )

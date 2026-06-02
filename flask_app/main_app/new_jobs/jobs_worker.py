@@ -8,6 +8,7 @@ from typing import Any, Dict
 
 from flask import Flask, current_app
 
+from ..db.exceptions import DuplicateJobError
 from ..db.models import JobRecord
 from ..db.services import cancel_job_db, create_job
 from ..su_services.jobs_files_service import create_job_cancelled_file
@@ -102,6 +103,9 @@ def start_job(
     try:
         # Create job record
         job = create_job(job_type, username)
+    except DuplicateJobError:
+        logger.warning("Attempted to start duplicate job of type '%s' by user '%s'", job_type, username)
+        raise
     except Exception as e:
         logger.exception(f"Failed to create job record for job type {job_type}")
         raise e

@@ -10,17 +10,18 @@ from flask_app.main_app.new_jobs.base_worker_object import BaseObjectsJobWorker,
 
 
 class MockWorker(BaseObjectsJobWorker):
-    def __init__(self, job_id: int) -> None:
+    def __init__(self, job_id: int, job_type_name: str = "mock_job") -> None:
         self.job_id = job_id
         self.args = {}
         self.site = None
+        self._job_type_name = job_type_name
 
         super().__init__(job_id, None, None)
 
         self.result_object: WorkerObject = WorkerObject()
 
     def get_job_type(self) -> str:
-        return "mock_job"
+        return self._job_type_name
 
     def process(self) -> Dict[str, Any]:
         return self.result_object.to_json()
@@ -28,8 +29,8 @@ class MockWorker(BaseObjectsJobWorker):
 
 def test_before_run_updates_status(app: Flask) -> None:
     with app.app_context():
-        job = create_job("mock_job", "test_user")
-        worker = MockWorker(job.id)
+        job = create_job("mock_job_before_run", "test_user")
+        worker = MockWorker(job.id, "mock_job_before_run")
 
         assert worker.result_object.status == "pending"
         worker.before_run()
@@ -39,14 +40,14 @@ def test_before_run_updates_status(app: Flask) -> None:
 
 def test_is_job_cancelled_detects_external_change(app: Flask) -> None:
     with app.app_context():
-        job = create_job("mock_job", "test_user")
+        job = create_job("mock_job_cancel_detect", "test_user")
 
         # Load the job record into the session's identity map
         # is_job_cancelled currently uses scalar query which MIGHT avoid identity map,
         # but let's see if we can make it fail by loading the record.
-        _ = db.session.query(JobRecord).get(job.id)
+        _ = db.session.get(JobRecord, job.id)
 
-        assert is_job_cancelled(job.id, "mock_job") is False
+        assert is_job_cancelled(job.id, "mock_job_cancel_detect") is False
 
         # Update status externally via a different session
         # In this test environment, we can just use a separate engine or connection
@@ -61,10 +62,10 @@ def test_is_job_cancelled_detects_external_change(app: Flask) -> None:
         # Actually, scalar query usually DOES go to the DB, but let's see.
         # IF it passes, it means scalar() bypasses the identity map or it's not in it.
         # But let's try to get the record again via ORM.
-        job_after = db.session.query(JobRecord).get(job.id)
+        job_after = db.session.get(JobRecord, job.id)
         assert job_after.status == "pending"  # It is stale here!
 
-        assert is_job_cancelled(job.id, "mock_job") is True
+        assert is_job_cancelled(job.id, "mock_job_cancel_detect") is True
 
         # After is_job_cancelled calls refresh, job_after should also be updated if it's the same object
         assert job_after.status == "cancelled"
@@ -72,8 +73,8 @@ def test_is_job_cancelled_detects_external_change(app: Flask) -> None:
 
 def test_is_cancelled_sets_cancelled_at(app: Flask) -> None:
     with app.app_context():
-        job = create_job("mock_job", "test_user")
-        worker = MockWorker(job.id)
+        job = create_job("mock_job_cancelled_at", "test_user")
+        worker = MockWorker(job.id, "mock_job_cancelled_at")
 
         # Manually cancel in DB
         with db.engine.connect() as conn:

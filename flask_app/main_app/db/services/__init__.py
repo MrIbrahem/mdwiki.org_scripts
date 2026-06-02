@@ -1,3 +1,4 @@
+from ..exceptions import DuplicateJobError
 from .admin_service import (
     is_active_coordinator,
 )
@@ -28,6 +29,8 @@ from .users_service import (
 )
 
 __all__ = [
+    # exceptions
+    "DuplicateJobError",
     # users_service
     "get_authenticated_user_token",
     "create_user",
