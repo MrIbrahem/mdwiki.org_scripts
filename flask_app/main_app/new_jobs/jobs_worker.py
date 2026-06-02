@@ -99,6 +99,8 @@ def start_job(
         raise ValueError(f"Unknown job type: {job_type}")
 
     username = user.get("username") if user else None
+    if not username:
+        raise ValueError("User authentication data is required")
 
     try:
         # Create job record
