@@ -39,7 +39,9 @@ class TestGenerateListItem:
         assert "bi-gear" in html
 
     def test_with_target_blank(self):
-        item = SidebarItem(id="test", admin=0, href="/test", title="Test", icon="bi-gear", target="_blank", disabled=False)
+        item = SidebarItem(
+            id="test", admin=0, href="/test", title="Test", icon="bi-gear", target="_blank", disabled=False
+        )
         html = generate_list_item(item)
         assert "target='_blank'" in html
 
