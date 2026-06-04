@@ -1,3 +1,4 @@
+
 a {
     text-decoration: none;
 }
@@ -36,6 +37,15 @@ a {
 
 .btn-tool:focus {
     box-shadow: none !important;
+}
+
+/* style="width:auto; height:320px; object-fit:cover;" */
+.svg-thumbnail-compare {
+    border: 1px solid rgba(44, 62, 80, 0.98);
+    border-radius: 10px;
+    width: 30rem;
+    height: auto;
+    object-fit: cover;
 }
 
 /* Mobile Responsiveness */

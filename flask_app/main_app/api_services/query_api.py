@@ -47,6 +47,7 @@ def is_pages_exists(
         group = titles[i : i + 50]
 
         json1 = site.get("query", titles="|".join(group))
+
         query_data = json1.get("query", {})
 
         normalized = {red["to"]: red["from"] for red in query_data.get("normalized", [])}
@@ -209,9 +210,9 @@ def get_page_links(
 
 __all__ = [
     "get_template_pages",
-    "get_double_redirects",
     "get_page_links",
     "is_pages_exists",
     "resolve_redirects",
     "search_pages",
+    "get_double_redirects",
 ]

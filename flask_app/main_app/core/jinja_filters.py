@@ -71,10 +71,37 @@ def get_status_class(status):
     return status_classes.get(str(status).lower(), "secondary")
 
 
+def short_url(value: str) -> str:
+    """Extract the last segment of a URL path.
+
+    For example, 'https://commons.wikimedia.org/wiki/File:Example.svg?test'
+    becomes 'File:Example.svg'.
+
+    Args:
+        value: A URL string.
+
+    Returns:
+        The last segment of the URL path, or empty string if parsing fails.
+    """
+    if not value or not isinstance(value, str):
+        return ""
+    url = ""
+    try:
+        # Remove trailing slash, split by '/', take last segment
+        url = value.rstrip("/").rsplit("/", 1)[-1]
+    except Exception:
+        logger.exception("Failed to extract short URL from: %s", value)
+
+    # Remove query string
+    url = url.split("?")[0].strip()
+    return url
+
+
 filters = {
     "format_long_date": format_long_date,
     "format_short_date": format_short_date,
     "get_status_class": get_status_class,
+    "short_url": short_url,
 }
 
 __all__ = [

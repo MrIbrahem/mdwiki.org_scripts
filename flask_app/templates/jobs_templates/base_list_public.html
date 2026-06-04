@@ -63,7 +63,7 @@
                                         action="{{ url_for('new_jobs.cancel_job', job_type=job_type, job_id=job.id) }}"
                                         class="d-inline">
                                         {{ csrf() }}
-                                        <button type="submit" class="btn btn-outline-warning btn-sm text-muted"
+                                        <button type="submit" class="btn btn-outline-warning text-muted btn-sm"
                                             onclick="return confirm('Are you sure you want to cancel this job?');">
                                             Cancel
                                         </button>
