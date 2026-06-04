@@ -9,10 +9,10 @@
 {% with messages = get_flashed_messages(with_categories=True) %}
 {% if messages %}
 <div class="flash-messages mt-2 mb-2">
-    {% for category, msg in messages %}
+    {% for category, message in messages %}
     {% set bs = {'message':'info','warning':'warning','danger':'danger','error':'danger','success':'success','info':'info'}.get(category, 'info') %}
     <div class="alert alert-{{ bs }} alert-dismissible fade show" role="alert">
-        {{ msg }}
+        {{ message }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endfor %}
@@ -41,7 +41,6 @@
     <i class="bi {{ icon }}"></i> {{ text }}
 </a>
 {% endmacro %}
-
 
 {% macro nav_link_with_args(endpoint, icon, text, url, path) %}
 {# check endpoint and job_type in URL #}

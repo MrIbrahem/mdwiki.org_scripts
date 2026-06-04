@@ -26,6 +26,7 @@ class JobsConfig:
 
     jobs_max_workers: int
     jobs_log_lines: int
+    priority_per_item: int | None = None
 
 
 @dataclass(frozen=True)

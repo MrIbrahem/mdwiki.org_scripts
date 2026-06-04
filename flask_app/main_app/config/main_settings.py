@@ -30,7 +30,7 @@ def _env_bool(name: str, default: bool = False) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
-def _env_int(name: str, default: int) -> int:
+def _env_int(name: str, default: int, safe: bool = False) -> int:
     """Convert environment variable to integer."""
     value = os.getenv(name)
     if value is None:
@@ -38,7 +38,10 @@ def _env_int(name: str, default: int) -> int:
     try:
         return int(value)
     except ValueError as exc:  # pragma: no cover - defensive guard
-        raise ValueError(f"Environment variable {name} must be an integer") from exc
+        if not safe:
+            raise ValueError(f"Environment variable {name} must be an integer") from exc
+        else:
+            return default
 
 
 def resolve_path(_path) -> Path:
@@ -195,9 +198,12 @@ def _load_jobs_config() -> JobsConfig:
     jobs_max_workers = max(1, _env_int("JOBS_MAX_WORKERS", 2))
     jobs_log_lines = max(10, _env_int("JOBS_LOG_LINES", 200))
 
+    priority_per_item = _env_int("PRIORITY_PER_ITEM", None, safe=True)
+
     _config = JobsConfig(
         jobs_max_workers=jobs_max_workers,
         jobs_log_lines=jobs_log_lines,
+        priority_per_item=priority_per_item,
     )
 
     return _config
