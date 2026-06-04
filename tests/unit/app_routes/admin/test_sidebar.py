@@ -27,21 +27,25 @@ class TestSidebarItem:
 
 class TestGenerateListItem:
     def test_basic_link(self):
-        html = generate_list_item("/test", "Test Page")
+        item = SidebarItem(id="test", admin=0, href="/test", title="Test Page", icon=None, target=None, disabled=False)
+        html = generate_list_item(item)
         assert "/test" in html
         assert "Test Page" in html
         assert "<a" in html
 
     def test_with_icon(self):
-        html = generate_list_item("/test", "Test", icon="bi-gear")
+        item = SidebarItem(id="test", admin=0, href="/test", title="Test", icon="bi-gear", target=None, disabled=False)
+        html = generate_list_item(item)
         assert "bi-gear" in html
 
     def test_with_target_blank(self):
-        html = generate_list_item("/test", "Test", target="_blank")
+        item = SidebarItem(id="test", admin=0, href="/test", title="Test", icon="bi-gear", target="_blank", disabled=False)
+        html = generate_list_item(item)
         assert "target='_blank'" in html
 
     def test_no_target_by_default(self):
-        html = generate_list_item("/test", "Test")
+        item = SidebarItem(id="test", admin=0, href="/test", title="Test", icon=None, target=None, disabled=False)
+        html = generate_list_item(item)
         assert "target=" not in html
 
 
