@@ -210,9 +210,9 @@ def get_page_links(
 
 __all__ = [
     "get_template_pages",
-    "get_double_redirects",
     "get_page_links",
     "is_pages_exists",
     "resolve_redirects",
     "search_pages",
+    "get_double_redirects",
 ]
