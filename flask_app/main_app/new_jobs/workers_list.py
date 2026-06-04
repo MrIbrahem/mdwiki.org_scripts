@@ -57,7 +57,7 @@ jobs_data = {
         job_list_template="jobs_templates/duplicate_redirect/list.html",
         job_callable=duplicate_redirect_worker_entry,
         job_args=[],
-        start_confirm_message="",
+        start_confirm_message="Start fixing duplicate redirects?",
     ),
     "find_and_replace": JobData(
         job_type="find_and_replace",
@@ -73,7 +73,7 @@ jobs_data = {
         job_list_template="jobs_templates/fixred_all/list.html",
         job_callable=fixred_all_worker_entry,
         job_args=[],
-        start_confirm_message="",
+        start_confirm_message="Start fixing redirects in all pages?",
     ),
     "fixref": JobData(
         job_type="fixref",

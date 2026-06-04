@@ -152,6 +152,7 @@ def _jobs_list(job_type: str) -> str:
         job_type=job_type,
         list_title=template_data.job_name,
         list_headline=template_data.job_name,
+        start_confirm_message=template_data.start_confirm_message,
     )
 
 
