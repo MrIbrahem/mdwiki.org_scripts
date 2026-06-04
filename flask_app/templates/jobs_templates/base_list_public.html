@@ -14,7 +14,7 @@
                 <form method="post" action="{{ url_for('new_jobs.start_job', job_type=job_type) }}" class="d-inline">
                     {{ csrf() }}
                     <button type="submit" class="btn btn-outline-primary"
-                        data-confirm-message="{% block start_confirm_message %}{% endblock %}"
+                        data-confirm-message="{{ start_confirm_message }}"
                         onclick="return confirm(this.dataset.confirmMessage);">
                         <i class="bi bi-play-circle"></i>
                         Start New Job
