@@ -24,15 +24,14 @@ def _edit_page(site: mwclient.Site, title: str, text: str, summary: str, nocreat
     return MwClientPage(title, site).edit_page(text, summary, nocreate=nocreate)
 
 
-def edit_page(site: mwclient.Site, title: str, text: str, summary: str, nocreate: int = 1) -> dict[str, any]:
-    """
-    """
+def edit_page(site: mwclient.Site, title: str, text: str, summary: str) -> dict[str, any]:
+    """ """
     missing_fields = verify_required_fields({"title": title, "text": text, "site": site})
     if missing_fields:
         list_str = ", ".join(missing_fields)
         logger.error(f"Missing required fields for edit_page: {list_str}")
         return {"success": False, "error": f"Missing required fields: {list_str}"}
-    return _edit_page(site, title, text, summary, nocreate=nocreate)
+    return _edit_page(site, title, text, summary, nocreate=1)
 
 
 def move_page(
