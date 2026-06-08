@@ -122,7 +122,7 @@ try:
     # route to appropriate list based on result.kind
 except Exception as e:
     logger.exception(f"Error processing {title}")
-    self.result_object.pages_errors.append({"title": title, "error": str(e)})
+    self.result.pages_errors.append({"title": title, "error": str(e)})
 ```
 
 -   Auth check: All workers validate `get_user_site()` result and fail early

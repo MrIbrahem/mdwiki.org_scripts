@@ -242,7 +242,7 @@ class JobsPublicRoutes:
         def job_detail(job_type: str, job_id: int) -> Response | str:
             return _job_detail(job_id, job_type)
 
-        @self.bp.get("/<string:job_type>/<int:job_id>")
+        @self.bp.get("/<string:job_type>/<int:job_id>/expand")
         def job_detail_expand(job_type: str, job_id: int) -> Response | str:
             return _job_detail(job_id, job_type, expand_all=True)
 

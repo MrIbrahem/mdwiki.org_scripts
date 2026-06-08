@@ -12,8 +12,8 @@ class TestDuplicateRedirectWorker:
         worker = DuplicateRedirectWorker(job_id=1, args={}, user=None)
         assert worker.get_job_type() == "duplicate_redirect"
 
-    def test_result_object_type(self):
+    def test_result_type(self):
         from flask_app.main_app.new_jobs.shared_objects import SharedworkerObject
 
         worker = DuplicateRedirectWorker(job_id=1, args={}, user=None)
-        assert isinstance(worker.result_object, SharedworkerObject)
+        assert isinstance(worker.result, SharedworkerObject)

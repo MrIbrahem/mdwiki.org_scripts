@@ -10,8 +10,8 @@ class TestFixRefWorker:
         worker = FixRefWorker(job_id=1, args={"titles": ["Test"]}, user=None)
         assert worker.get_job_type() == "fixref"
 
-    def test_result_object_type(self):
+    def test_result_type(self):
         from flask_app.main_app.new_jobs.shared_objects import SharedworkerObject
 
         worker = FixRefWorker(job_id=1, args={"titles": ["Test"]}, user=None)
-        assert isinstance(worker.result_object, SharedworkerObject)
+        assert isinstance(worker.result, SharedworkerObject)

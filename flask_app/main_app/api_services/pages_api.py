@@ -20,8 +20,18 @@ def is_redirect(page_title: str, site: mwclient.Site) -> bool:
     return MwClientPage(page_title, site).is_redirect()
 
 
-def edit_page(site: mwclient.Site, title: str, text: str, summary: str, nocreate: int = 1) -> dict[str, any]:
+def _edit_page(site: mwclient.Site, title: str, text: str, summary: str, nocreate: int = 1) -> dict[str, any]:
     return MwClientPage(title, site).edit_page(text, summary, nocreate=nocreate)
+
+
+def edit_page(site: mwclient.Site, title: str, text: str, summary: str) -> dict[str, any]:
+    """ """
+    missing_fields = verify_required_fields({"title": title, "text": text, "site": site})
+    if missing_fields:
+        list_str = ", ".join(missing_fields)
+        logger.error(f"Missing required fields for edit_page: {list_str}")
+        return {"success": False, "error": f"Missing required fields: {list_str}"}
+    return _edit_page(site, title, text, summary, nocreate=1)
 
 
 def move_page(
@@ -86,7 +96,7 @@ def create_page(
         logger.error(f"Missing required fields for create_page: {list_str}")
         return {"success": False, "error": f"Missing required fields: {list_str}"}
 
-    return edit_page(site, page_name, wikitext, summary)
+    return _edit_page(site, page_name, wikitext, summary, nocreate=0)
 
 
 def update_page_text(
@@ -113,7 +123,7 @@ def update_page_text(
         logger.error(f"Missing required fields for update_page_text: {list_str}")
         return {"success": False, "error": f"Missing required fields: {list_str}"}
 
-    return edit_page(site, page_name, updated_text, summary)
+    return _edit_page(site, page_name, updated_text, summary, nocreate=1)
 
 
 def get_page_text(

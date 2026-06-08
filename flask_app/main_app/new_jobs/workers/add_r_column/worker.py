@@ -97,21 +97,21 @@ class AddRColumnWorker(BaseObjectsJobWorker):
 
         super().__init__(job_id, user, cancel_event)
 
-        self.result_object: AddRColumnWorkerObject = AddRColumnWorkerObject()
+        self.result: AddRColumnWorkerObject = AddRColumnWorkerObject()
 
     def get_job_type(self) -> str:
         return "add_r_column"
 
     def _set_step_status(self, step: str, status: str, message: str) -> None:
-        self.result_object.set_step_status(step, status, message)
+        self.result.set_step_status(step, status, message)
 
     def _set_steps_skipped(self) -> None:
-        self.result_object.set_steps_skipped()
+        self.result.set_steps_skipped()
 
     def _set_status_failed(self, error) -> None:
-        self.result_object.status = "failed"
-        self.result_object.error = error
-        self.result_object.failed_at = datetime.now().isoformat()
+        self.result.status = "failed"
+        self.result.error = error
+        self.result.failed_at = datetime.now().isoformat()
 
     def process(self) -> Dict[str, Any]:
         """
@@ -122,26 +122,26 @@ class AddRColumnWorker(BaseObjectsJobWorker):
             logger.warning(f"Job {self.job_id}: No site authentication available")
             self._set_status_failed("No authenticated user site available. Please log in via OAuth.")
             self._set_steps_skipped()
-            return self.result_object
+            return self.result
 
         logger.info(f"Job {self.job_id}: for Add R column.")
 
         if self.is_cancelled():
-            return self.result_object
+            return self.result
 
         self._start()
 
         # set any pending steps to skipped
         self._set_steps_skipped()
 
-        if self.result_object.status in ("pending", "running"):
-            self.result_object.status = "completed"
+        if self.result.status in ("pending", "running"):
+            self.result.status = "completed"
 
-        return self.result_object
+        return self.result
 
     def _start(self) -> None:
         """Start the job."""
-        self.result_object.status = "running"
+        self.result.status = "running"
 
         title = "WikiProjectMed:WikiProject Medicine/Popular pages"
 
@@ -196,7 +196,7 @@ class AddRColumnWorker(BaseObjectsJobWorker):
             if not self._save_text(
                 new_text,
                 summary="Add R column",
-                step=self.result_object.steps.first_save,
+                step=self.result.steps.first_save,
             ):
                 self._set_status_failed("Failed to save text")
                 return False
@@ -218,8 +218,8 @@ class AddRColumnWorker(BaseObjectsJobWorker):
         self._set_step_status("add_r_column", "completed", "")
 
         if newtext == text:
-            self.result_object.status = "skipped"
-            self.result_object.error = "No changes"
+            self.result.status = "skipped"
+            self.result.error = "No changes"
             logger.info("no changes")
             return False
 
@@ -232,12 +232,12 @@ class AddRColumnWorker(BaseObjectsJobWorker):
         if not self._save_text(
             newtext,
             summary,
-            step=self.result_object.steps.final_save,
+            step=self.result.steps.final_save,
         ):
-            self.result_object.new_text = newtext
+            self.result.new_text = newtext
 
-            self.result_object.steps.final_save.status = "failed"
-            self.result_object.steps.final_save.message = "Failed to save text"
+            self.result.steps.final_save.status = "failed"
+            self.result.steps.final_save.message = "Failed to save text"
 
             self._set_status_failed("failed to save final text")
             return False

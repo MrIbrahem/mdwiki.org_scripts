@@ -66,7 +66,7 @@ class TestCreatePage:
             result = create_page("Test", "content", mock_site)
             assert result["success"] is True
             MockPage.assert_called_once_with("Test", mock_site)
-            MockPage.return_value.edit_page.assert_called_once_with("content", "", nocreate=1)
+            MockPage.return_value.edit_page.assert_called_once_with("content", "", nocreate=0)
 
 
 class TestUpdatePageText:

@@ -22,7 +22,9 @@
 {%- from "_macros.html" import flash_messages -%}
 
 <body>
+    {% if not hide_navbar %}
     {% include "_navbar.html" %}
+    {% endif %}
 
     <main id="body">
         <div id="maindiv" class="container">

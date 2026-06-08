@@ -56,7 +56,7 @@ class CreateRedirectsWorker(BaseObjectsJobWorker):
 
         super().__init__(job_id, user, cancel_event)
 
-        self.result_object: CreateRedirectsWorkerObject = CreateRedirectsWorkerObject()
+        self.result: CreateRedirectsWorkerObject = CreateRedirectsWorkerObject()
 
     # ------------------------------------------------------------------
     # BaseObjectsJobWorker hooks
@@ -69,15 +69,15 @@ class CreateRedirectsWorker(BaseObjectsJobWorker):
         self.site = get_user_site(self.user)
         if not self.site:
             logger.warning(f"Job {self.job_id}: No site authentication available")
-            self.result_object.status = "failed"
-            self.result_object.error = "No authenticated user site available. Please log in via OAuth."
-            self.result_object.failed_at = datetime.now().isoformat()
-            return self.result_object
+            self.result.status = "failed"
+            self.result.error = "No authenticated user site available. Please log in via OAuth."
+            self.result.failed_at = datetime.now().isoformat()
+            return self.result
 
         titles = self._resolve_titles()
 
         total = len(titles)
-        self.result_object.summary.total = total
+        self.result.summary.total = total
         per_item = self.get_priority(total) if total else 1
 
         logger.info(f"Job {self.job_id}: Processing {total} titles")
@@ -86,21 +86,21 @@ class CreateRedirectsWorker(BaseObjectsJobWorker):
             if self.is_cancelled():
                 break
 
-            self.result_object.summary.scanned += 1
+            self.result.summary.scanned += 1
 
             try:
                 counts = self._process_one(title)
             except Exception as exc:
                 logger.exception("redirect run failed for %s", title)
-                self.result_object.summary.errors += 1
-                self.result_object.pages_errors.append({"title": title, "msg": str(exc)})
+                self.result.summary.errors += 1
+                self.result.pages_errors.append({"title": title, "msg": str(exc)})
                 continue
 
-            self.result_object.summary.target_missing += counts.get("target_missing", 0)
-            self.result_object.summary.created += counts.get("created", 0)
-            self.result_object.summary.already_exists += counts.get("already_exists", 0)
-            self.result_object.summary.skipped += counts.get("skipped", 0)
-            self.result_object.summary.errors += counts.get("errors", 0)
+            self.result.summary.target_missing += counts.get("target_missing", 0)
+            self.result.summary.created += counts.get("created", 0)
+            self.result.summary.already_exists += counts.get("already_exists", 0)
+            self.result.summary.skipped += counts.get("skipped", 0)
+            self.result.summary.errors += counts.get("errors", 0)
 
             status = "created" if counts.get("created") else "skipped"
 
@@ -112,15 +112,15 @@ class CreateRedirectsWorker(BaseObjectsJobWorker):
                 "msg": msg,
             }
 
-            self.result_object.pages_processed.append(page_record)
+            self.result.pages_processed.append(page_record)
 
             if i == 1 or i % per_item == 0:
                 self._save_progress()
 
-        if self.result_object.status in ("pending", "running"):
-            self.result_object.status = "completed"
+        if self.result.status in ("pending", "running"):
+            self.result.status = "completed"
 
-        return self.result_object
+        return self.result
 
     def _resolve_titles(self):
         titles_raw = self.args.get("titles", [])
@@ -129,7 +129,7 @@ class CreateRedirectsWorker(BaseObjectsJobWorker):
         else:
             titles = [t.replace("_", " ").strip() for t in titles_raw if t and t.strip()]
 
-        self.result_object.pages_to_work = titles
+        self.result.pages_to_work = titles
         return titles
 
     # ------------------------------------------------------------------

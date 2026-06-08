@@ -7,11 +7,11 @@ import threading
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from typing import Any, Dict, Final, Optional
+from typing import Any, Dict, Final, List, Optional
 
 from sqlalchemy.orm.exc import StaleDataError
 
-from ..config.main_settings import settings
+from ..config import settings
 from ..db.services import (
     is_job_cancelled,
     update_job_status,
@@ -20,6 +20,8 @@ from ..su_services import is_job_cancelled_file_exist, save_job_result_by_name
 from .utils import generate_result_file_name
 
 logger = logging.getLogger(__name__)
+
+WorkerError = Dict[str, Any]
 
 
 @dataclass
@@ -30,6 +32,7 @@ class WorkerObject:
     cancelled_at: Optional[str] = None
     last_update: Optional[str] = ""
     failed_at: Optional[str] = None
+    errors: List[WorkerError] = field(default_factory=list)
     error: Optional[str] = None
     error_type: Optional[str] = None
 
@@ -65,24 +68,24 @@ class BaseObjectsJobWorker(ABC):
         job_id: int,
         user: Dict[str, Any] | None = None,
         cancel_event: threading.Event | None = None,
-    ):
+    ) -> None:
         self.job_id: Final[int] = job_id
         self.user: Final[Dict[str, Any] | None] = user
         self.cancel_event: Final[threading.Event | None] = cancel_event
         self.job_type: str = self.get_job_type()
         self.result_file: str = generate_result_file_name(job_id, self.job_type)
         self._status: str = "pending"
-        self.result_object: WorkerObject = None
-
         self.result_file_cancelled: str = f"{self.result_file}.cancelled"
         self._edit_count: int = 0
+
+        self.result: WorkerObject = None
 
     @abstractmethod
     def get_job_type(self) -> str:
         """Return the job type string identifier.
 
         Returns:
-            The job type string (e.g., 'crop_main_files', 'collect_main_files')
+            The job type string (e.g., 'crop_main_files', 'collect_templates_data')
         """
         ...
 
@@ -106,7 +109,8 @@ class BaseObjectsJobWorker(ABC):
         """
         try:
             update_job_status(self.job_id, "running", self.result_file, job_type=self.job_type)
-            self.result_object.status = "running"
+            self.result.status = "running"
+            self._save_progress()
             return True
         except LookupError:
             logger.exception(
@@ -117,8 +121,13 @@ class BaseObjectsJobWorker(ABC):
     def after_run(self) -> None:
         """Called after processing completes (success or failure)."""
         # Finalize timestamps
-        self.result_object.completed_at = datetime.now().isoformat()
-        final_status = self.result_object.status or "completed"
+        self.result.completed_at = datetime.now().isoformat()
+        final_status = self.result.status or "completed"
+
+        if final_status in ["running", "pending"]:
+            final_status = "completed"
+
+        self.result.status = final_status
 
         # Save final results
         self._save_progress()
@@ -133,10 +142,11 @@ class BaseObjectsJobWorker(ABC):
 
         logger.info(f"Job {self.job_id}: Finished with status {final_status}")
 
-    def _save_progress(self):
-        try:
-            result = self.result_object.to_json()
+    def _save_progress(self, insert_last_update: bool = True) -> None:
+        result = self.result.to_json()
+        if insert_last_update:
             result["last_update"] = datetime.now().isoformat()
+        try:
             save_job_result_by_name(self.result_file, result)
         except Exception:
             logger.exception(f"Job {self.job_id}: Failed to save job result")
@@ -186,9 +196,10 @@ class BaseObjectsJobWorker(ABC):
 
     def _mark_as_cancelled_in_result(self) -> None:
         """Standardize the result dictionary for a cancelled job."""
-        self.result_object.status = "cancelled"
-        self.result_object.cancelled_at = datetime.now().isoformat()
-        self._save_progress()
+        self.result.status = "cancelled"
+        if self.result.cancelled_at is None:
+            self.result.cancelled_at = datetime.now().isoformat()
+        self._save_progress(insert_last_update=False)
 
     def get_priority(self, length) -> int:
         if length < 11:
@@ -212,9 +223,21 @@ class BaseObjectsJobWorker(ABC):
             prefix += f": {context}"
         logger.exception(prefix)
 
-        self.result_object.status = "failed"
-        self.result_object.error = str(error)
-        self.result_object.error_type = type(error).__name__
+        self.result.status = "failed"
+        self.result.failed_at = datetime.now().isoformat()
+
+        self.log_errors(str(error), type(error).__name__)
+
+    def log_errors(self, error: str, error_type: str = "") -> None:
+        """ """
+        if error:
+            self.result.errors.append({"error": error, "error_type": error_type})
+
+    def log_no_site_error(self) -> None:
+        """ """
+        self.result.status = "failed"
+        self.result.failed_at = datetime.now().isoformat()
+        self.log_errors("No authenticated user site available.")
 
     def run(self) -> Dict[str, Any]:
         """Execute the complete job lifecycle.
@@ -230,10 +253,10 @@ class BaseObjectsJobWorker(ABC):
         try:
             # Pre-processing setup
             if not self.before_run():
-                return self.result_object.to_json()
+                return self.result.to_json()
 
             # Main processing
-            self.result_object = self.process()
+            self.result = self.process()
 
         except Exception as e:
             self.handle_error(e)
@@ -242,7 +265,7 @@ class BaseObjectsJobWorker(ABC):
             # Post-processing cleanup
             self.after_run()
 
-        return self.result_object.to_json()
+        return self.result.to_json()
 
 
 __all__ = [

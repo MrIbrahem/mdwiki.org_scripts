@@ -12,11 +12,11 @@ class TestAddUnlinkedWikibaseWorker:
         worker = AddUnlinkedWikibaseWorker(job_id=1, args={}, user=None)
         assert worker.get_job_type() == "add_unlinkedwikibase"
 
-    def test_result_object_is_shared_worker_object(self):
+    def test_result_is_shared_worker_object(self):
         from flask_app.main_app.new_jobs.shared_objects import SharedworkerObject
 
         worker = AddUnlinkedWikibaseWorker(job_id=1, args={}, user=None)
-        assert isinstance(worker.result_object, SharedworkerObject)
+        assert isinstance(worker.result, SharedworkerObject)
 
     def test_process_sets_completed(self):
         worker = AddUnlinkedWikibaseWorker(job_id=1, args={}, user=None)

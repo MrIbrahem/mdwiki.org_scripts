@@ -40,7 +40,7 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
 
         super().__init__(job_id, user, cancel_event)
 
-        self.result_object: FindAndReplaceWorkerObject = FindAndReplaceWorkerObject()
+        self.result: FindAndReplaceWorkerObject = FindAndReplaceWorkerObject()
 
     # ------------------------------------------------------------------
     # BaseObjectsJobWorker hooks
@@ -53,10 +53,10 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
         self.site = get_user_site(self.user)
         if not self.site:
             logger.warning(f"Job {self.job_id}: No site authentication available")
-            self.result_object.status = "failed"
-            self.result_object.error = "No authenticated user site available. Please log in via OAuth."
-            self.result_object.failed_at = datetime.now().isoformat()
-            return self.result_object
+            self.result.status = "failed"
+            self.result.error = "No authenticated user site available. Please log in via OAuth."
+            self.result.failed_at = datetime.now().isoformat()
+            return self.result
 
         str_find = self.args.get("str_find", "")
         str_replace = self.args.get("str_replace", "")
@@ -64,26 +64,26 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
         number = self.args.get("number")
 
         if not str_find:
-            self.result_object.status = "failed"
-            self.result_object.error = "`find` cannot be empty."
-            return self.result_object
+            self.result.status = "failed"
+            self.result.error = "`find` cannot be empty."
+            return self.result
 
-        self.result_object.text_find = str_find
-        self.result_object.text_replace = str_replace
+        self.result.text_find = str_find
+        self.result.text_replace = str_replace
 
         try:
             cap = int(number) if number and int(number) > 0 else None
         except ValueError:
             cap = None
 
-        self.result_object.cap = cap
+        self.result.cap = cap
 
         # save json file before start search
         self._save_progress()
 
         titles = self._resolve_titles(str_find, listtype)
         total = len(titles)
-        self.result_object.summary.total = total
+        self.result.summary.total = total
         per_item = self.get_priority(total) if total else 1
 
         logger.info(f"Job {self.job_id}: Processing {total} pages (listtype={listtype})")
@@ -91,36 +91,36 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
         for i, title in enumerate(titles, start=1):
             logger.debug(f"i: {i}/{total}, page: {title}.")
             if self.is_cancelled():
-                self.result_object.stopped = True
+                self.result.stopped = True
                 break
 
-            if cap is not None and self.result_object.summary.changed >= cap:
+            if cap is not None and self.result.summary.changed >= cap:
                 logger.info(f"Job {self.job_id}: Reached cap of {cap} modifications")
                 break
 
-            self.result_object.summary.scanned += 1
+            self.result.summary.scanned += 1
 
             try:
                 outcome = self._process_one(title, str_find, str_replace)
             except Exception as exc:
                 logger.exception("job failed for %s", title)
-                self.result_object.pages_errors.append({"title": title, "msg": str(exc)})
+                self.result.pages_errors.append({"title": title, "msg": str(exc)})
                 continue
 
             self.record_page_outcome(outcome, title)
 
             # Check DB if the job cancelled every N successful edits
             if outcome.kind == "changed" and self.check_cancel_db_periodic():
-                self.result_object.stopped = True
+                self.result.stopped = True
                 break
 
             if i == 1 or i % per_item == 0:
                 self._save_progress()
 
-        if self.result_object.status in ("pending", "running"):
-            self.result_object.status = "completed"
+        if self.result.status in ("pending", "running"):
+            self.result.status = "completed"
 
-        return self.result_object
+        return self.result
 
     def record_page_outcome(self, outcome: UpdaterOutcome, title: str) -> None:
         page_record = {
@@ -129,20 +129,20 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
         }
         if outcome.kind == "changed":
             page_record["newrevid"] = outcome.newrevid
-            self.result_object.pages_changed.append(page_record)
+            self.result.pages_changed.append(page_record)
 
         elif outcome.kind == "missing":
-            self.result_object.pages_missing.append(title)
+            self.result.pages_missing.append(title)
 
         elif outcome.kind == "skipped":
-            self.result_object.pages_skipped.append(page_record)
+            self.result.pages_skipped.append(page_record)
 
         elif outcome.kind == "error":
-            self.result_object.pages_errors.append(page_record)
+            self.result.pages_errors.append(page_record)
 
         else:
             page_record["status"] = outcome.kind
-            self.result_object.pages_processed.append(page_record)
+            self.result.pages_processed.append(page_record)
 
     def _resolve_titles(
         self,

@@ -18,13 +18,13 @@ class MockWorker(BaseObjectsJobWorker):
 
         super().__init__(job_id, None, None)
 
-        self.result_object: WorkerObject = WorkerObject()
+        self.result: WorkerObject = WorkerObject()
 
     def get_job_type(self) -> str:
         return self._job_type_name
 
     def process(self) -> Dict[str, Any]:
-        return self.result_object.to_json()
+        return self.result.to_json()
 
 
 def test_before_run_updates_status(app: Flask) -> None:
@@ -32,10 +32,10 @@ def test_before_run_updates_status(app: Flask) -> None:
         job = create_job("mock_job_before_run", "test_user")
         worker = MockWorker(job.id, "mock_job_before_run")
 
-        assert worker.result_object.status == "pending"
+        assert worker.result.status == "pending"
         worker.before_run()
         # This is expected to fail currently based on the issue description
-        assert worker.result_object.status == "running"
+        assert worker.result.status == "running"
 
 
 def test_is_job_cancelled_detects_external_change(app: Flask) -> None:
@@ -81,8 +81,8 @@ def test_is_cancelled_sets_cancelled_at(app: Flask) -> None:
             conn.execute(db.text("UPDATE jobs SET status = 'cancelled' WHERE id = :id"), {"id": job.id})
             conn.commit()
 
-        assert worker.result_object.cancelled_at is None
+        assert worker.result.cancelled_at is None
         assert worker.is_cancelled() is False
         assert worker.is_cancelled(check_db=True) is True
-        assert worker.result_object.status == "cancelled"
-        assert worker.result_object.cancelled_at is not None
+        assert worker.result.status == "cancelled"
+        assert worker.result.cancelled_at is not None

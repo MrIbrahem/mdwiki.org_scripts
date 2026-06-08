@@ -14,8 +14,8 @@ class TestCreateRedirectsWorker:
         worker = CreateRedirectsWorker(job_id=1, args={}, user=None)
         assert worker.get_job_type() == "create_redirects"
 
-    def test_result_object_type(self):
+    def test_result_type(self):
         from flask_app.main_app.new_jobs.workers.create_redirects.objects import CreateRedirectsWorkerObject
 
         worker = CreateRedirectsWorker(job_id=1, args={}, user=None)
-        assert isinstance(worker.result_object, CreateRedirectsWorkerObject)
+        assert isinstance(worker.result, CreateRedirectsWorkerObject)

@@ -39,7 +39,7 @@ class FixRedAllWorker(BaseObjectsJobWorker):
 
         super().__init__(job_id, user, cancel_event)
 
-        self.result_object: SharedworkerObject = SharedworkerObject()
+        self.result: SharedworkerObject = SharedworkerObject()
 
     # ------------------------------------------------------------------
     # BaseObjectsJobWorker hooks
@@ -52,10 +52,10 @@ class FixRedAllWorker(BaseObjectsJobWorker):
         self.site = get_user_site(self.user)
         if not self.site:
             logger.warning(f"Job {self.job_id}: No site authentication available")
-            self.result_object.status = "failed"
-            self.result_object.error = "No authenticated user site available. Please log in via OAuth."
-            self.result_object.failed_at = datetime.now().isoformat()
-            return self.result_object
+            self.result.status = "failed"
+            self.result.error = "No authenticated user site available. Please log in via OAuth."
+            self.result.failed_at = datetime.now().isoformat()
+            return self.result
 
         state = RunState()
         titles = list(
@@ -69,7 +69,7 @@ class FixRedAllWorker(BaseObjectsJobWorker):
         )
 
         total = len(titles)
-        self.result_object.summary.total = total
+        self.result.summary.total = total
         per_item = self.get_priority(total) if total else 1
 
         logger.info(f"Job {self.job_id}: Processing {total} pages")
@@ -80,13 +80,13 @@ class FixRedAllWorker(BaseObjectsJobWorker):
                 break
 
             title = page.name if hasattr(page, "name") else str(page)
-            self.result_object.summary.scanned += 1
+            self.result.summary.scanned += 1
 
             try:
                 outcome = self._process_one(title, state)
             except Exception as exc:
                 logger.exception("job failed for %s", title)
-                self.result_object.pages_errors.append({"title": title, "msg": str(exc)})
+                self.result.pages_errors.append({"title": title, "msg": str(exc)})
                 continue
 
             self.record_page_outcome(outcome, title)
@@ -97,10 +97,10 @@ class FixRedAllWorker(BaseObjectsJobWorker):
             if i == 1 or i % per_item == 0:
                 self._save_progress()
 
-        if self.result_object.status in ("pending", "running"):
-            self.result_object.status = "completed"
+        if self.result.status in ("pending", "running"):
+            self.result.status = "completed"
 
-        return self.result_object
+        return self.result
 
     def record_page_outcome(self, outcome: UpdaterOutcome, title: str) -> None:
         page_record = {
@@ -109,20 +109,20 @@ class FixRedAllWorker(BaseObjectsJobWorker):
         }
         if outcome.kind == "changed":
             page_record["newrevid"] = outcome.newrevid
-            self.result_object.pages_changed.append(page_record)
+            self.result.pages_changed.append(page_record)
 
         elif outcome.kind == "missing":
-            self.result_object.pages_missing.append(title)
+            self.result.pages_missing.append(title)
 
         elif outcome.kind == "skipped":
-            self.result_object.pages_skipped.append(page_record)
+            self.result.pages_skipped.append(page_record)
 
         elif outcome.kind == "error":
-            self.result_object.pages_errors.append(page_record)
+            self.result.pages_errors.append(page_record)
 
         else:
             page_record["status"] = outcome.kind
-            self.result_object.pages_processed.append(page_record)
+            self.result.pages_processed.append(page_record)
 
     # ------------------------------------------------------------------
     # Internal helpers

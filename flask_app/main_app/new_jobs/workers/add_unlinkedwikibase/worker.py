@@ -31,7 +31,7 @@ class AddUnlinkedWikibaseWorker(BaseObjectsJobWorker):
 
         super().__init__(job_id, user, cancel_event)
 
-        self.result_object: SharedworkerObject = SharedworkerObject()
+        self.result: SharedworkerObject = SharedworkerObject()
 
     def get_job_type(self) -> str:
         return "add_unlinkedwikibase"
@@ -45,10 +45,10 @@ class AddUnlinkedWikibaseWorker(BaseObjectsJobWorker):
         # In a real scenario, we might scan all pages.
         # For placeholder, we'll just do nothing.
 
-        if self.result_object.status in ("pending", "running"):
-            self.result_object.status = "completed"
+        if self.result.status in ("pending", "running"):
+            self.result.status = "completed"
 
-        return self.result_object
+        return self.result
 
 
 def add_unlinkedwikibase_worker_entry(

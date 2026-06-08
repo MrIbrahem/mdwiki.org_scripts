@@ -12,8 +12,8 @@ class TestFindAndReplaceWorker:
         worker = FindAndReplaceWorker(job_id=1, args={"find": "a", "replace": "b"}, user=None)
         assert worker.get_job_type() == "find_and_replace"
 
-    def test_result_object_type(self):
+    def test_result_type(self):
         from flask_app.main_app.new_jobs.workers.find_and_replace.objects import FindAndReplaceWorkerObject
 
         worker = FindAndReplaceWorker(job_id=1, args={"find": "a", "replace": "b"}, user=None)
-        assert isinstance(worker.result_object, FindAndReplaceWorkerObject)
+        assert isinstance(worker.result, FindAndReplaceWorkerObject)
