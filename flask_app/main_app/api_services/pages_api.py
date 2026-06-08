@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 import mwclient
 
@@ -20,11 +21,11 @@ def is_redirect(page_title: str, site: mwclient.Site) -> bool:
     return MwClientPage(page_title, site).is_redirect()
 
 
-def _edit_page(site: mwclient.Site, title: str, text: str, summary: str, nocreate: int = 1) -> dict[str, any]:
+def _edit_page(site: mwclient.Site, title: str, text: str, summary: str, nocreate: int = 1) -> dict[str, Any]:
     return MwClientPage(title, site).edit_page(text, summary, nocreate=nocreate)
 
 
-def edit_page(site: mwclient.Site, title: str, text: str, summary: str) -> dict[str, any]:
+def edit_page(site: mwclient.Site, title: str, text: str, summary: str) -> dict[str, Any]:
     """ """
     missing_fields = verify_required_fields({"title": title, "text": text, "site": site})
     if missing_fields:
@@ -41,7 +42,7 @@ def move_page(
     reason: str = "",
     move_talk: bool = True,
     no_redirect: bool = False,
-) -> dict[str, any]:
+) -> dict[str, Any]:
     """
     Move (rename) a page on Wikimedia Commons.
 
@@ -106,7 +107,7 @@ def update_page_text(
     summary: str = "",
 ) -> dict:
     """
-    Update the wikitext of any page on Wikimedia Commons.
+    Update the wikitext of Any page on Wikimedia Commons.
 
     Args:
         page_name: The name of the page to update.
@@ -131,7 +132,7 @@ def get_page_text(
     site: mwclient.Site | None,
 ) -> str:
     """
-    Get the wikitext of any page.
+    Get the wikitext of Any page.
 
     Args:
         page_title: The name of the page (e.g., "Barley yields").
