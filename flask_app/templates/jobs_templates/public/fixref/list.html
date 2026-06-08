@@ -9,7 +9,7 @@
     Provide one of: a title list, a category to walk, or a number of
     mainspace pages to scan.
 </p>
-<form method="post" action="{{ url_for('new_jobs.start_job', job_type=job_type) }}"
+<form method="post" action="{{ url_for('public_jobs.start_job', job_type=job_type) }}"
     class="row gy-2 gx-3 align-items-center mb-4">
     {{ csrf() }}
     <div class="mb-3">

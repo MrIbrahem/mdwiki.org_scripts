@@ -6,7 +6,7 @@ from .admin.routes import bp_admin
 from .auth.routes import bp_auth
 from .fixred import bp_fixred
 from .main import bp_main
-from .new_jobs import jobs_module
+from .public_jobs import jobs_module
 from .newupdater.route import bp_newupdater
 from .profile import bp_profile
 

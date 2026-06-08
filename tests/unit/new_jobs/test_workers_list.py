@@ -1,8 +1,8 @@
-"""Unit tests for flask_app/main_app/new_jobs/workers_list.py module."""
+"""Unit tests for flask_app/main_app/public_jobs/workers_list.py module."""
 
 from __future__ import annotations
 
-from flask_app.main_app.new_jobs.workers_list import JobData, jobs_data
+from flask_app.main_app.public_jobs.workers_list import JobData, jobs_data
 
 
 class TestJobData:

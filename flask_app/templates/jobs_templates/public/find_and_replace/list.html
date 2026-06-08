@@ -9,7 +9,7 @@
     Use the <strong>newlist</strong> mode to search only pages that contain the
     query (recommended); <strong>oldlist</strong> walks every mainspace page and is slower.
 </p>
-<form method="post" action="{{ url_for('new_jobs.start_job', job_type=job_type) }}"
+<form method="post" action="{{ url_for('public_jobs.start_job', job_type=job_type) }}"
     class="row gy-2 gx-3 align-items-center mb-4">
     {{ csrf() }}
     <div class="row g-3 mb-3">

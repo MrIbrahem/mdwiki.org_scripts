@@ -1,8 +1,8 @@
-"""Unit tests for flask_app/main_app/new_jobs/workers/add_r_column/worker.py."""
+"""Unit tests for flask_app/main_app/public_jobs/workers/add_r_column/worker.py."""
 
 from __future__ import annotations
 
-from flask_app.main_app.new_jobs.workers.add_r_column.worker import add_to_tables
+from flask_app.main_app.public_jobs.workers.add_r_column.worker import add_to_tables
 
 
 class TestAddToTables:

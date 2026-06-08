@@ -13,27 +13,27 @@
             <p>Jobs for all pages:</p>
             <ul class="list-group mb-4">
                 <li class="list-group-item">
-                    <a href="{{ url_for('new_jobs.jobs_list', job_type='add_unlinkedwikibase') }}">
+                    <a href="{{ url_for('public_jobs.jobs_list', job_type='add_unlinkedwikibase') }}">
                         add unlinkedwikibase tag
                     </a>
                 </li>
                 <li class="list-group-item">
-                    <a href="{{ url_for('new_jobs.jobs_list', job_type='fixred_all') }}">
+                    <a href="{{ url_for('public_jobs.jobs_list', job_type='fixred_all') }}">
                         Fix redirects all pages <i class="bi bi-check2-circle"></i>
                     </a>
                 </li>
                 <li class="list-group-item">
-                    <a href="{{ url_for('new_jobs.jobs_list', job_type='fixref') }}">
+                    <a href="{{ url_for('public_jobs.jobs_list', job_type='fixref') }}">
                         Normalize references
                     </a>
                 </li>
                 <li class="list-group-item">
-                    <a href="{{ url_for('new_jobs.jobs_list', job_type='duplicate_redirect') }}">
+                    <a href="{{ url_for('public_jobs.jobs_list', job_type='duplicate_redirect') }}">
                         Fix duplicate redirects <i class="bi bi-check2-circle"></i>
                     </a>
                 </li>
                 <li class="list-group-item">
-                    <a href="{{ url_for('new_jobs.jobs_list', job_type='find_and_replace') }}">
+                    <a href="{{ url_for('public_jobs.jobs_list', job_type='find_and_replace') }}">
                         find &amp; replace
                     </a>
                 </li>
@@ -42,7 +42,7 @@
             <p>Jobs for one page:</p>
             <ul class="list-group mb-0">
                 <li class="list-group-item">
-                    <a href="{{ url_for('new_jobs.jobs_list', job_type='add_r_column') }}">
+                    <a href="{{ url_for('public_jobs.jobs_list', job_type='add_r_column') }}">
                         Add R column <i class="bi bi-check2-circle"></i>
                     </a>
                 </li>
@@ -57,12 +57,12 @@
                     </a>
                 </li>
                 <li class="list-group-item">
-                    <a href="{{ url_for('new_jobs.jobs_list', job_type='import_history') }}">
+                    <a href="{{ url_for('public_jobs.jobs_list', job_type='import_history') }}">
                         Import page history
                     </a>
                 </li>
                 <li class="list-group-item">
-                    <a href="{{ url_for('new_jobs.jobs_list', job_type='create_redirects') }}">
+                    <a href="{{ url_for('public_jobs.jobs_list', job_type='create_redirects') }}">
                         Create redirects
                     </a>
                 </li>

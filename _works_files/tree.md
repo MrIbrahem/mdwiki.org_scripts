@@ -41,7 +41,7 @@ flask_app/
 │   │   │   └── routes_utils.py
 │   │   ├── __init__.py
 │   │   ├── fixred.py
-│   │   ├── new_jobs.py
+│   │   ├── public_jobs.py
 │   │   ├── profile.py
 │   │   └── README.md
 │   ├── config/
@@ -70,7 +70,7 @@ flask_app/
 │   │   ├── __init__.py
 │   │   ├── exceptions.py
 │   │   └── README.md
-│   ├── new_jobs/
+│   ├── public_jobs/
 │   │   ├── workers/
 │   │   │   ├── add_r_column/
 │   │   │   │   ├── __init__.py

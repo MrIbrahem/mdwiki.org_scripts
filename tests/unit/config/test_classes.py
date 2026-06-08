@@ -101,7 +101,7 @@ class TestJobsConfig:
 
 class TestPaths:
     def test_fields(self):
-        p = Paths(log_dir="/tmp/logs", jobs_path="/tmp/jobs", new_jobs_path="/tmp/new_jobs")
+        p = Paths(log_dir="/tmp/logs", jobs_path="/tmp/jobs", new_jobs_path="/tmp/public_jobs")
         assert p.log_dir == "/tmp/logs"
 
 

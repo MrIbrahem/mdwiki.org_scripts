@@ -10,7 +10,7 @@ Flask Blueprint-based route handlers implementing the web interface for MDWiki t
 app_routes/
 ├── __init__.py           # register_blueprints()
 ├── fixred.py             # bp_fixred — single-page redirect fixer
-├── new_jobs.py           # bp_public_jobs — job management dashboard
+├── public_jobs.py           # bp_public_jobs — job management dashboard
 ├── auth/
 │   ├── __init__.py
 │   ├── routes.py         # bp_auth — OAuth login/logout/callback
@@ -44,7 +44,7 @@ app_routes/
 2. Redirect to MediaWiki OAuth authorization
 3. Callback: verify state token → complete handshake → encrypt + store tokens → set signed cookie
 
-### Jobs (`bp_public_jobs`, prefix: `/new_jobs`)
+### Jobs (`bp_public_jobs`, prefix: `/public_jobs`)
 
 | Method | Path                           | Description                      |
 | ------ | ------------------------------ | -------------------------------- |

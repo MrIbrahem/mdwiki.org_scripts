@@ -13,7 +13,7 @@
 | `db/`           | SQLAlchemy models (UserToken, AdminUser, Job) + CRUD services |
 | `api_services/` | MediaWiki API wrappers (mwclient-based)                       |
 | `app_routes/`   | Flask Blueprints (auth, main, jobs, newupdater, fixred)       |
-| `new_jobs/`     | Thread-based background job runner + 8 worker implementations |
+| `public_jobs/`     | Thread-based background job runner + 8 worker implementations |
 | `shared/`       | Domain logic — wikitext processing, template normalization    |
 | `su_services/`  | User authentication helpers + job result file I/O             |
 | `utils/`        | Input validation helpers                                      |
@@ -71,7 +71,7 @@ migrate = Migrate()
 | ---------------- | ------------- | --------------------------- |
 | `bp_auth`        | `/`           | OAuth login/logout/callback |
 | `bp_main`        | `/`           | Index page, favicon         |
-| `bp_public_jobs` | `/new_jobs`   | Job management dashboard    |
+| `bp_public_jobs` | `/public_jobs`   | Job management dashboard    |
 | `bp_newupdater`  | `/newupdater` | Medical content updater     |
 | `bp_fixred`      | `/fixred`     | Single-page redirect fixer  |
 
@@ -96,7 +96,7 @@ pytest tests/ --cov=flask_app/main_app
 
 -   **No dependency injection** — tight coupling to `settings` singleton
 -   **`shared/` package** contains complex wikitext processing with poor documentation
--   **Worker objects partially consolidated** — `SharedworkerObject` in `new_jobs/shared_objects.py` replaces per-worker dataclasses for 4 workers; 3 workers retain local objects
+-   **Worker objects partially consolidated** — `SharedworkerObject` in `public_jobs/shared_objects.py` replaces per-worker dataclasses for 4 workers; 3 workers retain local objects
 -   **No middleware** for request logging, timing, or metrics
 -   **`load_auth_payload`** passes encrypted bytes without explicit decryption context
 -   **All error handlers** render `index.html` — no dedicated error pages

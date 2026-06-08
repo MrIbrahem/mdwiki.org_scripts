@@ -1,4 +1,4 @@
-"""Unit tests for flask_app/main_app/new_jobs/jobs_worker.py module."""
+"""Unit tests for flask_app/main_app/public_jobs/jobs_worker.py module."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from unittest.mock import patch
 import pytest
 from flask.app import Flask
 from flask_app.main_app.db.exceptions import DuplicateJobError
-from flask_app.main_app.new_jobs.jobs_worker import (
+from flask_app.main_app.public_jobs.jobs_worker import (
     JOBS_CANCEL_EVENTS,
     JOBS_CANCEL_EVENTS_LOCK,
     _get_jobs_cancel_event,
@@ -61,15 +61,15 @@ def test_start_job_raises_duplicate_job_error(app: Flask) -> None:
     with app.app_context():
         with (
             patch(
-                "flask_app.main_app.new_jobs.jobs_worker.create_job",
+                "flask_app.main_app.public_jobs.jobs_worker.create_job",
                 side_effect=DuplicateJobError("A job of type 'test' is already active"),
             ),
             patch(
-                "flask_app.main_app.new_jobs.jobs_worker.jobs_data",
+                "flask_app.main_app.public_jobs.jobs_worker.jobs_data",
                 {"test_type": type("JobData", (), {"job_callable": lambda: None})()},
             ),
         ):
-            from flask_app.main_app.new_jobs.jobs_worker import start_job
+            from flask_app.main_app.public_jobs.jobs_worker import start_job
 
             with pytest.raises(DuplicateJobError):
                 start_job(

@@ -29,7 +29,7 @@
                             <td> {{ loop.index }} </td>
                             <td>{{ job.id }}</td>
                             <td>
-                                <a href="{{ url_for('new_jobs.jobs_list', job_type=job.job_type) }}">
+                                <a href="{{ url_for('public_jobs.jobs_list', job_type=job.job_type) }}">
                                     {{ job.job_type }}
                                 </a>
                             </td>
@@ -55,7 +55,7 @@
                                 {{ job.completed_at | format_short_date("-") }}
                             </td>
                             <td class="text-center">
-                                <a href="{{ url_for('new_jobs.job_detail', job_type=job.job_type, job_id=job.id) }}">
+                                <a href="{{ url_for('public_jobs.job_detail', job_type=job.job_type, job_id=job.id) }}">
                                     Details
                                 </a>
                             </td>

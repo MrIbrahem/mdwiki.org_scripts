@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Concrete worker implementations for the background job system. Each subdirectory contains a worker class that extends `BaseObjectsJobWorker` from the parent `new_jobs` package. Workers perform wiki maintenance operations (redirect fixing, reference normalization, content import, etc.) on mdwiki.org via the MediaWiki API.
+Concrete worker implementations for the background job system. Each subdirectory contains a worker class that extends `BaseObjectsJobWorker` from the parent `public_jobs` package. Workers perform wiki maintenance operations (redirect fixing, reference normalization, content import, etc.) on mdwiki.org via the MediaWiki API.
 
 ### Structure
 
@@ -132,7 +132,7 @@ except Exception as e:
 ## Testing
 
 ```bash
-pytest tests/unit/new_jobs/workers --cov=flask_app/main_app/new_jobs/workers
+pytest tests/unit/public_jobs/workers --cov=flask_app/main_app/public_jobs/workers
 ```
 
 ## Strengths

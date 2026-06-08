@@ -2,7 +2,7 @@
 
 ## Goal
 
-Migrate 6 jobs from `flask_app/main_app/jobs/` into `flask_app/main_app/new_jobs/` using the `BaseJobWorker` pattern. Old `jobs/` folder stays untouched for reference.
+Migrate 6 jobs from `flask_app/main_app/jobs/` into `flask_app/main_app/public_jobs/` using the `BaseJobWorker` pattern. Old `jobs/` folder stays untouched for reference.
 
 ## Jobs to Migrate
 
@@ -21,7 +21,7 @@ Migrate 6 jobs from `flask_app/main_app/jobs/` into `flask_app/main_app/new_jobs
 
 ### Step 1: Create Worker Folder
 
-Create `flask_app/main_app/new_jobs/workers/<job_type>/` with:
+Create `flask_app/main_app/public_jobs/workers/<job_type>/` with:
 
 **`__init__.py`** — re-export the entry function:
 
@@ -55,7 +55,7 @@ Create `flask_app/templates/new_jobs_templates/<job_type>/` with:
 -   Set `job_type = '<job_type>'`
 -   Set `hide_start_button = '1'` (if the job has form args)
 -   Block `list_title` / `list_headline`: human-readable name
--   Block `list_info`: form that POSTs to `url_for('new_jobs.start_job_with_args', job_type=job_type)`
+-   Block `list_info`: form that POSTs to `url_for('public_jobs.start_job_with_args', job_type=job_type)`
     -   Form fields match the old template's inputs
     -   Use `<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />`
     -   For jobs with `title` + `titlelist` fields: add JS to merge them into a single `titles` field before submit, OR use a single textarea named `titles`
@@ -69,7 +69,7 @@ Create `flask_app/templates/new_jobs_templates/<job_type>/` with:
 
 ### Step 3: Register in `workers_list.py`
 
-Edit `flask_app/main_app/new_jobs/workers_list.py`:
+Edit `flask_app/main_app/public_jobs/workers_list.py`:
 
 1. Add import: `from .workers.<job_type>.worker import <job_type>_worker_entry`
 2. Add an entry to `jobs_data`:
@@ -169,8 +169,8 @@ Edit `flask_app/main_app/new_jobs/workers_list.py`:
 
 For each of the 6 jobs, create:
 
--   `flask_app/main_app/new_jobs/workers/<job_type>/__init__.py`
--   `flask_app/main_app/new_jobs/workers/<job_type>/worker.py`
+-   `flask_app/main_app/public_jobs/workers/<job_type>/__init__.py`
+-   `flask_app/main_app/public_jobs/workers/<job_type>/worker.py`
 -   `flask_app/templates/new_jobs_templates/<job_type>/list.html`
 -   `flask_app/templates/new_jobs_templates/<job_type>/details.html`
 
@@ -178,7 +178,7 @@ Total: 24 new files.
 
 Edit:
 
--   `flask_app/main_app/new_jobs/workers_list.py` (add 6 imports + 6 entries in each of 3 dicts)
+-   `flask_app/main_app/public_jobs/workers_list.py` (add 6 imports + 6 entries in each of 3 dicts)
 
 ---
 
@@ -189,11 +189,11 @@ Edit:
 -   [x] Created all 6 worker folders with `__init__.py` + `worker.py`
 -   [x] Created all 6 template folders with `list.html` + `details.html`
 -   [x] Registered all 6 jobs in `workers_list.py` (imports + 3 dicts)
--   [x] Updated `index.html` — all 6 `url_for` links now point to `new_jobs.jobs_list`
+-   [x] Updated `index.html` — all 6 `url_for` links now point to `public_jobs.jobs_list`
 -   [x] Added `start_job()` to `jobs_worker.py` (delegates to `start_job_with_args` with empty args)
 -   [x] Added descriptive text to `duplicate_redirect/list.html` and `fixred_all/list.html`
 -   [x] Added `pages_processed` table + args JSON to `duplicate_redirect/details.html` and `fixred_all/details.html`
--   [x] Created `/new_jobs/list` endpoint + `all_jobs_list.html` template (shows 100 recent jobs across all types)
+-   [x] Created `/public_jobs/list` endpoint + `all_jobs_list.html` template (shows 100 recent jobs across all types)
 -   [x] Added "New Jobs" link to navbar in `header.html`
 -   [x] Added missing `api_services` functions: `get_page_text`, `search_pages`, `get_double_redirects`, `import_page_from_wiki`, `get_page_links`
 -   [x] Refactored `fixred_worker.py` to use `api_services` instead of `newapi`

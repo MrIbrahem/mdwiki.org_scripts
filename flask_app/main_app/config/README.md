@@ -18,7 +18,7 @@ Configuration subsystem using **frozen dataclasses** loaded from environment var
 ```
 Settings (root)
 ├── database_data: DbConfig        # MySQL connection details
-├── paths: Paths                    # Log, jobs, new_jobs directories
+├── paths: Paths                    # Log, jobs, public_jobs directories
 ├── cookie: CookieConfig            # Session cookie settings
 ├── sessions: SessionConfig         # Flask session keys
 ├── oauth: OAuthConfig              # MediaWiki OAuth credentials

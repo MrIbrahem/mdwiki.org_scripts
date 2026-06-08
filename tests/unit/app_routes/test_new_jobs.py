@@ -1,11 +1,11 @@
-"""Unit tests for flask_app/main_app/app_routes/new_jobs.py module."""
+"""Unit tests for flask_app/main_app/app_routes/public_jobs.py module."""
 
 from __future__ import annotations
 
 from unittest.mock import MagicMock
 
 import pytest
-from flask_app.main_app.app_routes.new_jobs import _can_manage_job
+from flask_app.main_app.app_routes.public_jobs import _can_manage_job
 
 
 class TestCanManageJob:
@@ -49,9 +49,9 @@ class TestCanManageJob:
 @pytest.mark.usefixtures("app")
 class TestNewJobsRoutes:
     def test_jobs_list_requires_valid_type(self, mock_client):
-        resp = mock_client.get("/new_jobs/invalid_type")
+        resp = mock_client.get("/public_jobs/invalid_type")
         assert resp.status_code == 404
 
     def test_all_jobs_list_page(self, mock_client):
-        resp = mock_client.get("/new_jobs/list")
+        resp = mock_client.get("/public_jobs/list")
         assert resp.status_code == 200

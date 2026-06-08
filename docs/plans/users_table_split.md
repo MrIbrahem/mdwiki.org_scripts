@@ -440,7 +440,7 @@ def work_on_title(
 | 13  | Tests (10+ files)                   | Update constructors, mocks, assertions                                   |
 
 **Files that need NO changes:** `auth/routes.py`, `auth/utils.py`, `auth/cookie.py`,
-`auth/oauth.py`, `admin/admins_required.py`, `new_jobs.py`, `profile.py`,
+`auth/oauth.py`, `admin/admins_required.py`, `public_jobs.py`, `profile.py`,
 `api_services/clients/wiki_client.py`, `extensions.py`, all workers.
 
 ---

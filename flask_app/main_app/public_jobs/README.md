@@ -1,4 +1,4 @@
-# new_jobs — Background Job System
+# public_jobs — Background Job System
 
 ## Project Overview
 
@@ -7,7 +7,7 @@ Thread-based background job processing system with a standardized worker lifecyc
 ### Structure
 
 ```
-new_jobs/
+public_jobs/
 ├── __init__.py           # Empty
 ├── jobs_worker.py        # Job runner: start/cancel, thread management
 ├── workers_list.py       # Registry: JobData dataclass + jobs_data dict
@@ -135,8 +135,8 @@ jobs_data = {
 ## Testing
 
 ```bash
-pytest tests/unit/new_jobs --cov=flask_app/main_app/new_jobs
-pytest tests/unit/new_jobs --cov=flask_app/main_app/new_jobs
+pytest tests/unit/public_jobs --cov=flask_app/main_app/public_jobs
+pytest tests/unit/public_jobs --cov=flask_app/main_app/public_jobs
 ```
 
 ## Strengths

@@ -19,7 +19,7 @@ This tool runs on **Wikimedia Toolforge** (Kubernetes) and provides various jobs
 The application follows a strict layering: **Controller → Service → Repository → Database**.
 
 - **Flask App**: Main application framework.
-- **Background Jobs**: Managed using a custom worker system in `flask_app/main_app/new_jobs/`.
+- **Background Jobs**: Managed using a custom worker system in `flask_app/main_app/public_jobs/`.
 - **MediaWiki Integration**: Uses `mwclient` and `mwoauth`.
 - **Database**: SQLAlchemy for data persistence (MySQL in production, SQLite for tests).
 

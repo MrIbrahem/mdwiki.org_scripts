@@ -9,7 +9,7 @@
     English Wikipedia, then re-saves the current mdwiki body on top so
     the visible content is unchanged.
 </p>
-<form method="post" action="{{ url_for('new_jobs.start_job', job_type=job_type) }}"
+<form method="post" action="{{ url_for('public_jobs.start_job', job_type=job_type) }}"
     class="row gy-2 gx-3 align-items-center mb-4">
     {{ csrf() }}
     <div class="row g-3 mb-3">

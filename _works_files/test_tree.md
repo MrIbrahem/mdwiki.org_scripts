@@ -59,7 +59,7 @@ tests/
 │   │   │   └── test_user_token_service.py
 │   │   ├── test_db_init.py
 │   │   └── test_exceptions.py
-│   ├── new_jobs/
+│   ├── public_jobs/
 │   │   ├── workers/
 │   │   │   ├── add_r_column/
 │   │   │   │   ├── test_add_r_column_objects.py

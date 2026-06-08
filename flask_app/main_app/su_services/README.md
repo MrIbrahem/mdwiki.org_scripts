@@ -55,7 +55,7 @@ Saves `request.url` as `post_login_redirect` in session for post-login redirect.
 
 | Function                                  | Description                              |
 | ----------------------------------------- | ---------------------------------------- |
-| `get_jobs_data_dir()`                     | `@lru_cache` path to `MAIN_DIR/new_jobs` |
+| `get_jobs_data_dir()`                     | `@lru_cache` path to `MAIN_DIR/public_jobs` |
 | `save_job_result(job_id, data)`           | Saves JSON to `job_{id}.json`            |
 | `save_job_result_by_name(filename, data)` | Saves JSON with custom filename          |
 | `load_job_result(result_file)`            | Loads JSON from jobs directory           |

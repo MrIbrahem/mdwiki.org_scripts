@@ -36,14 +36,14 @@ is_active_admin=is_active_coordinator(username),
 | `routes_utils.py:context_user()`    | 33    | `_is_admin(user)`                            | same function, now reads field            |
 | `routes_utils.py:can_run_jobs()`    | 58    | `_is_admin(user)`                            | same                                      |
 | `routes_utils.py:can_run_bg_jobs()` | 68    | `_is_admin(user)`                            | same                                      |
-| `new_jobs.py:_can_manage_job()`     | 44    | `user.username in active_coordinators()`     | `getattr(user, "is_active_admin", False)` |
+| `public_jobs.py:_can_manage_job()`     | 44    | `user.username in active_coordinators()`     | `getattr(user, "is_active_admin", False)` |
 | `admins_required.py:admin_required` | 29    | `user.username not in active_coordinators()` | `not user.is_active_admin`                |
 
-After these changes, `routes_utils.py` and `new_jobs.py` no longer need to import `active_coordinators`.
+After these changes, `routes_utils.py` and `public_jobs.py` no longer need to import `active_coordinators`.
 
 ### Step 4 — Remove stale imports
 
-Remove `active_coordinators` from imports in `routes_utils.py` and `new_jobs.py` (keep it in `admin_service/__init__.py` exports and `coordinators.py` route where the full list is displayed).
+Remove `active_coordinators` from imports in `routes_utils.py` and `public_jobs.py` (keep it in `admin_service/__init__.py` exports and `coordinators.py` route where the full list is displayed).
 
 ### Step 5 — Update tests
 

@@ -1,4 +1,4 @@
-write a plan to merge old jobs into new_jobs, while keeping old `jobs` as its for `refernces`
+write a plan to merge old jobs into public_jobs, while keeping old `jobs` as its for `refernces`
 
 all jobs in `flask_app/main_app/jobs`
 
@@ -9,9 +9,9 @@ all jobs in `flask_app/main_app/jobs`
 -   fixref
 -   import_history
 
-should use `flask_app/main_app/new_jobs/jobs_worker.py`
+should use `flask_app/main_app/public_jobs/jobs_worker.py`
 
-start by creating folder for each job in `flask_app/main_app/new_jobs/workers`:
+start by creating folder for each job in `flask_app/main_app/public_jobs/workers`:
 
 -   `__init__.py` placeholder:
 
@@ -41,7 +41,7 @@ import logging
 import threading
 from datetime import datetime
 from typing import Any, Dict, Iterable
-from ....new_jobs.base_worker import BaseJobWorker
+from ....public_jobs.base_worker import BaseJobWorker
 
 logger = logging.getLogger(__name__)
 
@@ -133,4 +133,4 @@ __all__ = [
 ```
 
 -   job html templates at `flask_app/templates/new_jobs_templates/`
--   register in `flask_app/main_app/new_jobs/workers_list.py` by adding a `JobData` entry to `jobs_data`
+-   register in `flask_app/main_app/public_jobs/workers_list.py` by adding a `JobData` entry to `jobs_data`

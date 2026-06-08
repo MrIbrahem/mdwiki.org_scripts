@@ -6,7 +6,7 @@ from typing import Any, Dict
 
 from flask import g, url_for
 
-from ...new_jobs.workers_list import jobs_data
+from ...public_jobs.workers_list import jobs_data
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ def _is_admin(user: Any) -> bool:
     return bool(user and getattr(user, "is_active_admin", False))
 
 
-def context_user(wiki_domain: str, static_server: str) -> dict[str, Any]:
+def context_user(wiki_domain: str, static_server: str, tool_title: str = "Mdwiki tools") -> dict[str, Any]:
     """
     Used in @app.context_processor to inject variables into templates.
     """
@@ -31,6 +31,7 @@ def context_user(wiki_domain: str, static_server: str) -> dict[str, Any]:
         "is_admin": _is_admin(user),
         "wiki_domain": wiki_domain,
         "static_server": static_server,
+        "tool_title": tool_title,
     }
 
 
@@ -71,7 +72,7 @@ def can_run_bg_jobs(user: Any) -> bool:
 def get_job_detail_url(job_id: int, job_type: str) -> str:
     """Returns the correct job detail URL based on job type."""
     if job_type in jobs_data:
-        return url_for("new_jobs.job_detail", job_type=job_type, job_id=job_id)
+        return url_for("public_jobs.job_detail", job_type=job_type, job_id=job_id)
     return url_for("admin.jobs.job_detail", job_type=job_type, job_id=job_id)
 
 

@@ -1,10 +1,10 @@
 """
-Unit tests for flask_app/main_app/new_jobs/workers/create_redirects/worker.py
+Unit tests for flask_app/main_app/public_jobs/workers/create_redirects/worker.py
 """
 
 from __future__ import annotations
 
-from flask_app.main_app.new_jobs.workers.create_redirects.worker import (
+from flask_app.main_app.public_jobs.workers.create_redirects.worker import (
     CreateRedirectsWorker,
 )
 
@@ -15,7 +15,7 @@ class TestCreateRedirectsWorker:
         assert worker.get_job_type() == "create_redirects"
 
     def test_result_type(self):
-        from flask_app.main_app.new_jobs.workers.create_redirects.objects import CreateRedirectsWorkerObject
+        from flask_app.main_app.public_jobs.workers.create_redirects.objects import CreateRedirectsWorkerObject
 
         worker = CreateRedirectsWorker(job_id=1, args={}, user=None)
         assert isinstance(worker.result, CreateRedirectsWorkerObject)

@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block header_actions %}
-<form method="post" action="{{ url_for('new_jobs.start_job', job_type=job_type) }}" class="d-inline">
+<form method="post" action="{{ url_for('public_jobs.start_job', job_type=job_type) }}" class="d-inline">
     {{ csrf() }}
     <button type="submit" class="btn btn-outline-primary"
         data-confirm-message="Run background job to update add R column to WikiProjectMed:WikiProject Medicine/Popular page?"

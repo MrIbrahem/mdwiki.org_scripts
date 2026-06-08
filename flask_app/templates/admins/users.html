@@ -1,6 +1,6 @@
 {% extends "admins/base1.html" %}
 
-{% block title %}Users · Mdwiki tools{% endblock %}
+{% block title %}Users · {{ tool_title }}{% endblock %}
 
 {%- macro update_user_can_run(end_point, user_id, value, column_name) -%}
 <form method="post" action="{{ url_for(end_point, user_id=user_id) }}" class="d-inline">
@@ -55,7 +55,9 @@
                                 {{ user.username }}
                             </a>
                         </td>
-                        <td class="text-center">{{ user.created_at }}</td>
+                        <td class="text-center">
+                            {{ user.created_at }}
+                        </td>
                         <td class="text-center">
                             {{ update_user_can_run('admin.users.update_can_run_jobs', user.user_id, user.can_run_jobs, "can_run_jobs") }}
                         </td>

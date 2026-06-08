@@ -1,8 +1,8 @@
-"""Unit tests for flask_app/main_app/new_jobs/utils.py (test_new_jobs_utils.py)."""
+"""Unit tests for flask_app/main_app/public_jobs/utils.py (test_new_jobs_utils.py)."""
 
 from __future__ import annotations
 
-from flask_app.main_app.new_jobs.utils import generate_result_file_name
+from flask_app.main_app.public_jobs.utils import generate_result_file_name
 
 
 class TestGenerateResultFileName:
