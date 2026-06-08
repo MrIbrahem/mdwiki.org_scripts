@@ -1,67 +1,69 @@
 {% extends "base.html" %}
 {% from "_macros.html" import status_icon %}
 
-{% block content %}
-<div class="card">
-    <div class="card-header" style="font-weight:bold;">
-        <h3>New Jobs List</h3>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle mb-0 DataTable">
-                <thead>
-                    <tr>
-                        <th scope="col" style="width: 5%">#</th>
-                        <th scope="col" style="width: 10%">ID</th>
-                        <th scope="col" style="width: 12%">Type</th>
-                        <th scope="col" style="width: 8%">Status</th>
-                        <th scope="col" style="width: 12%">User</th>
-                        <th scope="col" style="width: 15%">Created</th>
-                        <th scope="col" style="width: 15%">Started</th>
-                        <th scope="col" style="width: 15%">Completed</th>
-                        <th scope="col" class="text-center" style="width: 8%">Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for job in jobs %}
-                    <tr>
-                        <td> {{ loop.index }} </td>
-                        <td>{{ job.id }}</td>
-                        <td>
-                            <a href="{{ url_for('new_jobs.jobs_list', job_type=job.job_type) }}">
-                                {{ job.job_type }}
-                            </a>
-                        </td>
-                        <td>
-                            {{ status_icon(job.status) }}
-                        </td>
-                        <td>
-                            {% if job.username %}
-                            <a href="{{ url_for('profile.user_dashboard', user_name=job.username) }}">
-                                <span class="">{{ job.username }}</span>
-                            </a>
-                            {% else %}
-                            {{ job.username if job.username else '-' }}
-                            {% endif %}
-                        </td>
-                        <td>
-                            {{ job.created_at | format_long_date("-") }}
-                        </td>
-                        <td>
-                            {{ job.started_at | format_short_date("-") }}
-                        </td>
-                        <td>
-                            {{ job.completed_at | format_short_date("-") }}
-                        </td>
-                        <td class="text-center">
-                            <a href="{{ url_for('new_jobs.job_detail', job_type=job.job_type, job_id=job.id) }}">
-                                Details
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+{% block content_fluid %}
+<div class="container">
+    <div class="card">
+        <div class="card-header" style="font-weight:bold;">
+            <h3>New Jobs List</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle mb-0 DataTable">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 5%">#</th>
+                            <th scope="col" style="width: 10%">ID</th>
+                            <th scope="col" style="width: 12%">Type</th>
+                            <th scope="col" style="width: 8%">Status</th>
+                            <th scope="col" style="width: 12%">User</th>
+                            <th scope="col" style="width: 15%">Created</th>
+                            <th scope="col" style="width: 15%">Started</th>
+                            <th scope="col" style="width: 15%">Completed</th>
+                            <th scope="col" class="text-center" style="width: 8%">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job in jobs %}
+                        <tr>
+                            <td> {{ loop.index }} </td>
+                            <td>{{ job.id }}</td>
+                            <td>
+                                <a href="{{ url_for('new_jobs.jobs_list', job_type=job.job_type) }}">
+                                    {{ job.job_type }}
+                                </a>
+                            </td>
+                            <td>
+                                {{ status_icon(job.status) }}
+                            </td>
+                            <td>
+                                {% if job.username %}
+                                <a href="{{ url_for('profile.user_dashboard', user_name=job.username) }}">
+                                    <span class="">{{ job.username }}</span>
+                                </a>
+                                {% else %}
+                                {{ job.username if job.username else '-' }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ job.created_at | format_long_date("-") }}
+                            </td>
+                            <td>
+                                {{ job.started_at | format_short_date("-") }}
+                            </td>
+                            <td>
+                                {{ job.completed_at | format_short_date("-") }}
+                            </td>
+                            <td class="text-center">
+                                <a href="{{ url_for('new_jobs.job_detail', job_type=job.job_type, job_id=job.id) }}">
+                                    Details
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

@@ -27,13 +27,7 @@
     {% if not hide_navbar %}
     {% include "_navbar.html" %}
     {% endif %}
-
-    <main id="body">
-        <div id="maindiv" class="container">
-            {{ flash_messages() }}
-            {% block content %}{% endblock %}
-        </div>
-    </main>
+    {{ flash_messages() }}
     {% block content_fluid %}{% endblock %}
     <script src='{{ static_server }}/ajax/libs/jquery/3.7.1/jquery.min.js'></script>
     <script src='{{ static_server }}/ajax/libs/jqueryui/1.14.1/jquery-ui.min.js'></script>

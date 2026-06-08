@@ -1,59 +1,61 @@
 {% extends "base.html" %}
 {% from "_macros.html" import csrf, edit_form, saved_alert %}
 
-{% block content %}
-<div class="card">
-	<div class="card-header" style="font-weight:bold;">
-		<h3>{{ title or "Fix redirects in page text" }}</h3>
-	</div>
-	<div class="card-body">
-		{% if not outcome %}
-		<p class="text-muted">
-			Walks the wikilinks on the given mdwiki page and rewrites every
-			redirect link to point at its canonical target (preserving the
-			original display text).
-		</p>
-		<form method="POST" action="{{ url_for('fixred.fixred_post') }}" class="row g-2">
-			{{ csrf() }}
-			<div class="col-md-4">
-				<div class="input-group mb-3">
-					<div class="input-group-prepend">
-						<span class="input-group-text">Title</span>
+{% block content_fluid %}
+<div class="container">
+	<div class="card">
+		<div class="card-header" style="font-weight:bold;">
+			<h3>{{ title or "Fix redirects in page text" }}</h3>
+		</div>
+		<div class="card-body">
+			{% if not outcome %}
+			<p class="text-muted">
+				Walks the wikilinks on the given mdwiki page and rewrites every
+				redirect link to point at its canonical target (preserving the
+				original display text).
+			</p>
+			<form method="POST" action="{{ url_for('fixred.fixred_post') }}" class="row g-2">
+				{{ csrf() }}
+				<div class="col-md-4">
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text">Title</span>
+						</div>
+						<input class="form-control wiki-autocomplete" type="text" id="title" name="title"
+							value="{{ form_title or 'User:Mr. Ibrahem/test' }}" required>
 					</div>
-					<input class="form-control wiki-autocomplete" type="text" id="title" name="title"
-						value="{{ form_title or 'User:Mr. Ibrahem/test' }}" required>
 				</div>
-			</div>
-			<div class='col-md-3'>
-				<div class='form-check form-switch'>
-                    <input class='form-check-input' type='checkbox' id='save' name='save' value='1' {% if save %}
-                        checked {% endif %}>
-					<label class='check-label' for='save'>Auto save</label>
+				<div class='col-md-3'>
+					<div class='form-check form-switch'>
+						<input class='form-check-input' type='checkbox' id='save' name='save' value='1' {% if save %}
+							checked {% endif %}>
+						<label class='check-label' for='save'>Auto save</label>
+					</div>
 				</div>
-			</div>
-			<div class="col-md-3 d-flex align-items-end">
-				<button class="btn btn-outline-primary w-100" type="submit">Start</button>
-			</div>
-		</form>
-		{% endif %}
-		{% if outcome %}
-		{% if outcome.kind == "changes" %}
-		<h5>Proposed changes for <code>{{ form_title }}</code></h5>
-		{{ edit_form(wiki_domain, form_title, outcome.new_text) }}
+				<div class="col-md-3 d-flex align-items-end">
+					<button class="btn btn-outline-primary w-100" type="submit">Start</button>
+				</div>
+			</form>
+			{% endif %}
+			{% if outcome %}
+			{% if outcome.kind == "changes" %}
+			<h5>Proposed changes for <code>{{ form_title }}</code></h5>
+			{{ edit_form(wiki_domain, form_title, outcome.new_text) }}
 
-		{% elif outcome.kind == "skipped" %}
-		<div class="alert alert-info">
-			<code>{{ form_title }}</code>: page skipped, reason: {{ outcome.msg }}
+			{% elif outcome.kind == "skipped" %}
+			<div class="alert alert-info">
+				<code>{{ form_title }}</code>: page skipped, reason: {{ outcome.msg }}
+			</div>
+			{% elif outcome.kind == "notext" %}
+			<div class="alert alert-warning">
+				<code>{{ form_title }}</code>: the page is empty, missing, or the
+				rewriter produced empty output.
+			</div>
+			{% elif outcome.kind == "saved" %}
+			{{ saved_alert(wiki_domain, form_title, outcome.newrevid) }}
+			{% endif %}
+			{% endif %}
 		</div>
-		{% elif outcome.kind == "notext" %}
-		<div class="alert alert-warning">
-			<code>{{ form_title }}</code>: the page is empty, missing, or the
-			rewriter produced empty output.
-		</div>
-		{% elif outcome.kind == "saved" %}
-		{{ saved_alert(wiki_domain, form_title, outcome.newrevid) }}
-		{% endif %}
-		{% endif %}
 	</div>
 </div>
 {% endblock %}
