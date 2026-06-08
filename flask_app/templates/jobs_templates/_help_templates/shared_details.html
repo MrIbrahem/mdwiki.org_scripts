@@ -1,6 +1,6 @@
 <!-- jobs_templates/_help_templates/shared_details.html -->
 {% extends "jobs_templates/base_details_public.html" %}
-{%- from "_macros/_jobs_macros.html" import template_pages_changed, template_pages_processed, template_pages_errors, template_pages_only_title -%}
+{% from "_macros/_jobs_macros.html" import template_pages_changed, template_pages_processed, template_pages_errors, template_pages_only_title %}
 
 {% block job_summary %}
 
@@ -12,31 +12,31 @@
 
 {% if result_data and result_data.pages_changed %}
 
-{{ template_pages_changed(wiki_domain, 'Changed Pages', result_data.pages_changed) }}
+{{ template_pages_changed(wiki_domain, 'Changed Pages', result_data.pages_changed, job.id, job_type, expand_all) }}
 
 {% endif %}
 
 {% if result_data and result_data.pages_processed %}
 
-{{ template_pages_processed(wiki_domain, 'Pages Processed', result_data.pages_processed) }}
+{{ template_pages_processed(wiki_domain, 'Pages Processed', result_data.pages_processed, job.id, job_type, expand_all) }}
 
 {% endif %}
 
 {% if result_data and result_data.pages_errors %}
 
-{{ template_pages_errors(wiki_domain, 'Pages Errors', result_data.pages_errors) }}
+{{ template_pages_errors(wiki_domain, 'Pages Errors', result_data.pages_errors, job.id, job_type, expand_all) }}
 
 {% endif %}
 
 {% if result_data and result_data.pages_skipped %}
 
-{{ template_pages_errors(wiki_domain, 'Pages skipped', result_data.pages_skipped) }}
+{{ template_pages_errors(wiki_domain, 'Pages skipped', result_data.pages_skipped, job.id, job_type, expand_all) }}
 
 {% endif %}
 
 {% if result_data and result_data.pages_missing %}
 
-{{ template_pages_only_title(wiki_domain, 'Pages missing', result_data.pages_missing) }}
+{{ template_pages_only_title(wiki_domain, 'Pages missing', result_data.pages_missing, job.id, job_type, expand_all) }}
 
 {% endif %}
 {% endblock %}
