@@ -48,7 +48,7 @@ __all__ = [
 
 ### Step 2: Create Templates
 
-Create `flask_app/templates/new_jobs_templates/<job_type>/` with:
+Create `flask_app/templates/public_jobs_templates/<job_type>/` with:
 
 **`list.html`** — extends `base_list2.html`:
 
@@ -171,8 +171,8 @@ For each of the 6 jobs, create:
 
 -   `flask_app/main_app/public_jobs/workers/<job_type>/__init__.py`
 -   `flask_app/main_app/public_jobs/workers/<job_type>/worker.py`
--   `flask_app/templates/new_jobs_templates/<job_type>/list.html`
--   `flask_app/templates/new_jobs_templates/<job_type>/details.html`
+-   `flask_app/templates/public_jobs_templates/<job_type>/list.html`
+-   `flask_app/templates/public_jobs_templates/<job_type>/details.html`
 
 Total: 24 new files.
 

@@ -38,7 +38,7 @@ tests/
 │   │   │   └── test_routes_utils.py
 │   │   ├── test_app_routes_init.py
 │   │   ├── test_fixred.py
-│   │   ├── test_new_jobs.py
+│   │   ├── test_public_jobs.py
 │   │   └── test_profile.py
 │   ├── config/
 │   │   ├── test_classes.py
@@ -86,7 +86,7 @@ tests/
 │   │   ├── test_base_worker_object.py
 │   │   ├── test_job_lifecycle_updates.py
 │   │   ├── test_jobs_worker.py
-│   │   ├── test_new_jobs_utils.py
+│   │   ├── test_public_jobs_utils.py
 │   │   ├── test_shared_objects.py
 │   │   ├── test_utils.py
 │   │   └── test_workers_list.py

@@ -49,7 +49,7 @@ class DbConfig:
 class Paths:
     log_dir: str
     jobs_path: str
-    new_jobs_path: str
+    public_jobs_path: str
 
 
 @dataclass(frozen=True)

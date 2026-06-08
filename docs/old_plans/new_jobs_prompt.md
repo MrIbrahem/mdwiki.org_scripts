@@ -132,5 +132,5 @@ __all__ = [
 ]
 ```
 
--   job html templates at `flask_app/templates/new_jobs_templates/`
+-   job html templates at `flask_app/templates/public_jobs_templates/`
 -   register in `flask_app/main_app/public_jobs/workers_list.py` by adding a `JobData` entry to `jobs_data`

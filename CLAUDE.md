@@ -56,7 +56,7 @@ Routes registered in `flask_app/main_app/app_routes/__init__.py`:
 -   `bp_main` — Index page
 -   `bp_auth` — OAuth login/callback/logout, rate limiting
 -   `bp_fixred` — Single-page redirect fixer (`/fixred/`)
--   `bp_new_jobs` — Admin job management (`/public_jobs/`)
+-   `bp_public_jobs` — Admin job management (`/public_jobs/`)
 -   `bp_newupdater` — Medical content updater (`/newupdater/`)
 
 ### Background Job System

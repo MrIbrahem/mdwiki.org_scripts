@@ -146,7 +146,7 @@ This is a well-architected Flask application with a clean layered structure (Con
 -   [ ] **14 `# pragma: no cover` exclusions** — Many are legitimate (network interactions, teardowns), but several in route handlers indicate complex error paths without test coverage.
 -   [ ] **`stub_service` fixture is underutilized** — It exists in `conftest.py` but virtually no tests use it.
 -   [ ] **No integration tests for OAuth flow** — The OAuth flow has no integration test coverage (though this is hard without a real MW instance).
--   [ ] **`test_new_jobs_utils.py` and `test_utils.py`** — Need to check if they actually test anything meaningful or are just placeholder files.
+-   [ ] **`test_public_jobs_utils.py` and `test_utils.py`** — Need to check if they actually test anything meaningful or are just placeholder files.
 -   [ ] **No tests for `shared/new_updater/` complex logic** — The medical content updater has extensive wikitext processing with no test coverage.
 
 #### Recommendations:

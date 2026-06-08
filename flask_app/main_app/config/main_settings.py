@@ -143,7 +143,7 @@ def _get_paths() -> Paths:
     return Paths(
         log_dir=str(main_dir / "logs"),
         jobs_path=str(main_dir / "jobs"),
-        new_jobs_path=str(main_dir / "public_jobs"),
+        public_jobs_path=str(main_dir / "public_jobs"),
     )
 
 
@@ -271,7 +271,7 @@ def ensure_directories() -> None:
 
     Call this once at app startup (in the factory), not at import time.
     """
-    for dir_name in [settings.paths.log_dir, settings.paths.jobs_path, settings.paths.new_jobs_path]:
+    for dir_name in [settings.paths.log_dir, settings.paths.jobs_path, settings.paths.public_jobs_path]:
         Path(dir_name).mkdir(parents=True, exist_ok=True)
 
 

@@ -101,14 +101,14 @@ class TestJobsConfig:
 
 class TestPaths:
     def test_fields(self):
-        p = Paths(log_dir="/tmp/logs", jobs_path="/tmp/jobs", new_jobs_path="/tmp/public_jobs")
+        p = Paths(log_dir="/tmp/logs", jobs_path="/tmp/jobs", public_jobs_path="/tmp/public_jobs")
         assert p.log_dir == "/tmp/logs"
 
 
 class TestSettings:
     def test_fields(self):
         db = DbConfig(db_name="x", db_host="h", db_user=None, db_password=None)
-        paths = Paths(log_dir="/l", jobs_path="/j", new_jobs_path="/n")
+        paths = Paths(log_dir="/l", jobs_path="/j", public_jobs_path="/n")
         cookie = CookieConfig(name="c", max_age=1, secure=False, httponly=False, samesite="Lax")
         sessions = SessionConfig(state_key="sk", request_token_key="rtk")
         security = SecurityConfig(

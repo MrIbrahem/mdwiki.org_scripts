@@ -413,7 +413,7 @@ def work_on_title(
 | `tests/unit/app_routes/utils/test_routes_utils.py`        | Mock `CurrentUser` instead of `UserTokenRecord`                                 |
 | `tests/unit/app_routes/newupdater/test_route.py`          | Construct `CurrentUser` instead of `UserTokenRecord`                            |
 | `tests/unit/app_routes/auth/test_auth_utils.py`           | Mock returns `CurrentUser`                                                      |
-| `tests/unit/app_routes/test_new_jobs.py`                  | Mock `user.username` — still works on `CurrentUser`                             |
+| `tests/unit/app_routes/test_public_jobs.py`                  | Mock `user.username` — still works on `CurrentUser`                             |
 | `tests/unit/app_routes/admin/test_admins_required.py`     | Mock `user.username` — still works                                              |
 | `tests/integration/app_routes/auth/test_auth_routes.py`   | `get_user_token` returns `UserTokenRecord` (no username); assert via `get_user` |
 | `tests/integration/app_routes/test_jobs_routes.py`        | `upsert_user_token` still works (auto-creates user)                             |

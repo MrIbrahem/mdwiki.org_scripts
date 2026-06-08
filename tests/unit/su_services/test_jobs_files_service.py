@@ -14,7 +14,7 @@ from flask_app.main_app.su_services.jobs_files_service import (
 @pytest.fixture
 def temp_jobs_dir(tmp_path):
     with patch("flask_app.main_app.su_services.jobs_files_service.settings") as mock_settings:
-        mock_settings.paths.new_jobs_path = str(tmp_path)
+        mock_settings.paths.public_jobs_path = str(tmp_path)
         get_jobs_data_dir.cache_clear()
         yield tmp_path
 

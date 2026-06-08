@@ -1,4 +1,4 @@
-"""Unit tests for flask_app/main_app/public_jobs/utils.py (test_new_jobs_utils.py)."""
+"""Unit tests for flask_app/main_app/public_jobs/utils.py (test_public_jobs_utils.py)."""
 
 from __future__ import annotations
 
