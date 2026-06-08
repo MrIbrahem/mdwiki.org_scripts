@@ -15,6 +15,7 @@ from sqlalchemy.orm import joinedload
 from ...core.crypto import encrypt_value
 from ...extensions import db
 from ..models import UsersRecord, UserTokenRecord
+from .utils import db_guard_rollback
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +64,7 @@ def get_user_token_by_username(username: str) -> Optional[UserTokenRecord]:
 # ── INSERT, UPDATE, SET ──────────────────────────────────
 
 
+@db_guard_rollback
 def create_user_token(user_id: int, access_key: str, access_secret: str) -> UserTokenRecord:
     """ """
     encrypted_token = encrypt_value(access_key)
@@ -81,6 +83,7 @@ def create_user_token(user_id: int, access_key: str, access_secret: str) -> User
     return orm_obj
 
 
+@db_guard_rollback
 def update_user_token(user_id: int, access_key: str, access_secret: str) -> UserTokenRecord:
     """
     update the encrypted OAuth credentials for a user.
@@ -102,6 +105,7 @@ def update_user_token(user_id: int, access_key: str, access_secret: str) -> User
     return orm_obj
 
 
+@db_guard_rollback
 def upsert_user_token(user_id: int, access_key: str, access_secret: str) -> UserTokenRecord:
     """
     Upsert the encrypted OAuth credentials for a user.
@@ -121,6 +125,7 @@ def upsert_user_token(user_id: int, access_key: str, access_secret: str) -> User
 # ── DELETE ───────────────────────────────────────────────
 
 
+@db_guard_rollback
 def delete_user_token(user_id: int) -> bool:
     """
     Delete the stored OAuth token only. User identity row persists.

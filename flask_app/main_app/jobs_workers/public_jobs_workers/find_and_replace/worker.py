@@ -162,7 +162,7 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
                 api_chunk_size=None,
             )
             logger.debug(search_data)
-            results = [r.get("title") for r in search_data if r.get("title") ]
+            results = [r.get("title") for r in search_data if r.get("title")]
             logger.info(f"Found {len(results)} pages matching '{str_find}'")
             return results
 

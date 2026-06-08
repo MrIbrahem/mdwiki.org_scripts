@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .classes import (
     CookieConfig,
+    CorsConfig,
     DbConfig,
     JobsConfig,
     OAuthConfig,
@@ -29,7 +30,7 @@ __all__ = [
     "TestingConfig",
     "build_sqlalchemy_uri",
     "CookieConfig",
-    # "CorsConfig",
+    "CorsConfig",
     "DbConfig",
     "JobsConfig",
     "OAuthConfig",

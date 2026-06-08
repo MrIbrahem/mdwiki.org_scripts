@@ -80,6 +80,11 @@ class OAuthConfig:
 
 
 @dataclass(frozen=True)
+class CorsConfig:
+    allowed_domains: list[str]
+
+
+@dataclass(frozen=True)
 class SecurityConfig:
     """Security configuration for Flask 3.1+ features."""
 
@@ -104,6 +109,7 @@ class Settings:
     security: SecurityConfig
     other: OtherConfig
     jobs: JobsConfig
+    # cors: CorsConfig
 
 
 __all__ = [
@@ -116,4 +122,5 @@ __all__ = [
     "Settings",
     "OtherConfig",
     "SecurityConfig",
+    "CorsConfig",
 ]
