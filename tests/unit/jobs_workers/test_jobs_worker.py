@@ -61,11 +61,11 @@ def test_start_job_raises_duplicate_job_error(app: Flask) -> None:
     with app.app_context():
         with (
             patch(
-                "flask_app.main_app.public_jobs.jobs_worker.create_job",
+                "flask_app.main_app.jobs_workers.jobs_worker.create_job",
                 side_effect=DuplicateJobError("A job of type 'test' is already active"),
             ),
             patch(
-                "flask_app.main_app.public_jobs.jobs_worker.jobs_data",
+                "flask_app.main_app.jobs_workers.jobs_worker.jobs_data",
                 {"test_type": type("JobData", (), {"job_callable": lambda: None})()},
             ),
         ):
