@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flask_app.main_app.public_jobs.workers.add_r_column.worker import add_to_tables
+from flask_app.main_app.jobs_workers.public_jobs_workers.add_r_column.worker import add_to_tables
 
 
 class TestAddToTables:

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pytest
-from flask_app.main_app.public_jobs.base_worker_object import BaseObjectsJobWorker
+from flask_app.main_app.jobs_workers.base_worker_object import BaseObjectsJobWorker
 
 
 class TestBaseObjectsJobWorkerAbstract:

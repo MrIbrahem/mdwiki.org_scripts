@@ -1,7 +1,7 @@
 """
-Worker module for fixred_all.
+Worker module for find_and_replace.
 
-Migrated from flask_app/main_app/jobs/workers/fixred_all.py.
+Migrated from flask_app/main_app/jobs/workers/find_and_replace.py.
 """
 
 from __future__ import annotations
@@ -15,16 +15,17 @@ import mwclient
 
 from ....api_services.clients import get_user_site
 from ....api_services.pages_api import edit_page, get_page_text, is_page_exists
-from ....shared.fixref_shared.fixred_worker import work_on_text
-from ....shared.fixref_shared.objects import RunState
-from ...base_worker_object import BaseObjectsJobWorker
-from ...shared_objects import SharedworkerObject, UpdaterOutcome
+from ....jobs_workers.base_worker_object import BaseObjectsJobWorker
+from ...shared_objects import UpdaterOutcome
+from .objects import FindAndReplaceWorkerObject
+
+# from ....api_services.query_api import search_pages
 
 logger = logging.getLogger(__name__)
 
 
-class FixRedAllWorker(BaseObjectsJobWorker):
-    """Fix redirect links in all mdwiki pages."""
+class FindAndReplaceWorker(BaseObjectsJobWorker):
+    """Find-and-replace bot for mdwiki pages."""
 
     def __init__(
         self,
@@ -39,14 +40,14 @@ class FixRedAllWorker(BaseObjectsJobWorker):
 
         super().__init__(job_id, user, cancel_event)
 
-        self.result: SharedworkerObject = SharedworkerObject()
+        self.result: FindAndReplaceWorkerObject = FindAndReplaceWorkerObject()
 
     # ------------------------------------------------------------------
     # BaseObjectsJobWorker hooks
     # ------------------------------------------------------------------
 
     def get_job_type(self) -> str:
-        return "fixred_all"
+        return "find_and_replace"
 
     def process(self) -> Dict[str, Any]:
         self.site = get_user_site(self.user)
@@ -57,33 +58,50 @@ class FixRedAllWorker(BaseObjectsJobWorker):
             self.result.failed_at = datetime.now().isoformat()
             return self.result
 
-        state = RunState()
-        titles = list(
-            self.site.allpages(
-                start="!",
-                namespace=0,
-                filterredir="nonredirects",
-                dir="ascending",
-                generator=True,
-            )
-        )
+        str_find = self.args.get("str_find", "")
+        str_replace = self.args.get("str_replace", "")
+        listtype = self.args.get("listtype", "newlist")
+        number = self.args.get("number")
 
+        if not str_find:
+            self.result.status = "failed"
+            self.result.error = "`find` cannot be empty."
+            return self.result
+
+        self.result.text_find = str_find
+        self.result.text_replace = str_replace
+
+        try:
+            cap = int(number) if number and int(number) > 0 else None
+        except ValueError:
+            cap = None
+
+        self.result.cap = cap
+
+        # save json file before start search
+        self._save_progress()
+
+        titles = self._resolve_titles(str_find, listtype)
         total = len(titles)
         self.result.summary.total = total
         per_item = self.get_priority(total) if total else 1
 
-        logger.info(f"Job {self.job_id}: Processing {total} pages")
+        logger.info(f"Job {self.job_id}: Processing {total} pages (listtype={listtype})")
 
-        for i, page in enumerate(titles, start=1):
-            logger.debug(f"i: {i}/{total}, page: {page}.")
+        for i, title in enumerate(titles, start=1):
+            logger.debug(f"i: {i}/{total}, page: {title}.")
             if self.is_cancelled():
+                self.result.stopped = True
                 break
 
-            title = page.name if hasattr(page, "name") else str(page)
+            if cap is not None and self.result.summary.changed >= cap:
+                logger.info(f"Job {self.job_id}: Reached cap of {cap} modifications")
+                break
+
             self.result.summary.scanned += 1
 
             try:
-                outcome = self._process_one(title, state)
+                outcome = self._process_one(title, str_find, str_replace)
             except Exception as exc:
                 logger.exception("job failed for %s", title)
                 self.result.pages_errors.append({"title": title, "msg": str(exc)})
@@ -91,7 +109,9 @@ class FixRedAllWorker(BaseObjectsJobWorker):
 
             self.record_page_outcome(outcome, title)
 
+            # Check DB if the job cancelled every N successful edits
             if outcome.kind == "changed" and self.check_cancel_db_periodic():
+                self.result.stopped = True
                 break
 
             if i == 1 or i % per_item == 0:
@@ -124,11 +144,45 @@ class FixRedAllWorker(BaseObjectsJobWorker):
             page_record["status"] = outcome.kind
             self.result.pages_processed.append(page_record)
 
+    def _resolve_titles(
+        self,
+        str_find: str,
+        listtype: str,
+    ) -> list[str]:
+        """Pick the page list to walk based on *listtype*."""
+        if listtype == "newlist":
+            # return search_pages(str_find, self.site, namespace=0, limit="max")
+            """ """
+            search_data = self.site.search(
+                str_find,
+                namespace="0",
+                what="text",
+                redirects=False,
+                max_items=None,
+                api_chunk_size=None,
+            )
+            logger.debug(search_data)
+            results = [r.title for r in search_data]
+            logger.info(f"Found {len(results)} pages matching '{str_find}'")
+            return results
+
+        titles = list(
+            self.site.allpages(
+                start="!",
+                namespace=0,
+                filterredir="nonredirects",
+                dir="ascending",
+                generator=True,
+            )
+        )
+        # oldlist: walk every mainspace page.
+        return [p.name for p in titles]
+
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _process_one(self, title: str, state: RunState) -> UpdaterOutcome:
+    def _process_one(self, title: str, str_find: str, str_replace: str) -> UpdaterOutcome:
         if not is_page_exists(title, self.site):
             logger.info(f"Job {self.job_id}: {title!r}: missing!")
             return UpdaterOutcome(kind="missing")
@@ -137,7 +191,7 @@ class FixRedAllWorker(BaseObjectsJobWorker):
         if not text or not text.strip():
             return UpdaterOutcome(kind="skipped", msg="Page is empty")
 
-        new_text, summary = self.make_new_text(title, state, text)
+        new_text, summary = self.make_new_text(str_find, str_replace, text)
 
         if new_text == text:
             return UpdaterOutcome(kind="skipped", msg="No changes")
@@ -149,13 +203,13 @@ class FixRedAllWorker(BaseObjectsJobWorker):
 
         return UpdaterOutcome(kind="error", msg=result.get("error", "Unknown error"))
 
-    def make_new_text(self, title, state, text):
-        new_text = work_on_text(title, text, self.site, state)
-        summary = "Fix redirects"
+    def make_new_text(self, str_find, str_replace, text):
+        new_text = text.replace(str_find, str_replace)
+        summary = "Replace via mdwiki.toolforge.org find-and-replace tool."
         return new_text, summary
 
 
-def fixred_all_worker_entry(
+def find_and_replace_worker_entry(
     job_id: int,
     user: Dict[str, Any] | None = None,
     *,
@@ -163,8 +217,8 @@ def fixred_all_worker_entry(
     args: Dict[str, Any] | None = None,
 ) -> None:
     """Background worker entry-point."""
-    logger.info(f"Starting job {job_id}: fixred_all")
-    worker = FixRedAllWorker(
+    logger.info(f"Starting job {job_id}: find_and_replace")
+    worker = FindAndReplaceWorker(
         job_id=job_id,
         user=user,
         args=args,
@@ -174,6 +228,5 @@ def fixred_all_worker_entry(
 
 
 __all__ = [
-    "FixRedAllWorker",
-    "fixred_all_worker_entry",
+    "find_and_replace_worker_entry",
 ]

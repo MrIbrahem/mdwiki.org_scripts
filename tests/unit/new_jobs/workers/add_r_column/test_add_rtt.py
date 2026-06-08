@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flask_app.main_app.public_jobs.workers.add_r_column.add_rtt import fix_title
+from flask_app.main_app.jobs_workers.public_jobs_workers.add_r_column.add_rtt import fix_title
 
 
 class TestFixTitle:

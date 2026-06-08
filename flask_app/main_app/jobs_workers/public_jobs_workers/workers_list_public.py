@@ -1,14 +1,14 @@
 from dataclasses import dataclass
 from typing import Callable, Optional
 
-from .workers.add_r_column.worker import add_r_column_worker_entry
-from .workers.add_unlinkedwikibase.worker import add_unlinkedwikibase_worker_entry
-from .workers.create_redirects.worker import create_redirects_worker_entry
-from .workers.duplicate_redirect.worker import duplicate_redirect_worker_entry
-from .workers.find_and_replace.worker import find_and_replace_worker_entry
-from .workers.fixred_all.worker import fixred_all_worker_entry
-from .workers.fixref.worker import fixref_worker_entry
-from .workers.import_history.worker import import_history_worker_entry
+from ...jobs_workers.public_jobs_workers.add_unlinkedwikibase.worker import add_unlinkedwikibase_worker_entry
+from ...jobs_workers.public_jobs_workers.create_redirects.worker import create_redirects_worker_entry
+from ...jobs_workers.public_jobs_workers.duplicate_redirect.worker import duplicate_redirect_worker_entry
+from ...jobs_workers.public_jobs_workers.find_and_replace.worker import find_and_replace_worker_entry
+from ...jobs_workers.public_jobs_workers.fixred_all.worker import fixred_all_worker_entry
+from ...jobs_workers.public_jobs_workers.fixref.worker import fixref_worker_entry
+from ...jobs_workers.public_jobs_workers.import_history.worker import import_history_worker_entry
+from .add_r_column.worker import add_r_column_worker_entry
 
 
 @dataclass

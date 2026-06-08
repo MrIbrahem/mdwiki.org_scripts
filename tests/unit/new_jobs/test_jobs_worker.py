@@ -8,7 +8,7 @@ from unittest.mock import patch
 import pytest
 from flask.app import Flask
 from flask_app.main_app.db.exceptions import DuplicateJobError
-from flask_app.main_app.public_jobs.jobs_worker import (
+from flask_app.main_app.jobs_workers.jobs_worker import (
     JOBS_CANCEL_EVENTS,
     JOBS_CANCEL_EVENTS_LOCK,
     _get_jobs_cancel_event,
@@ -69,7 +69,7 @@ def test_start_job_raises_duplicate_job_error(app: Flask) -> None:
                 {"test_type": type("JobData", (), {"job_callable": lambda: None})()},
             ),
         ):
-            from flask_app.main_app.public_jobs.jobs_worker import start_job
+            from flask_app.main_app.jobs_workers.jobs_worker import start_job
 
             with pytest.raises(DuplicateJobError):
                 start_job(

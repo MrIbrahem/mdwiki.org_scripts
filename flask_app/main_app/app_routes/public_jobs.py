@@ -24,8 +24,8 @@ from ..db.services import (
     get_job,
     list_jobs,
 )
-from ..public_jobs import jobs_worker
-from ..public_jobs.workers_list import jobs_data
+from ..jobs_workers import jobs_worker
+from ..jobs_workers.public_jobs_workers.workers_list_public import jobs_data
 from ..su_services import load_job_result
 from .auth.utils import load_user
 from .utils.routes_utils import can_run_bg_jobs, load_auth_payload
@@ -170,6 +170,7 @@ def _job_detail(job_id: int, job_type: str, expand_all: bool = False) -> Respons
 
     # Load job result if available
     result_data = None
+
     if job.result_file:
         result_data = load_job_result(job.result_file)
 
@@ -275,7 +276,8 @@ class JobsPublicRoutes:
             return _delete_job(job_id, job_type)
 
         @self.bp.get("/read-job-result-file/<path:result_file>")
-        def read_job_result_file(result_file: str) -> ResponseReturnValue:
+        @self.bp.get("/read-job-result-file/<path:result_file>/<string:job_type>")
+        def read_job_result_file(result_file: str, job_type: str = "") -> ResponseReturnValue:
             """ """
             result_data = load_job_result(result_file)
             return jsonify(result_data)

@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import pytest
-from flask_app.main_app.public_jobs.base_worker_object import WorkerObject
-from flask_app.main_app.public_jobs.shared_objects import (
+from flask_app.main_app.jobs_workers.base_worker_object import WorkerObject
+from flask_app.main_app.jobs_workers.shared_objects import (
     SharedworkerObject,
     Summary,
     UpdaterOutcome,

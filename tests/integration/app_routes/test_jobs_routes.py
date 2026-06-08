@@ -98,7 +98,7 @@ class TestJobsListByType:
 
     def test_all_valid_job_types_load(self, mock_client):
         """Every registered job type should return 200."""
-        from flask_app.main_app.public_jobs.workers_list import jobs_data
+        from flask_app.main_app.jobs_workers.public_jobs_workers.workers_list_public import jobs_data
 
         for job_type in jobs_data:
             resp = mock_client.get(f"/public_jobs/{job_type}")

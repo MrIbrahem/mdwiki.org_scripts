@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from flask_app.main_app.public_jobs.utils import generate_result_file_name
+from flask_app.main_app.jobs_workers.utils import generate_result_file_name
 
 
 def test_generate_result_file_name():

@@ -21,9 +21,6 @@ logger = logging.getLogger(__name__)
 
 bp_admin = Blueprint("admin", __name__, url_prefix="/admin")
 
-bp_admin.register_blueprint(coordinators_module.bp)
-bp_admin.register_blueprint(users_module.bp)
-
 
 @bp_admin.app_context_processor
 def inject_sidebar():
@@ -37,7 +34,17 @@ def inject_sidebar():
 @bp_admin.get("/")
 @admin_required
 def admin_dashboard():
-    return render_template("admins.html")
+    return render_template(
+        "admins/admin.html",
+    )
+
+
+def register_blueprints(bp_admin) -> None:
+    bp_admin.register_blueprint(coordinators_module.bp)
+    bp_admin.register_blueprint(users_module.bp)
+
+
+register_blueprints(bp_admin)
 
 
 __all__ = [

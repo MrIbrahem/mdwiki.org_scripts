@@ -17,8 +17,8 @@ import mwclient
 from ....api_services.category import get_category_members_api
 from ....api_services.clients import get_user_site
 from ....api_services.pages_api import edit_page, get_page_text, is_page_exists
+from ....jobs_workers.base_worker_object import BaseObjectsJobWorker
 from ....shared.fixref_shared.fixref_text_new import fix_ref_template
-from ...base_worker_object import BaseObjectsJobWorker
 from ...shared_objects import SharedworkerObject, UpdaterOutcome
 
 logger = logging.getLogger(__name__)

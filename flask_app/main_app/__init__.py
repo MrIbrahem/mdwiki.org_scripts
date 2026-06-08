@@ -19,6 +19,7 @@ from .db import init_db
 from .db.exceptions import DatabaseInitError
 from .extensions import db as _db
 from .extensions import migrate
+from .jobs_workers.cli_jobs import register_cli_jobs
 
 logger = logging.getLogger(__name__)
 
@@ -138,6 +139,7 @@ def create_app(config_class: Type) -> Flask:
 
     if db_is_ok:
         register_blueprints(app)
+        register_cli_jobs(app)
     else:
 
         @app.before_request

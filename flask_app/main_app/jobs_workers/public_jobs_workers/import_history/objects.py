@@ -6,7 +6,8 @@ import logging
 from dataclasses import asdict, dataclass, field
 from typing import Any, Literal
 
-from ..public_jobs.base_worker_object import WorkerObject
+from ....jobs_workers.base_worker_object import WorkerObject
+from ...shared_objects import Summary
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 class UpdaterOutcome:
     """Result of running the updater on one page."""
 
-    kind: Literal["missing", "changed", "error", "skipped"]
+    kind: Literal["missing", "imported", "imported_fallback", "error"]
     newrevid: int = 0
     msg: str = ""
 
@@ -24,18 +25,15 @@ class UpdaterOutcome:
 
 
 @dataclass
-class Summary:
-    scanned: int = 0
-    total: int = 0
+class ImportHistoryWorkerObject(WorkerObject):
+    from_lang: str = "en"
 
-
-@dataclass
-class SharedworkerObject(WorkerObject):
     summary: Summary = field(default_factory=Summary)
 
     pages_processed: list[dict[str, Any]] = field(default_factory=list)
 
-    pages_changed: list[dict[str, Any]] = field(default_factory=list)
+    pages_imported: list[dict[str, Any]] = field(default_factory=list)
+    pages_imported_fallback: list[dict[str, Any]] = field(default_factory=list)
     pages_errors: list[dict[str, Any]] = field(default_factory=list)
     pages_skipped: list[dict[str, Any]] = field(default_factory=list)
 
@@ -43,7 +41,6 @@ class SharedworkerObject(WorkerObject):
 
 
 __all__ = [
-    "Summary",
-    "SharedworkerObject",
+    "ImportHistoryWorkerObject",
     "UpdaterOutcome",
 ]

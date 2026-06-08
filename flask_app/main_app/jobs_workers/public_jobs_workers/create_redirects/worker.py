@@ -18,7 +18,7 @@ from ....api_services.clients import get_user_site
 from ....api_services.enwiki_api import get_redirects_for
 from ....api_services.pages_api import create_page, is_page_exists
 from ....api_services.query_api import is_pages_exists
-from ...base_worker_object import BaseObjectsJobWorker
+from ....jobs_workers.base_worker_object import BaseObjectsJobWorker
 from .objects import CreateRedirectsWorkerObject
 
 logger = logging.getLogger(__name__)

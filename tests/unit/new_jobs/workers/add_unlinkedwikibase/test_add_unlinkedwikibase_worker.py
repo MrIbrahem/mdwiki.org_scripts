@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flask_app.main_app.public_jobs.workers.add_unlinkedwikibase.worker import (
+from flask_app.main_app.jobs_workers.public_jobs_workers.add_unlinkedwikibase.worker import (
     AddUnlinkedWikibaseWorker,
 )
 
@@ -13,7 +13,7 @@ class TestAddUnlinkedWikibaseWorker:
         assert worker.get_job_type() == "add_unlinkedwikibase"
 
     def test_result_is_shared_worker_object(self):
-        from flask_app.main_app.public_jobs.shared_objects import SharedworkerObject
+        from flask_app.main_app.jobs_workers.shared_objects import SharedworkerObject
 
         worker = AddUnlinkedWikibaseWorker(job_id=1, args={}, user=None)
         assert isinstance(worker.result, SharedworkerObject)

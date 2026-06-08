@@ -6,4 +6,5 @@ from .wiki_client import get_user_site
 __all__ = [
     "create_commons_session",
     "get_user_site",
+    "get_cronjob_site",
 ]

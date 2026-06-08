@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flask_app.main_app.public_jobs.workers_list import JobData, jobs_data
+from flask_app.main_app.jobs_workers.public_jobs_workers.workers_list_public import JobData, jobs_data
 
 
 class TestJobData:

@@ -10,7 +10,7 @@ import logging
 import threading
 from typing import Any, Dict
 
-from ...base_worker_object import BaseObjectsJobWorker
+from ....jobs_workers.base_worker_object import BaseObjectsJobWorker
 from ...shared_objects import SharedworkerObject
 
 logger = logging.getLogger(__name__)

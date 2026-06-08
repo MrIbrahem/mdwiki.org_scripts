@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flask_app.main_app.public_jobs.workers.fixref.worker import FixRefWorker
+from flask_app.main_app.jobs_workers.public_jobs_workers.fixref.worker import FixRefWorker
 
 
 class TestFixRefWorker:
@@ -11,7 +11,7 @@ class TestFixRefWorker:
         assert worker.get_job_type() == "fixref"
 
     def test_result_type(self):
-        from flask_app.main_app.public_jobs.shared_objects import SharedworkerObject
+        from flask_app.main_app.jobs_workers.shared_objects import SharedworkerObject
 
         worker = FixRefWorker(job_id=1, args={"titles": ["Test"]}, user=None)
         assert isinstance(worker.result, SharedworkerObject)

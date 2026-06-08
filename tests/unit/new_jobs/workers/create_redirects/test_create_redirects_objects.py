@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from flask_app.main_app.public_jobs.base_worker_object import WorkerObject
-from flask_app.main_app.public_jobs.workers.create_redirects.objects import (
+from flask_app.main_app.jobs_workers.base_worker_object import WorkerObject
+from flask_app.main_app.jobs_workers.public_jobs_workers.create_redirects.objects import (
     CreateRedirectsWorkerObject,
     RedirectsSummary,
 )
