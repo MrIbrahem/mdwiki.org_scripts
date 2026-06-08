@@ -1,4 +1,4 @@
-# workers — Background Job Worker Implementations
+# public_jobs_workers — Background Job Worker Implementations
 
 ## Project Overview
 
@@ -7,7 +7,7 @@ Concrete worker implementations for the background job system. Each subdirectory
 ### Structure
 
 ```
-workers/
+public_jobs_workers/
 ├── __init__.py                # Empty
 ├── add_r_column/
 │   ├── __init__.py            # Exports add_r_column_worker_entry
