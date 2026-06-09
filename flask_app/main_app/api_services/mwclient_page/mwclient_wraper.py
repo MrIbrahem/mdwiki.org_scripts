@@ -146,7 +146,7 @@ class MwClientPage:
         return self.get_redirect_target() is not None
 
     def edit(self, text: str, summary: str, nocreate: bool = True) -> dict[str, Any]:
-        if not text:
+        if text is None:
             return {"success": False, "error": "missing text"}
 
         page = self.load_page()
