@@ -113,17 +113,12 @@ class MwClientPage:
         return True
 
     def get_text(self) -> str:
-        page = self.load_page()
-        if not page:
-            logger.warning(f"Failed to load page '{self.title}'")
-            return ""
-
         if not self.exists():
             return ""
 
         try:
-            return page.text()
-        except Exception as exc:
+            return self.page.text()
+        except Exception:
             logger.exception(f"Failed to retrieve wikitext for {self.title}")
         return ""
 
