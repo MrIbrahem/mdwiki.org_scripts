@@ -41,7 +41,13 @@ os.environ.setdefault("ALLOWLIST_USERS", "Doc James,Mr. Ibrahem")
 
 
 @pytest.fixture(autouse=True)
-def stop_nets():
+def stop_nets(request):
+    # Check if 'network' mark is present in the current test item
+    if "network" in request.node.keywords:
+        # Do nothing and allow network access for this specific test
+        return
+
+    # Otherwise, disable the socket for all other tests
     disable_socket(allow_unix_socket=True)
 
 

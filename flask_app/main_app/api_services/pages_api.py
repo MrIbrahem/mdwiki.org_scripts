@@ -21,7 +21,7 @@ def is_redirect(page_title: str, site: mwclient.Site) -> bool:
     return MwClientPage(page_title, site).is_redirect()
 
 
-def _edit_page(site: mwclient.Site, title: str, text: str, summary: str, nocreate: int = 1) -> dict[str, Any]:
+def _edit_page(site: mwclient.Site, title: str, text: str, summary: str, nocreate: bool = True) -> dict[str, Any]:
     return MwClientPage(title, site).edit_page(text, summary, nocreate=nocreate)
 
 
@@ -32,7 +32,7 @@ def edit_page(site: mwclient.Site, title: str, text: str, summary: str) -> dict[
         list_str = ", ".join(missing_fields)
         logger.error(f"Missing required fields for edit_page: {list_str}")
         return {"success": False, "error": f"Missing required fields: {list_str}"}
-    return _edit_page(site, title, text, summary, nocreate=1)
+    return _edit_page(site, title, text, summary, nocreate=True)
 
 
 def move_page(
@@ -97,7 +97,7 @@ def create_page(
         logger.error(f"Missing required fields for create_page: {list_str}")
         return {"success": False, "error": f"Missing required fields: {list_str}"}
 
-    return _edit_page(site, page_name, wikitext, summary, nocreate=0)
+    return MwClientPage(page_name, site).create_page(wikitext, summary)
 
 
 def update_page_text(
@@ -107,7 +107,7 @@ def update_page_text(
     summary: str = "",
 ) -> dict:
     """
-    Update the wikitext of Any page on Wikimedia Commons.
+    Update the wikitext of any page on Wikimedia Commons.
 
     Args:
         page_name: The name of the page to update.
@@ -124,15 +124,14 @@ def update_page_text(
         logger.error(f"Missing required fields for update_page_text: {list_str}")
         return {"success": False, "error": f"Missing required fields: {list_str}"}
 
-    return _edit_page(site, page_name, updated_text, summary, nocreate=1)
-
+    return _edit_page(site, page_name, updated_text, summary, nocreate=True)
 
 def get_page_text(
     page_title: str,
     site: mwclient.Site | None,
 ) -> str:
     """
-    Get the wikitext of Any page.
+    Get the wikitext of any page.
 
     Args:
         page_title: The name of the page (e.g., "Barley yields").
@@ -158,7 +157,6 @@ def get_page_text(
     except Exception as exc:
         logger.exception(f"Failed to retrieve wikitext for {page_title}", exc_info=exc)
         return ""
-
 
 def import_page_from_wiki(
     site: mwclient.Site,
