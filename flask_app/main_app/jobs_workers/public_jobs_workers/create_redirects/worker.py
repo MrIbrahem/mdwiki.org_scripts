@@ -137,7 +137,8 @@ class CreateRedirectsWorker(BaseObjectsJobWorker):
         """Copy missing redirects for one source title; return per-title counts."""
         counts = {"target_missing": 0, "created": 0, "already_exists": 0, "skipped": 0, "errors": 0, "msg": ""}
 
-        if not MwClientPage(title, self.site).exists():
+        page = MwClientPage(title, self.site)
+        if not page.exists():
             logger.info(f"Job {self.job_id}: {title!r}: missing!")
             counts["msg"] = "target page missing"
             counts["target_missing"] = 1

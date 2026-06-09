@@ -124,11 +124,12 @@ class ImportHistoryWorker(BaseObjectsJobWorker):
     # ------------------------------------------------------------------
 
     def _process_one(self, title: str) -> UpdaterOutcome:
-        if not MwClientPage(title, self.site).exists():
+        page = MwClientPage(title, self.site)
+        if not page.exists():
             logger.info(f"Job {self.job_id}: {title!r}: missing!")
             return UpdaterOutcome(kind="missing")
 
-        text = MwClientPage(title, self.site).get_text()
+        text = page.get_text()
         if not text or not text.strip():
             return UpdaterOutcome(kind="skipped", msg="Page is empty")
 
@@ -147,7 +148,7 @@ class ImportHistoryWorker(BaseObjectsJobWorker):
         # Re-save the original body so the page content matches what the operator
         # saw before the import.
         if text is not None:
-            saved = MwClientPage(title, self.site).edit(text, "")
+            saved = page.edit(text, "")
             if saved.get("success"):
                 return UpdaterOutcome(kind="imported", newrevid=saved.get("newrevid", 0))
 

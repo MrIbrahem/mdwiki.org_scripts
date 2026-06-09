@@ -34,7 +34,8 @@ def work_on_title(
 
     site = get_user_site(user.to_auth_payload())
 
-    old_text = MwClientPage(title, site).get_text()
+    page = MwClientPage(title, site)
+    old_text = page.get_text()
 
     if not old_text or not old_text.strip():
         return UpdaterTextOutcome(kind="notext", old_text=old_text)
@@ -53,7 +54,7 @@ def work_on_title(
         return UpdaterTextOutcome(kind="skipped", msg="No changes")
 
     if save:
-        result = MwClientPage(title, site).edit(new_text, summary)
+        result = page.edit(new_text, summary)
         if result.get("success"):
             return UpdaterTextOutcome(kind="saved", newrevid=result.get("newrevid", 0))
 
