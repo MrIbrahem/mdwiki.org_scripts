@@ -62,11 +62,11 @@ class TestCreatePage:
     def test_valid_calls_edit(self):
         mock_site = MagicMock()
         with patch("flask_app.main_app.api_services.pages_api.MwClientPage") as MockPage:
-            MockPage.return_value.edit_page.return_value = {"success": True}
+            MockPage.return_value.create_page.return_value = {"success": True}
             result = create_page("Test", "content", mock_site)
             assert result["success"] is True
             MockPage.assert_called_once_with("Test", mock_site)
-            MockPage.return_value.edit_page.assert_called_once_with("content", "", nocreate=0)
+            MockPage.return_value.create_page.assert_called_once_with("content", "")
 
 
 class TestUpdatePageText:
