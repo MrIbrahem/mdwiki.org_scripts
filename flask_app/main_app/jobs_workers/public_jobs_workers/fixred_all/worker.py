@@ -126,11 +126,12 @@ class FixRedAllWorker(BaseObjectsJobWorker):
     # ------------------------------------------------------------------
 
     def _process_one(self, title: str, state: RunState) -> UpdaterOutcome:
-        if not MwClientPage(title, self.site).exists():
+        page = MwClientPage(title, self.site)
+        if not page.exists():
             logger.info(f"Job {self.job_id}: {title!r}: missing!")
             return UpdaterOutcome(kind="missing")
 
-        text = MwClientPage(title, self.site).get_text()
+        text = page.get_text()
         if not text or not text.strip():
             return UpdaterOutcome(kind="skipped", msg="Page is empty")
 
@@ -139,7 +140,7 @@ class FixRedAllWorker(BaseObjectsJobWorker):
         if new_text == text:
             return UpdaterOutcome(kind="skipped", msg="No changes")
 
-        result = MwClientPage(title, self.site).edit(new_text, summary)
+        result = page.edit(new_text, summary)
 
         if result.get("success"):
             return UpdaterOutcome(kind="changed", newrevid=result.get("newrevid", 0))
