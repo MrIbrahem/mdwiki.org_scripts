@@ -9,7 +9,7 @@ def get_category_members(
     site: mwclient.Site,
     category_title: str,
     namespace: int = 0,
-    limit: int| str | None = None,
+    limit: int | str | None = None,
 ) -> list[mwclient.page.Page]:
     """
     Retrieve all members of a specified category from a MediaWiki site.
@@ -33,6 +33,7 @@ def get_category_members(
     except KeyError as e:
         logger.warning(f"Key error in API response for {category_title}: {e}")
         return []
+
 
 __all__ = [
     "get_category_members",
