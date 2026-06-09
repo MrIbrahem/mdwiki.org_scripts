@@ -7,32 +7,20 @@ from typing import Any
 
 import mwclient
 
-from ..utils.verify import verify_required_fields
 from .mwclient_page import MwClientPage
 
 logger = logging.getLogger(__name__)
 
 
 def is_page_exists(page_title: str, site: mwclient.Site) -> bool:
-    return MwClientPage(page_title, site).check_exists()
+    return MwClientPage(page_title, site).exists()
 
 
 def is_redirect(page_title: str, site: mwclient.Site) -> bool:
     return MwClientPage(page_title, site).is_redirect()
 
-
-def _edit_page(site: mwclient.Site, title: str, text: str, summary: str, nocreate: bool = True) -> dict[str, Any]:
-    return MwClientPage(title, site).edit_page(text, summary, nocreate=nocreate)
-
-
 def edit_page(site: mwclient.Site, title: str, text: str, summary: str) -> dict[str, Any]:
-    """ """
-    missing_fields = verify_required_fields({"title": title, "text": text, "site": site})
-    if missing_fields:
-        list_str = ", ".join(missing_fields)
-        logger.error(f"Missing required fields for edit_page: {list_str}")
-        return {"success": False, "error": f"Missing required fields: {list_str}"}
-    return _edit_page(site, title, text, summary, nocreate=True)
+    return MwClientPage(title, site).edit(text, summary)
 
 
 def move_page(
@@ -43,29 +31,7 @@ def move_page(
     move_talk: bool = True,
     no_redirect: bool = False,
 ) -> dict[str, Any]:
-    """
-    Move (rename) a page on Wikimedia Commons.
-
-    Args:
-        site: Authenticated mwclient.Site object for Commons.
-        title: Current page title (e.g. "Template:OWID/foo").
-        new_title: Target page title (e.g. "Template:OWID/Foo").
-        reason: Move reason / log summary on the wiki.
-        move_talk: Also move the associated talk page.
-        no_redirect: Do not leave a redirect at the old title (requires
-            the ``suppressredirect`` user right).
-
-    Returns:
-        A dictionary with ``success`` (bool) and ``error``/``details`` on failure,
-        matching the shape returned by :func:`create_page` / :func:`edit_page`.
-    """
-    missing_fields = verify_required_fields({"title": title, "new_title": new_title, "site": site})
-    if missing_fields:
-        list_str = ", ".join(missing_fields)
-        logger.error(f"Missing required fields for move_page: {list_str}")
-        return {"success": False, "error": f"Missing required fields: {list_str}"}
-
-    return MwClientPage(title, site).move_page(
+    return MwClientPage(title, site).move(
         new_title,
         reason=reason,
         move_talk=move_talk,
@@ -79,25 +45,7 @@ def create_page(
     site: mwclient.Site | None,
     summary: str = "",
 ) -> dict:
-    """
-    Create a new page on Wikimedia Commons.
-
-    Args:
-        page_name: The name of the page to create.
-        wikitext: The wikitext content for the new page.
-        site: Authenticated mwclient.Site object for Commons.
-        summary: Edit summary.
-
-    Returns:
-        A dictionary with 'success' (bool) and optionally 'error' (str) on failure.
-    """
-    missing_fields = verify_required_fields({"page_name": page_name, "wikitext": wikitext, "site": site})
-    if missing_fields:
-        list_str = ", ".join(missing_fields)
-        logger.error(f"Missing required fields for create_page: {list_str}")
-        return {"success": False, "error": f"Missing required fields: {list_str}"}
-
-    return MwClientPage(page_name, site).create_page(wikitext, summary)
+    return MwClientPage(page_name, site).create(wikitext, summary)
 
 
 def update_page_text(
@@ -106,82 +54,14 @@ def update_page_text(
     site: mwclient.Site | None,
     summary: str = "",
 ) -> dict:
-    """
-    Update the wikitext of any page on Wikimedia Commons.
-
-    Args:
-        page_name: The name of the page to update.
-        updated_text: The new wikitext content.
-        site: Authenticated mwclient.Site object for Commons.
-        summary: Edit summary.
-
-    Returns:
-        A dictionary with 'success' (bool) and optionally 'error' (str) on failure.
-    """
-    missing_fields = verify_required_fields({"page_name": page_name, "updated_text": updated_text, "site": site})
-    if missing_fields:
-        list_str = ", ".join(missing_fields)
-        logger.error(f"Missing required fields for update_page_text: {list_str}")
-        return {"success": False, "error": f"Missing required fields: {list_str}"}
-
-    return _edit_page(site, page_name, updated_text, summary, nocreate=True)
+    return MwClientPage(page_name, site).edit(updated_text, summary)
 
 
 def get_page_text(
     page_title: str,
     site: mwclient.Site | None,
 ) -> str:
-    """
-    Get the wikitext of any page.
-
-    Args:
-        page_title: The name of the page (e.g., "Barley yields").
-        site: Authenticated mwclient.Site object.
-
-    Returns:
-        The wikitext of the page, or an empty string if it cannot be retrieved.
-    """
-    missing_fields = verify_required_fields(
-        {
-            "page_title": page_title,
-            "site": site,
-        }
-    )
-    if missing_fields:
-        list_str = ", ".join(missing_fields)
-        logger.error(f"Missing required fields for get_page_text: {list_str}")
-        return ""
-
-    try:
-        page = site.pages[page_title]
-        return page.text()
-    except Exception as exc:
-        logger.exception(f"Failed to retrieve wikitext for {page_title}", exc_info=exc)
-        return ""
-
-
-def import_page_from_wiki(
-    site: mwclient.Site,
-    title: str,
-    family: str = "wikipedia",
-) -> dict:
-    """Import revision history of *title* from another wiki family.
-
-    Uses the MediaWiki ``action=import`` API (interwiki import).
-    Returns the API response dict.
-    """
-    params = {
-        "action": "import",
-        "title": title,
-        "interwikisource": family,
-        "fullhistory": 1,
-    }
-    try:
-        result = site.post(**params)
-        return result or {}
-    except Exception as exc:
-        logger.exception("import_page_from_wiki failed for %s", title)
-        return {"error": str(exc)}
+    return MwClientPage(page_title, site).get_text()
 
 
 __all__ = [
@@ -191,5 +71,4 @@ __all__ = [
     "is_redirect",
     "move_page",
     "update_page_text",
-    "import_page_from_wiki",
 ]

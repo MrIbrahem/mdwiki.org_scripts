@@ -14,10 +14,10 @@ from typing import Any, Dict
 import mwclient
 
 from ....api_services.clients import get_user_site
+from ....api_services.query_api import import_page_from_wiki
 from ....api_services.pages_api import (
     edit_page,
     get_page_text,
-    import_page_from_wiki,
     is_page_exists,
 )
 from ....jobs_workers.base_worker_object import BaseObjectsJobWorker
