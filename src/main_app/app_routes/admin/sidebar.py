@@ -57,17 +57,17 @@ def create_side(active_route, path: str | None = None):
         "Files jobs": "bi-files",
         "OWID Templates/Pages": "bi-file-earmark-richtext",
         "Settings": "bi-sliders",
+        "Users": "bi-person",
     }
 
     main_menu = {
-        "Main": [
+        "Users": [
             SidebarItem(
                 id="admins",
                 admin=1,
                 href=_safe_url_for("admin.coordinators.dashboard", "/admin/coordinators/"),
                 title="Coordinators",
                 icon="bi-person-gear",
-                disabled=False,
             ),
             SidebarItem(
                 id="users",
@@ -75,8 +75,9 @@ def create_side(active_route, path: str | None = None):
                 href=_safe_url_for("admin.users.dashboard", "/admin/users/"),
                 title="Users",
                 icon="bi-person",
-                disabled=False,
             ),
+        ],
+        "Main": [
         ],
     }
 
