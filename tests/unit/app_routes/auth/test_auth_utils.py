@@ -5,6 +5,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 from flask import g, session
+
 from src.main_app.app_routes.auth.utils import load_logged_in_user, load_user, oauth_required
 from src.main_app.su_services.current_user import CurrentUser
 

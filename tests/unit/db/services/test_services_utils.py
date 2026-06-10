@@ -1,11 +1,21 @@
-"""Unit tests for src/main_app/db/services/utils.py module."""
+"""
+Unit tests for src/main_app/db/services/utils.py module.
+
+Functions to test: db_guard_rollback, db_guard
+
+TODO: write tests
+"""
 
 from __future__ import annotations
 
 from unittest.mock import patch
 
 from sqlalchemy.exc import SQLAlchemyError
-from src.main_app.db.services.utils import db_guard
+
+from src.main_app.db.services.utils import (
+    db_guard,
+    db_guard_rollback,
+)
 
 
 class TestDbGuard:

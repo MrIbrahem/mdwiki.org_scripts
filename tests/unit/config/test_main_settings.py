@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+
 from src.main_app.config.classes import CookieConfig, OtherConfig
 from src.main_app.config.main_settings import (
     _env_bool,
@@ -75,11 +76,6 @@ class TestLoadOtherConfig:
     def test_default_wiki_domain(self):
         result = load_other_config()
         assert result.wiki_domain == "mdwiki.org"
-
-    def test_default_allowlist_users(self):
-        result = load_other_config()
-        assert "Doc James" in result.allowlist_users
-        assert "Mr. Ibrahem" in result.allowlist_users
 
     def test_csrf_time_limit_default(self):
         result = load_other_config()

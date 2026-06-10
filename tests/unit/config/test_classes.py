@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+
 from src.main_app.config.classes import (
     CookieConfig,
     DbConfig,
@@ -85,12 +86,10 @@ class TestOtherConfig:
         cfg = OtherConfig(
             csrf_time_limit=3600,
             user_agent="test/1.0",
-            allowlist_users=("Alice",),
             wiki_domain="example.org",
             static_server="https://cdn.example.org",
         )
         assert cfg.csrf_time_limit == 3600
-        assert cfg.allowlist_users == ("Alice",)
 
 
 class TestJobsConfig:
@@ -120,7 +119,7 @@ class TestSettings:
             max_form_parts=1,
             secret_key_fallbacks=(),
         )
-        other = OtherConfig(csrf_time_limit=1, user_agent="t", allowlist_users=(), wiki_domain="w", static_server="s")
+        other = OtherConfig(csrf_time_limit=1, user_agent="t", wiki_domain="w", static_server="s")
         jobs = JobsConfig(jobs_max_workers=1, jobs_log_lines=1)
         s = Settings(
             database_data=db,

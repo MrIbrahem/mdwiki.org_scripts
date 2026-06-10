@@ -5,6 +5,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 import pytest
+
 from src.main_app.app_routes.public_jobs import _can_manage_job
 
 

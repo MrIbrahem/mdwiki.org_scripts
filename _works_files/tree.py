@@ -2,7 +2,7 @@ from pathlib import Path
 
 from directory_tree import DisplayTree
 
-work_path = Path(__file__).parent.parent / "flask_app"
+work_path = Path(__file__).parent.parent / "src"
 tree_save_path = Path(__file__).parent / "tree.md"
 
 tree: str = DisplayTree(

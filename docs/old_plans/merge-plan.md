@@ -67,7 +67,7 @@ src/
 ├── app.py                       # WSGI entry (unchanged)
 ├── main_app/
 │   ├── __init__.py              # app factory (extended for new bps & error pages)
-│   ├── config.py                # add JOBS_BACKEND, ALLOWLIST_USERS, ENABLE_OAUTH
+│   ├── config.py                # add JOBS_BACKEND, ENABLE_OAUTH
 │   ├── auth/                    # NEW: thin auth surface
 │   │   ├── __init__.py
 │   │   ├── current_user.py      # current_user(), is_authenticated, is_authorized
@@ -160,7 +160,7 @@ We do **not** implement full OAuth in this PR. We add:
 -   `auth.current_user() -> User | None` reading `session["username"]`.
 -   `auth.is_authenticated()` and `auth.is_authorized(user)`.
 -   `@login_required` (302 to a login placeholder if missing).
--   `@authorized_only(allowlist=settings.other.allowlist_users)` returning **403 with
+-   `@authorized_only` returning **403 with
     a friendly “Access denied” template** for `import-history` and `replace`.
 
 For local testing, a hidden `?dev_user=Mr. Ibrahem` query writes the username
@@ -231,7 +231,7 @@ on_progress=None) -> JobResult`. Internally: - If `titles` non-empty → iterate
 
 -   **Inputs:** `title` (single) **or** `titlelist` (textarea); optional `from`
     (source language). POST.
--   **Auth:** `@authorized_only(allowlist)`.
+-   **Auth:** `@authorized_only`.
 -   **Service:** `services.imp.run(*, titles: list[str], from_lang: str = "en",
 save: bool = True, on_progress=None) -> JobResult`. Per title:
     `MainPage(title, from_lang, family="wikipedia").import_page(family="mdwiki")`
@@ -280,7 +280,7 @@ This is the biggest refactor.
 
 -   **Inputs:** `find` (textarea, required), `replace` (textarea, required, may
     be empty), `number` (int), `listtype` (`newlist|oldlist`). POST.
--   **Auth:** `@authorized_only(allowlist)`.
+-   **Auth:** `@authorized_only`.
 -   **Service:** `services.replace.run(*, find: str, replace: str, number: int |
 None, listtype: Literal["newlist","oldlist"], on_progress=None,
 stop_event=None) -> JobResult`. Logic from `find_replace_bot/one_job.py`
@@ -357,14 +357,13 @@ summary=summary)` - `mdwiki_page.NewApi(...)` → `AllAPIS(...).NewApi()`
 
 Additions to `main_app/config.py` (`Settings` dataclass):
 
-| Field              | Env var            | Default                   | Notes                                           |
-| ------------------ | ------------------ | ------------------------- | ----------------------------------------------- |
-| `allowlist_users`  | `ALLOWLIST_USERS`  | `"Doc James,Mr. Ibrahem"` | comma-sep, used by `import-history` & `replace` |
-| `enable_oauth`     | `ENABLE_OAUTH`     | `false`                   | when `false`, `/auth` falls back to dev-mode    |
-| `jobs_max_workers` | `JOBS_MAX_WORKERS` | `2`                       | thread pool size                                |
-| `jobs_log_lines`   | `JOBS_LOG_LINES`   | `200`                     | rolling per-job log buffer size                 |
-| `wiki_username`    | `WIKI_USERNAME`    | –                         | already used by `fix_duplicate.py`              |
-| `wiki_password`    | `WIKI_PASSWORD`    | –                         | already used by `fix_duplicate.py`              |
+| Field              | Env var            | Default | Notes                                        |
+| ------------------ | ------------------ | ------- | -------------------------------------------- |
+| `enable_oauth`     | `ENABLE_OAUTH`     | `false` | when `false`, `/auth` falls back to dev-mode |
+| `jobs_max_workers` | `JOBS_MAX_WORKERS` | `2`     | thread pool size                             |
+| `jobs_log_lines`   | `JOBS_LOG_LINES`   | `200`   | rolling per-job log buffer size              |
+| `wiki_username`    | `WIKI_USERNAME`    | –       | already used by `fix_duplicate.py`           |
+| `wiki_password`    | `WIKI_PASSWORD`    | –       | already used by `fix_duplicate.py`           |
 
 The OAuth env-var hard-fail in `_load_oauth_config()` is **softened** behind
 `ENABLE_OAUTH`. When it is `false` (default for local), missing OAuth vars

@@ -1,9 +1,16 @@
+"""
+Unit tests for src/main_app/extensions.py module.
+
+Classes to test: BaseModel
+"""
+
 from __future__ import annotations
 
 from datetime import datetime
 
 from flask.app import Flask
 from sqlalchemy import Column, DateTime, Integer, String
+
 from src.main_app.extensions import db
 
 

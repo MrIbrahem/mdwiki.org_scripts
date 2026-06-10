@@ -24,7 +24,7 @@ Settings (root)
 ├── oauth: OAuthConfig              # MediaWiki OAuth credentials
 ├── security: SecurityConfig        # Secret key, form limits, key rotation
 ├── jobs: JobsConfig                # Background job worker settings
-└── other: OtherConfig              # CSRF, user-agent, allowlist, wiki domain
+└── other: OtherConfig              # CSRF, user-agent, wiki domain
 ```
 
 ### Flask Config Hierarchy
@@ -62,7 +62,6 @@ Config (base)
 | `TOOL_TOOLSDB_PASSWORD` | No       | `None`                  | MySQL password                  |
 | `MAIN_DIR`              | No       | `~/data`                | Base directory for logs/jobs    |
 | `WIKI_DOMAIN`           | No       | `mdwiki.org`            | Target wiki domain              |
-| `ALLOWLIST_USERS`       | No       | `Doc James,Mr. Ibrahem` | Authorized usernames            |
 | `WTF_CSRF_TIME_LIMIT`   | No       | `3600`                  | CSRF token lifetime (seconds)   |
 
 ## Testing

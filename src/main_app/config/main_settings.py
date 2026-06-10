@@ -163,16 +163,11 @@ def load_other_config() -> OtherConfig:
         "Translation Dashboard/1.0 (https://mdwiki.toolforge.org/; tools.mdwiki@toolforge.org)",
     )
 
-    # Tool authorization allow-list (used by /import-history/ and /replace/).
-    _allowlist_raw = os.getenv("ALLOWLIST_USERS", "Doc James,Mr. Ibrahem")
-    allowlist_users = tuple(name.strip() for name in _allowlist_raw.split(",") if name.strip())
-
     _config = OtherConfig(
         csrf_time_limit=csrf_time_limit,
         user_agent=user_agent,
         wiki_domain=wiki_domain,
         static_server=static_server,
-        allowlist_users=allowlist_users,
     )
 
     return _config

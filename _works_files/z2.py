@@ -33,11 +33,14 @@ def extract_classes_and_functions(file_path):
     return classes, functions
 
 
-def generate_domain_test_placeholders(src_root, test_root):
+def generate_domain_test_placeholders(src_root, test_root, src_name: str = "src") -> None:
     """Generates test placeholders based on the source directory structure."""
     src_path = Path(src_root)
     test_base_unit = Path(test_root) / "unit"
     test_base_integration = Path(test_root) / "integration"
+
+    list_of_all_tests_files = [x.name for x in Path(test_root).rglob("*.py")]
+    duplicate_names = []
 
     for root, _dirs, files in os.walk(src_path):
         current_path = Path(root)
@@ -77,15 +80,22 @@ def generate_domain_test_placeholders(src_root, test_root):
                     else:
                         test_filename = f"test_{parent_name}_init.py"
 
+                if "routes_routes" in test_filename:
+                    test_filename = test_filename.replace("routes_routes", "routes")
+
+                if test_filename in list_of_all_tests_files:
+                    duplicate_names.append(test_filename)
+                    continue
+
                 # Create the directory if it doesn't exist
                 target_dir.mkdir(parents=True, exist_ok=True)
                 test_file_path = target_dir / test_filename
 
                 # The path that will appear in the docstring
-                # Find the index of the "flask_app" part to build the internal path
+                # Find the index of the "{src_name}" part to build the internal path
                 parts = current_path.parts
                 try:
-                    internal_path = "/".join(parts[parts.index("flask_app") :])
+                    internal_path = "/".join(parts[parts.index(f"{src_name}") :])
                 except ValueError:
                     internal_path = "/".join(parts)
 
@@ -103,7 +113,7 @@ def generate_domain_test_placeholders(src_root, test_root):
                     # Convert elements to a comma-separated string
                     items_str = ", ".join(items_to_import)
 
-                    # Convert path (e.g., flask_app/main_app/domain) to python path (flask_app.main_app.domain)
+                    # Convert path (e.g., {src_name}/main_app/domain) to python path ({src_name}.main_app.domain)
                     module_path = f"{internal_path.replace('/', '.')}.{file_stem}"
 
                     if module_path.endswith(".__init__"):
@@ -156,14 +166,16 @@ def generate_domain_test_placeholders(src_root, test_root):
                 with open(test_file_path, "w", encoding="utf-8") as f:
                     f.write(content_new)
 
+    print(f"Duplicate file names: {len(duplicate_names):,}")
+
 
 if __name__ == "__main__":
     main_path = Path(__file__).parent.parent
 
-    SOURCE_DIR = main_path / "flask_app/main_app"
+    SOURCE_DIR = main_path / "src/main_app"
     TEST_DIR = main_path / "tests"
 
     print(f"SOURCE_DIR: {SOURCE_DIR}")
     print(f"TEST_DIR: {TEST_DIR}")
 
-    generate_domain_test_placeholders(SOURCE_DIR, TEST_DIR)
+    generate_domain_test_placeholders(SOURCE_DIR, TEST_DIR, src_name="src")

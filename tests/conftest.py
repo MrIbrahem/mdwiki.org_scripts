@@ -8,6 +8,7 @@ don't leak across tests.
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 import secrets
@@ -35,9 +36,7 @@ os.environ.setdefault("OAUTH_ENCRYPTION_KEY", Fernet.generate_key().decode("utf-
 os.environ.setdefault("OAUTH_CONSUMER_KEY", "test-consumer-key")
 os.environ.setdefault("OAUTH_CONSUMER_SECRET", "test-consumer-secret")
 os.environ.setdefault("OAUTH_MWURI", "https://example.org/w/index.php")
-
-# Pin allowlist for tests so we don't depend on the prod default drifting.
-os.environ.setdefault("ALLOWLIST_USERS", "Doc James,Mr. Ibrahem")
+os.environ.setdefault("WIKI_DOMAIN", "test.wikipedia.org")
 
 
 @pytest.fixture(autouse=True)

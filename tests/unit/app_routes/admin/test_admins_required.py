@@ -5,6 +5,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from src.main_app.app_routes.admin.admins_required import admin_required
 
 

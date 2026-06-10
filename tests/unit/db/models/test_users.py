@@ -1,8 +1,21 @@
+"""
+Unit tests for src/main_app/db/models/users.py module.
+
+Classes to test: UsersRecord, AdminUserRecord, UserTokenRecord
+
+TODO: write tests
+"""
+
 from __future__ import annotations
 
 from flask.app import Flask
+
 from src.main_app.core.crypto import encrypt_value
-from src.main_app.db.models.users import AdminUserRecord, UsersRecord, UserTokenRecord
+from src.main_app.db.models.users import (
+    AdminUserRecord,
+    UsersRecord,
+    UserTokenRecord,
+)
 from src.main_app.extensions import db
 
 

@@ -11,6 +11,7 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from flask.app import Flask
+
 from src.main_app.config import settings
 from src.main_app.db.services import get_user_by_username, get_user_token, upsert_user_token
 from src.main_app.db.services.users_service import create_user

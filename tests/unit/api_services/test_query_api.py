@@ -5,6 +5,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 import pytest
+
 from src.main_app.api_services.query_api import (
     get_page_links,
     get_template_pages,

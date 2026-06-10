@@ -9,6 +9,7 @@ from __future__ import annotations
 from unittest.mock import Mock
 
 import pytest
+
 from src.main_app.db.services import (
     is_active_coordinator,
     upsert_user_token,

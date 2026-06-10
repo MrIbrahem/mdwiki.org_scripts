@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from flask.app import Flask
+
 from src.main_app.db.models.jobs import JobRecord
 from src.main_app.extensions import db
 

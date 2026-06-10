@@ -14,8 +14,6 @@ class OtherConfig:
 
     csrf_time_limit: Optional[int]  # None means never expire
     user_agent: str
-    # Phase-1 additions (see docs/merge-plan.md §7)
-    allowlist_users: tuple[str, ...]
     wiki_domain: str
     static_server: str
 

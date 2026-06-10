@@ -84,7 +84,7 @@ if __name__ == "__main__":
     main_path = Path(__file__).parent.parent
 
     # Define the source directory to modify
-    SOURCE_DIR = main_path / "flask_app/main_app"
+    SOURCE_DIR = main_path / "src/main_app"
 
     print(f"Starting to process files in: {SOURCE_DIR}")
     add_all_to_source_files(SOURCE_DIR)

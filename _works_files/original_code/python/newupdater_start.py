@@ -5,6 +5,7 @@ python3 I:/MD_TOOLS/mdwiki.toolforge.org/PYTHON_REPOS/pybot/src/newupdater.py -p
 import sys
 
 from mdapi import GetPageText, page_put
+
 from src.main_app.shared.new_updater import med_updater_one
 
 
