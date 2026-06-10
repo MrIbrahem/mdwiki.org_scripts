@@ -14,7 +14,6 @@ def gt_arg(temp: wtp.Template, name: str) -> str | bool:
 
 
 def add_param_named(text: str) -> str:
-
     parsed = wtp.parse(text)
 
     param = "named after"
@@ -31,7 +30,6 @@ def add_param_named(text: str) -> str:
     false_params = []
 
     for temp in parsed.templates:
-
         name = str(temp.normal_name()).strip().lower().replace("_", " ")
         if name in target_infoboxs:
             # ---

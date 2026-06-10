@@ -81,7 +81,6 @@ class FixChembox:
     def new_temp(self):
         # ---
         for p, value in self.all_params.items():
-
             param = rename_chem_params.get(p, "") if rename_chem_params.get(p, "") != "" else p
 
             param_value = f"| {param}= {value}" if value.strip() else f"| {param}="

@@ -34,7 +34,6 @@ def add_rtt_to_text(text: str, title: str) -> str:
     parsed = wtp.parse(text)
 
     for temp in parsed.templates:
-
         name = str(temp.normal_name()).strip().lower().replace("_", " ")
         if name in target_templates:
             logger.info(f"page already tagged.{title=}")
