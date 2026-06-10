@@ -92,8 +92,8 @@ def resolve_redirects(
         # Per-page redirects array: pages that redirect TO this title.
         for page in (query.get("pages", {}) or {}).values():
             target = page.get("title", "")
-            for src in page.get("redirects", []) or []:
-                from_to[src["title"]] = target
+            for t in page.get("redirects", []) or []:
+                from_to[t["title"]] = target
 
     result = {
         "normalized": normalized,
