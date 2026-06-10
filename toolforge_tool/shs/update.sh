@@ -19,4 +19,4 @@ REPO_NAME="mdwiki.org_scripts"
 TARGET_DIR="$HOME/www/python/src"
 BRANCH="${1:-main}"
 
-$HOME/shs/deploy_secure.sh "$REPO_NAME" "$TARGET_DIR" "$BRANCH"
+$HOME/shs/deploy_repo.sh "$REPO_NAME" "$TARGET_DIR" "$BRANCH"
