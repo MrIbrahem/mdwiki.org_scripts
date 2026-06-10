@@ -1,13 +1,58 @@
-"""Unit tests for src/main_app/app_routes/auth/cookie.py."""
+"""
+Tests for cookie helpers.
+src/main_app/app_routes/auth/cookie.py
+"""
 
 from __future__ import annotations
 
 from src.main_app.app_routes.auth.cookie import (
+    _serializer,
+    _state_serializer,
     extract_user_id,
     sign_state_token,
     sign_user_id,
     verify_state_token,
 )
+
+
+def test_sign_user_id() -> None:
+    token = sign_user_id(123)
+
+    data = _serializer.loads(token)
+    assert data["uid"] == 123
+
+
+def test_extract_user_id_valid_token() -> None:
+    token = _serializer.dumps({"uid": 55})
+
+    assert extract_user_id(token) == 55
+
+
+def test_sign_state_token() -> None:
+    token = sign_state_token("nonce")
+
+    data = _state_serializer.loads(token)
+    assert data["nonce"] == "nonce"
+
+
+def test_verify_state_token_success() -> None:
+    token = _state_serializer.dumps({"nonce": "abc"})
+
+    assert verify_state_token(token) == "abc"
+
+
+def test_verify_state_token_invalid_payload() -> None:
+    token = _state_serializer.dumps({"not": "nonce"})
+
+    assert verify_state_token(token) is None
+
+
+def test_extract_user_id_invalid_token() -> None:
+    assert extract_user_id("invalid-token") is None
+
+
+def test_verify_state_token_bad_signature() -> None:
+    assert verify_state_token("bad-token") is None
 
 
 class TestSignAndExtractUserId:

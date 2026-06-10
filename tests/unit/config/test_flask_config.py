@@ -1,4 +1,11 @@
-"""Unit tests for src/main_app/config/flask_config.py module."""
+"""
+Unit tests for src/main_app/config/flask_config.py module.
+
+Classes to test: Config, DevelopmentConfig, ProductionConfig, TestingConfig
+Functions to test: build_sqlalchemy_uri
+
+TODO: write tests
+"""
 
 from __future__ import annotations
 

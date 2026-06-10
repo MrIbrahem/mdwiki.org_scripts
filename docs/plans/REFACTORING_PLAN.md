@@ -18,7 +18,7 @@ This is a well-architected Flask application with a clean layered structure (Con
 -   **Application Factory Pattern**: `create_app()` provides clean initialization with graceful DB-failure fallback.
 -   **Frozen Dataclass Configuration**: Immutable `Settings` singleton loaded from environment variables — clean, testable, and well-documented.
 -   **Worker Lifecycle Pattern**: `BaseObjectsJobWorker` with `before_run() → process() → after_run()` template method provides consistent job execution.
--   **Good Test Infrastructure**: `conftest.py` has session-scoped app, CSRF-aware client, login helper, and `stub_service` fixture.
+-   **Good Test Infrastructure**: `conftest.py` has session-scoped app, CSRF-aware client, login helper fixture.
 -   **Type Hints**: Extensive use of `from __future__ import annotations` and type hints throughout.
 -   **OAuth Security**: Fernet encryption for tokens, signed cookies, rate limiting on auth endpoints.
 -   **Documentation**: `CLAUDE.md`, `README.md`, and inline `README.md` files in major subsystems.
@@ -144,7 +144,6 @@ This is a well-architected Flask application with a clean layered structure (Con
 -   [ ] **No worker implementation tests** — The 8 workers in `public_jobs/workers/` have no unit tests for their actual logic (only infrastructure tests in `tests/unit/public_jobs/`).
 -   [ ] **No API service tests** — `tests/unit/api_services/` has no test files (the directory only has `__pycache__`).
 -   [ ] **14 `# pragma: no cover` exclusions** — Many are legitimate (network interactions, teardowns), but several in route handlers indicate complex error paths without test coverage.
--   [ ] **`stub_service` fixture is underutilized** — It exists in `conftest.py` but virtually no tests use it.
 -   [ ] **No integration tests for OAuth flow** — The OAuth flow has no integration test coverage (though this is hard without a real MW instance).
 -   [ ] **`test_public_jobs_utils.py` and `test_utils.py`** — Need to check if they actually test anything meaningful or are just placeholder files.
 -   [ ] **No tests for `shared/new_updater/` complex logic** — The medical content updater has extensive wikitext processing with no test coverage.
@@ -154,7 +153,6 @@ This is a well-architected Flask application with a clean layered structure (Con
 1. [ ] Write unit tests for each worker's core logic, mocking the MW API calls
 2. [ ] Add unit tests for `api_services/` functions (especially `category.py`, `pages_api.py`, `query_api.py`)
 3. [ ] Remove `# pragma: no cover` from route handlers and write tests for those error paths
-4. [ ] Use the `stub_service` fixture to test job lifecycle end-to-end
 5. [ ] Add property-based or golden-file tests for wikitext processing logic
 
 ---
@@ -280,7 +278,6 @@ This is a well-architected Flask application with a clean layered structure (Con
 -   [ ] **Add test coverage**:
     -   [ ] Unit tests for all 8 workers
     -   [ ] Unit tests for `api_services/` functions
-    -   [ ] Integration tests for job lifecycle (using `stub_service`)
     -   [ ] Remove unnecessary `# pragma: no cover` annotations
     -   [ ] Golden-file tests for wikitext processing
 -   [ ] **Refactor error handling**:
@@ -387,7 +384,7 @@ This is a well-architected Flask application with a clean layered structure (Con
 ### `tests/`
 
 -   **Strengths**: Good conftest.py, session-scoped app, CSRF token fixture
--   **Issues**: Major gaps in worker, API, and wikitext tests; unused `stub_service` fixture
+-   **Issues**: Major gaps in worker, API, and wikitext tests
 -   **Priority**: Phase 3
 
 ### `pyproject.toml`

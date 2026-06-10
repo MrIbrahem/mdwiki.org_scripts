@@ -113,7 +113,7 @@ Jinja2 templates with Bootstrap 5, jQuery, DataTables, and Ace editor. Base layo
 
 -   `pytest-socket` blocks network access by default (autouse fixture)
 -   Mark network-dependent tests with `@pytest.mark.network`
--   Test fixtures in `tests/conftest.py`: `mock_client` (Flask test client), `login` (session mock), `csrf_token`, `stub_service`
+-   Test fixtures in `tests/conftest.py`: `mock_client` (Flask test client), `login` (session mock), `csrf_tokens`
 -   `TestingConfig` uses SQLite in-memory and disables CSRF
 
 ## Deployment

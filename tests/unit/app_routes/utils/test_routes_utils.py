@@ -1,10 +1,20 @@
-"""Unit tests for src/main_app/app_routes/utils/routes_utils.py module."""
+"""
+Unit tests for src/main_app/app_routes/utils/routes_utils.py module.
+
+Functions to test: context_user, load_auth_payload, get_job_detail_url
+
+TODO: write tests
+"""
 
 from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from src.main_app.app_routes.utils.routes_utils import load_auth_payload
+from src.main_app.app_routes.utils.routes_utils import (
+    context_user,
+    get_job_detail_url,
+    load_auth_payload,
+)
 from src.main_app.su_services.current_user import CurrentUser
 
 

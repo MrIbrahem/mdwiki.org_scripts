@@ -1,9 +1,9 @@
+"""Tests for category helpers."""
+
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+import pytest
 
-import requests
+from src.main_app.api_services.category import get_category_members
 
-from src.main_app.api_services.category import (
-    get_category_members,
-)
+

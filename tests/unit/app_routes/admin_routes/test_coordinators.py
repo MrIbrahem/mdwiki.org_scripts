@@ -1,8 +1,18 @@
-"""Unit tests for src/main_app/app_routes/admin_routes/coordinators.py."""
+"""
+Unit tests for src/main_app/app_routes/admin_routes/coordinators.py module.
+
+Classes to test: CoordinatorsRoutes
+
+TODO: write tests
+"""
 
 from __future__ import annotations
 
 import pytest
+
+from src.main_app.app_routes.admin_routes.coordinators import (
+    CoordinatorsRoutes,
+)
 
 
 @pytest.mark.usefixtures("app")
