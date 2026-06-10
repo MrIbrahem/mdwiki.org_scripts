@@ -10,3 +10,5 @@ patch-diff.diff
 coverage.xml
 .coverage
 **/work_on_text_result.wiki
+.claude/settings.json
+.claude/settings.local.json

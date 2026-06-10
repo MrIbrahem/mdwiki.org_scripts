@@ -1,5 +1,5 @@
 #!/bin/bash
-# toolforge-jobs run update --image python3.11 --command "~/shs/update.sh" --wait
+# toolforge-jobs run update-repo --image python3.11 --command "~/shs/update.sh" --wait
 
 export USER_NAME="MrIbrahem"
 export SUB_DIR_COPY="src"
@@ -9,7 +9,7 @@ export CLEAN_INSTALL=1
 export REMOVE_SRC_JSONS_BEFORE_COPY=0
 
 # Ensure the Python3 binary exists before compiling
-export PYTHON_BIN="$HOME/local/bin/python3"
+export PYTHON_BIN="$HOME/www/python/venv/bin/python3"
 export COMPILE_PYTHON_FILES=1
 
 # additional file to copy to TARGET_DIR
