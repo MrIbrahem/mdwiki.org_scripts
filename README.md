@@ -8,49 +8,51 @@ This tool runs on **Wikimedia Toolforge** (Kubernetes) and provides various jobs
 
 ## Features
 
-- **OAuth Authentication**: Secure login using MediaWiki credentials.
-- **Background Job System**: Run long-running maintenance tasks in the background.
-- **Redirect Fixer**: Tool to fix redirects on one or many pages.
-- **Medical Content Updater**: Tools for updating medical information.
-- **Admin Management**: Interface for managing and monitoring jobs.
+-   **OAuth Authentication**: Secure login using MediaWiki credentials.
+-   **Background Job System**: Run long-running maintenance tasks in the background.
+-   **Redirect Fixer**: Tool to fix redirects on one or many pages.
+-   **Medical Content Updater**: Tools for updating medical information.
+-   **Admin Management**: Interface for managing and monitoring jobs.
 
 ## Architecture
 
 The application follows a strict layering: **Controller → Service → Repository → Database**.
 
-- **Flask App**: Main application framework.
-- **Background Jobs**: Managed using a custom worker system in `src/main_app/public_jobs/`.
-- **MediaWiki Integration**: Uses `mwclient` and `mwoauth`.
-- **Database**: SQLAlchemy for data persistence (MySQL in production, SQLite for tests).
+-   **Flask App**: Main application framework.
+-   **Background Jobs**: Managed using a custom worker system in `src/main_app/public_jobs/`.
+-   **MediaWiki Integration**: Uses `mwclient` and `mwoauth`.
+-   **Database**: SQLAlchemy for data persistence (MySQL in production, SQLite for tests).
 
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.13+
-- MariaDB/MySQL (for local development, you can use SQLite)
+-   Python 3.13+
+-   MariaDB/MySQL (for local development, you can use SQLite)
 
 ### Installation
 
 1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd mdwiki-org-scripts
-   ```
+
+    ```bash
+    git clone <repository-url>
+    cd mdwiki-org-scripts
+    ```
 
 2. Create a virtual environment and install dependencies:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-   pip install -r requirements-dev.txt
-   ```
+
+    ```bash
+    python -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+    pip install -r requirements-dev.txt
+    ```
 
 3. Set up environment variables:
    Copy `.env.example` to `.env` and fill in the required values.
-   ```bash
-   cp .env.example .env
-   ```
+    ```bash
+    cp .env.example .env
+    ```
 
 ### Running the Development Server
 
@@ -68,14 +70,18 @@ python -m pytest tests/ -v -m unit            # Unit tests only
 python -m pytest tests/ -v -m integration     # Integration tests only
 ```
 
-## Linting and Formatting
-
-We use `Ruff` for linting and formatting.
+## Linting & Formatting
 
 ```bash
-ruff check src/ tests/      # Lint
-ruff format src/ tests/     # Format
+ruff check src/           # Lint
+ruff check --fix src/     # Lint with auto-fix
+mypy src/                 # Type check
+black .                   # Format
+isort .                   # Sort imports
+pyright src/              # Type check
 ```
+
+Line length is 120 across all tools.
 
 ## Deployment
 
