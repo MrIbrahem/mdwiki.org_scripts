@@ -189,7 +189,7 @@ class AddRttTemplateWorker(BaseObjectsJobWorker):
             logger.info(f"Job {self.job_id}: {title!r}: missing!")
             return UpdaterOutcome(kind="missing")
 
-        ns = page.namespace()
+        ns = page.namespace
         if ns != 0:
             return UpdaterOutcome(kind="skipped", msg="Not in main namespace")
 

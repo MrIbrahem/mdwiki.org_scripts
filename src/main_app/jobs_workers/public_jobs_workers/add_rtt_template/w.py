@@ -60,7 +60,7 @@ def work_page(title):
     if not page.exists():
         return False
 
-    ns = page.namespace()
+    ns = page.namespace
 
     if ns != 0:
         return False
