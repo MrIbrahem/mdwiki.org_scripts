@@ -14,8 +14,7 @@ from ....api_services.category import get_category_members
 logger = logging.getLogger(__name__)
 
 
-def add_rtt_to_text(text, title):
-
+def add_rtt_to_text(text: str, title: str) -> str:
     new_line = "{{RTT}}"
 
     if text.find(new_line) != -1:
