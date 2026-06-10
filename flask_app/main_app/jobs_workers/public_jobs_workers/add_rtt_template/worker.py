@@ -29,7 +29,7 @@ def add_rtt_to_text(text: str, title: str) -> str:
         logger.info(f"page already tagged.{new_line}")
         return text
 
-    target_templates = ["RTT"]
+    target_templates = ["rtt"]
 
     parsed = wtp.parse(text)
 
@@ -47,14 +47,15 @@ def add_rtt_to_text(text: str, title: str) -> str:
     for section in parsed.sections:
         last_section = section
 
-    # add line before the first [[Category: in last_section
+    category_found = False
     if last_section:
         for line in last_section.contents.split("\n"):
-            if line.startswith("[[Category:"):
-                newtext = newtext.replace(line, f"{new_line}\n{line}")
+            if line.strip().lower().startswith("[[category:"):
+                newtext = newtext.replace(line, f"{new_line}\n{line}", 1)
+                category_found = True
                 break
-    else:
-        newtext = f"{newtext}\n{new_line}"
+    if not category_found:
+        newtext = f"{newtext.rstrip()}\n{new_line}"
 
     return newtext
 
