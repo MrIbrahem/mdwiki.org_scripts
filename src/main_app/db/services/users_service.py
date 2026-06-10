@@ -93,7 +93,6 @@ def toggle_can_run_bg_jobs(user_id: int, value: bool) -> UsersRecord:
 # ── DELETE ───────────────────────────────────────────────
 
 
-
 @db_guard(default_return=False)
 def delete_user(user_id: int) -> bool:
     """Delete user row. Cascades to user_tokens and admin_users via FK."""
