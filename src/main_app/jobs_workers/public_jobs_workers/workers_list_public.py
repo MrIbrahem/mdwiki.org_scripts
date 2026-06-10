@@ -1,29 +1,13 @@
-from dataclasses import dataclass
-from typing import Callable, Optional
-
-from ...jobs_workers.public_jobs_workers.add_rtt_template.worker import add_rtt_template_worker_entry
-from ...jobs_workers.public_jobs_workers.add_unlinkedwikibase.worker import add_unlinkedwikibase_worker_entry
-from ...jobs_workers.public_jobs_workers.create_redirects.worker import create_redirects_worker_entry
-from ...jobs_workers.public_jobs_workers.duplicate_redirect.worker import duplicate_redirect_worker_entry
-from ...jobs_workers.public_jobs_workers.find_and_replace.worker import find_and_replace_worker_entry
-from ...jobs_workers.public_jobs_workers.fixred_all.worker import fixred_all_worker_entry
-from ...jobs_workers.public_jobs_workers.fixref.worker import fixref_worker_entry
-from ...jobs_workers.public_jobs_workers.import_history.worker import import_history_worker_entry
+from ..objects import JobData
 from .add_r_column.worker import add_r_column_worker_entry
-
-
-@dataclass
-class JobData:
-    job_type: str
-    job_name: str
-    job_list_template: str
-
-    job_callable: Callable
-    job_args: list | None = None
-    start_confirm_message: str | None = None
-    job_details_template: Optional[str] = "jobs_templates/_help_templates/shared_details.html"
-    ready: bool = False
-
+from .add_rtt_template.worker import add_rtt_template_worker_entry
+from .add_unlinkedwikibase.worker import add_unlinkedwikibase_worker_entry
+from .create_redirects.worker import create_redirects_worker_entry
+from .duplicate_redirect.worker import duplicate_redirect_worker_entry
+from .find_and_replace.worker import find_and_replace_worker_entry
+from .fixred_all.worker import fixred_all_worker_entry
+from .fixref.worker import fixref_worker_entry
+from .import_history.worker import import_history_worker_entry
 
 jobs_data_for_all_pages = {
     "add_unlinkedwikibase": JobData(

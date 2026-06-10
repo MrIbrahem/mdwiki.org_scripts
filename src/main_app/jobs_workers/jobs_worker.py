@@ -15,7 +15,8 @@ from ..db.services import (
     create_job,
 )
 from ..su_services.jobs_files_service import create_job_cancelled_file
-from .public_jobs_workers.workers_list_public import JobData, jobs_data
+from .objects import JobData
+from .public_jobs_workers.workers_list_public import jobs_data
 
 logger = logging.getLogger(__name__)
 
