@@ -12,6 +12,7 @@ from typing import Optional
 from ...extensions import db
 from ..exceptions import UserNotFoundError
 from ..models import UsersRecord
+from .utils import db_guard
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +47,6 @@ def create_user(username: str) -> UsersRecord:
     existing = db.session.query(UsersRecord).filter(UsersRecord.username == username).first()
     if existing:
         return existing
-
     record = UsersRecord(username=username)
     db.session.add(record)
     try:
@@ -54,6 +54,10 @@ def create_user(username: str) -> UsersRecord:
         db.session.refresh(record)
     except Exception:
         db.session.rollback()
+        # Handle potential race condition where user was created concurrently
+        existing = db.session.query(UsersRecord).filter(UsersRecord.username == username).first()
+        if existing:
+            return existing
         raise
     return record
 
@@ -89,6 +93,7 @@ def toggle_can_run_bg_jobs(user_id: int, value: bool) -> UsersRecord:
 # ── DELETE ───────────────────────────────────────────────
 
 
+@db_guard(default_return=False)
 def delete_user(user_id: int) -> bool:
     """Delete user row. Cascades to user_tokens and admin_users via FK."""
     if not user_id:
