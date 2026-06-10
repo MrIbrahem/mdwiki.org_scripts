@@ -75,7 +75,7 @@ class TestLoadOtherConfig:
 
     def test_default_wiki_domain(self):
         result = load_other_config()
-        assert result.wiki_domain == "mdwiki.org"
+        assert result.wiki_domain == "test.wikipedia.org"
 
     def test_csrf_time_limit_default(self):
         result = load_other_config()
