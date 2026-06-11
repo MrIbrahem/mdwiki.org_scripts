@@ -94,7 +94,7 @@ def move_resources(text: str, title: str, lkj: str = _lkj_, lkj2: str = _lkj2_) 
     page_identifier_params = {}
     # ---
     drug_resources = ""
-    resources_params = {}
+    #resources_params = {}
     # ---
     # Parse the wikitext
     temps = wtp.parse(text).templates
