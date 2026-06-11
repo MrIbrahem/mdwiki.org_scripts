@@ -50,6 +50,6 @@ callback_rate_limiter = RateLimiter(limit=10, period=timedelta(minutes=1))
 
 __all__ = [
     "RateLimiter",
-    "login_rate_limiter",
     "callback_rate_limiter",
+    "login_rate_limiter",
 ]

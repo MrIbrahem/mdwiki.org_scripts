@@ -1,7 +1,12 @@
 """"""
 
 from .category import get_category_members
-from .clients import get_user_site
+from .clients import (
+    create_commons_session,
+    download_commons_file_core,
+    get_cronjob_site,
+    get_user_site,
+)
 from .mwclient_page import MwClientPage
 from .query_api import (
     get_page_links,
@@ -20,4 +25,7 @@ __all__ = [
     "resolve_redirects",
     "search_pages",
     "get_category_members",
+    "create_commons_session",
+    "download_commons_file_core",
+    "get_cronjob_site",
 ]

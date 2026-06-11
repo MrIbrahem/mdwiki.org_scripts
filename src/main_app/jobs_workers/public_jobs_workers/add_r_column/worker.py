@@ -278,9 +278,9 @@ class AddRColumnWorker(BaseObjectsJobWorker):
     def _newtext_step(self, text) -> str:
         # pages = CatDepth("Category:RTT", sitecode="www", family="mdwiki", depth=0, ns=0)
         template_pages = get_template_pages(
-            "Template:RTT",
-            namespace=0,
+            title="Template:RTT",
             site=self.site,
+            namespace=0,
         )
 
         links = self._get_text_wikilinks(text)
