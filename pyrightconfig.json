@@ -13,6 +13,6 @@
   "venvPath": ".",
   "venv": ".venv",
   "reportMissingTypeStubs": false,
-  "reportGeneralTypeIssues": false,
+  "reportGeneralTypeIssues": true,
   "reportUnknownMemberType": "warning"
 }
