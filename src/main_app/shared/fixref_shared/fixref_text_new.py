@@ -84,7 +84,7 @@ def fix_ref_template(text, returnsummary=False):
     # ---
     for tag in parsed.get_tags(name="ref"):
         # ---
-        content = tag.contents
+        content = tag.contents or ""
         # ---
         if not content.strip():
             continue

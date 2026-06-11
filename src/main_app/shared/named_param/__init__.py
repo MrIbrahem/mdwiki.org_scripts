@@ -34,7 +34,8 @@ def add_param_named(text: str) -> str:
         if name in target_infoboxs:
             # ---
             if temp.has_arg(param):
-                value = temp.get_arg(param).value
+                arg = temp.get_arg(param)
+                value = arg.value if arg else ""
                 logger.info(f"page already had temp {name} with (|{param}={value}). ")
                 return text
             # ---

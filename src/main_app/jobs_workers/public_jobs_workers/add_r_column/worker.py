@@ -12,8 +12,9 @@ import threading
 from datetime import datetime
 from typing import Any, Dict
 
-import mwclient
 import wikitextparser as wtp
+from mwclient.client import Site
+from mwclient.page import Page
 
 from ....api_services import MwClientPage, get_user_site
 from ....api_services.query_api import get_template_pages
@@ -57,7 +58,7 @@ def add_to_tables(
 
 def get_titles_redirects(
     titles: list[str],
-    site: mwclient.Site,
+    site: Site,
 ) -> dict[str, bool]:
     from_to = {}
 
@@ -147,7 +148,7 @@ class AddRColumnWorker(BaseObjectsJobWorker):
 
         # step 1 load page
         self.page = MwClientPage(title, self.site)
-        self._page: mwclient.page.Page = self.page.load_page()
+        self._page: Page = self.page.load_page()
 
         if not self._page:
             self._set_step_status("load_page", "failed", "Failed to load page")

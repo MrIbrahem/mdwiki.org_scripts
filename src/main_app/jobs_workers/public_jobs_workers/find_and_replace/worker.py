@@ -11,7 +11,7 @@ import threading
 from datetime import datetime
 from typing import Any, Dict
 
-import mwclient
+from mwclient.client import Site
 
 from ....api_services import MwClientPage
 from ....api_services.clients import get_user_site
@@ -36,7 +36,7 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
     ) -> None:
         self.job_id = job_id
         self.args = args
-        self.site: mwclient.Site | None = None
+        self.site: Site | None = None
 
         super().__init__(job_id, user, cancel_event)
 

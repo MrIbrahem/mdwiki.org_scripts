@@ -1,5 +1,6 @@
 import logging
 import re
+from typing import Dict, List, Optional
 
 import wikitextparser as wtp
 
@@ -14,18 +15,18 @@ lkj2 = r"(<!--\s*(?:Monoclonal antibody data|External links|Names*|Clinical data
 
 
 class TextProcessor:
-    def __init__(self, text):
+    def __init__(self, text: str):
         # ---
         self.text = text
         self.new_text = text
 
-        self.drugbox_params = {}
-        self.all_drugbox_params = {}
+        self.drugbox_params: Dict[str, str] = {}
+        self.all_drugbox_params: Dict[str, str] = {}
         self.olddrugbox = ""
         self.drugbox_title = ""
         self.newdrugbox = ""
         # ---
-        self.params_done_lowers = []
+        self.params_done_lowers: List[str] = []
         # ---
         self.run()
 
@@ -35,12 +36,12 @@ class TextProcessor:
     def get_old_temp(self):
         return self.olddrugbox
 
-    def get_txt_params(self, text):
+    def get_txt_params(self, text: str):
         # ---
         logger.debug("get_txt_params")
         # ---
         txt = ""
-        params = {}
+        params: Dict[str, str] = {}
         parsed = wtp.parse(text)
         # ---
         for template in parsed.templates:
@@ -143,11 +144,11 @@ class TextProcessor:
         # ---
         combo_titles = {"mab": "Monoclonal antibody data", "vaccine": "Vaccine data", "combo": "Combo data"}
         # ---
-        all_combo = all_params["combo"]["all"]
+        all_combo: List[str] = list(all_params.get("combo", {}).get("all", []))
         # ---
         _type = self.drugbox_params.get("type", "").lower().strip()
         # ---
-        sec_title = "| type = mab / vaccine / combo"
+        sec_title: Optional[str] = "| type = mab / vaccine / combo"
         # ---
         if _type:
             empty = bool(re.match(r"<!--\s*empty\s*-->", _type))
@@ -161,7 +162,7 @@ class TextProcessor:
             # ---
             if _type in combo_titles:
                 # ---
-                params = all_params["combo"][_type]
+                params: List[str] = list(all_params.get("combo", {}).get(_type, []))
                 # ---
                 for p in all_combo:
                     if p not in params:
@@ -185,7 +186,7 @@ class TextProcessor:
         # ---
         logger.debug("get_chemical")
         # ---
-        sec_params = all_params.get("chemical", {})
+        sec_params: List[str] = list(all_params.get("chemical", []))
         # ---
         sec_text = ""
         # ---
@@ -219,7 +220,7 @@ class TextProcessor:
         # ---
         return sec_text, sec_params
 
-    def create_section(self, sectionname):
+    def create_section(self, sectionname: str) -> List[str]:
         # ---
         sections_titles = {
             "first": "",

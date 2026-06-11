@@ -1,12 +1,14 @@
 import logging
 
 import mwclient
+import mwclient.errors
+from mwclient.client import Site
 
 logger = logging.getLogger(__name__)
 
 
 def get_category_members(
-    site: mwclient.Site,
+    site: Site,
     category_title: str,
     namespace: int = 0,
     limit: int | str | None = None,

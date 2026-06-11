@@ -379,8 +379,7 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
 
     Usage::
 
-        client = WikiLoginClient(lang="en", family="wikipedia",
-                                 username="MyBot", password="s3cr3t")
+        client = WikiLoginClient(lang="en", family="wikipedia", username="MyBot", password="s3cr3t")
         data = client.client_request({"action": "query", "titles": "Python"})
     """
 

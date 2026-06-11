@@ -4,6 +4,7 @@
 
 import logging
 import re
+from typing import Any, Optional
 
 import wikitextparser as wtp
 
@@ -84,7 +85,7 @@ def add_resources(new_text, drug_resources, page_identifier_params):
     return new_text, line
 
 
-def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
+def move_resources(text: str, title: str, lkj: str = _lkj_, lkj2: str = _lkj2_) -> str:
     # ---
     logger.debug("move_resources")
     # ---
@@ -93,13 +94,13 @@ def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
     page_identifier_params = {}
     # ---
     drug_resources = ""
-    resources_params = {}
+    # resources_params = {}
     # ---
     # Parse the wikitext
     temps = wtp.parse(text).templates
     # ---
-    infobox_temp = {}
-    resources_temp = False
+    infobox_temp: Optional[wtp.Template] = None
+    resources_temp: Optional[wtp.Template] = None
     # ---
     for temp in temps:
         name = str(temp.normal_name()).lower()
@@ -109,10 +110,10 @@ def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
         if name in ["drug resources"]:
             resources_temp = temp
     # ---
-    if not infobox_temp:
+    if infobox_temp is None:
         return text
     # ---
-    infobox_old = infobox_temp.string
+    infobox_old = str(infobox_temp.string)
     # identifiers_params
     # ---
     # remove identifiers_params from infobox
@@ -120,7 +121,10 @@ def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
     for param in identifiers_params:
         if infobox_temp.has_arg(param):
             # ---
-            value = infobox_temp.get_arg(param).value
+            arg = infobox_temp.get_arg(param)
+            if not arg:
+                continue
+            value = str(arg.value)
             # ---
             fa = re.search(lkj2, value)
             # ---
@@ -135,7 +139,7 @@ def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
             # ---
             infobox_temp.del_arg(param)
     # ---
-    infobox_new = infobox_temp.string
+    infobox_new = str(infobox_temp.string)
     # ---
     # remove identifiers from {{drugbox|
     infobox_new = re.sub(r"<!--\s*Identifiers\s*-->", "", infobox_new, flags=re.IGNORECASE)
@@ -152,13 +156,10 @@ def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
     # ---
     if resources_temp:
         # ---
-        resources_old = resources_temp.string
+        resources_old = str(resources_temp.string)
         # ---
         logger.debug(f"resources_temp = {resources_temp}")
         # ---
-        resources_params = resources_temp.arguments
-        # ---
-        logger.debug(f"resources_params = {resources_params}")
         # ---
         for param, value in page_identifier_params.items():
             value = value.strip()
@@ -167,7 +168,8 @@ def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
                 # ---
                 logger.debug(f"resources_temp.has_arg({param}) = {resources_temp.has_arg(param)}")
                 # ---
-                old_value = resources_temp.get_arg(param).value
+                arg = resources_temp.get_arg(param)
+                old_value = str(arg.value) if arg else ""
                 # ---
                 if value != "" and old_value.strip() == "":
                     resources_temp.set_arg(f" {param} ", value)
@@ -175,7 +177,7 @@ def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
             else:
                 resources_temp.set_arg(f" {param} ", f"{value}\n", preserve_spacing=False)
         # ---
-        resources_new = resources_temp.string
+        resources_new = str(resources_temp.string)
         # resources_new = resources_temp.pformat()
         # ---
         logger.debug(f"resources_new = {resources_new}")
@@ -188,10 +190,12 @@ def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
         # نقل المعرفات لأسفل
         new_text, line = add_resources(new_text, drug_resources, page_identifier_params)
         # ---
-    resources_get_nlm = False
+    resources_get_nlm: Any = False
     # ---
-    if "NLM" in resources_params:
-        resources_get_nlm = resources_params["NLM"]
+    if resources_temp:
+        arg = resources_temp.get_arg("NLM")
+        if arg:
+            resources_get_nlm = arg.value
     # ---
     # إزالة استشهاد خاطىء
     new_text = remove_cite_web(new_text, resources_get_nlm, line, title)

@@ -10,8 +10,8 @@ import logging
 import threading
 from typing import Any, Dict
 
-import mwclient
 import wikitextparser as wtp
+from mwclient.client import Site
 
 from ....api_services import MwClientPage, get_template_pages
 from ....api_services.category import get_category_members
@@ -71,7 +71,7 @@ class AddRttTemplateWorker(BaseObjectsJobWorker):
     ) -> None:
         self.job_id = job_id
         self.args = args
-        self.site: mwclient.Site | None = None
+        self.site: Site | None = None
 
         super().__init__(job_id, user, cancel_event)
 

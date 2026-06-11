@@ -13,7 +13,6 @@ from ..db.services import (
     is_active_coordinator,
     upsert_user_token,
 )
-from ..db.services.users_service import UsersRecord
 from .current_user import CurrentUser
 
 logger = logging.getLogger(__name__)
@@ -34,15 +33,15 @@ class UserService:
 
         try:
             # Ensure user identity row exists
-            user: UsersRecord = get_user_by_username(username)
+            user = get_user_by_username(username)
 
             if not user:
-                user: UsersRecord = create_user(username)
+                user = create_user(username)
 
             if not user:
                 return None
 
-            user_id = user.user_id
+            user_id: int = user.user_id
 
         except Exception as e:
             logger.exception("Failed to upsert or fetch user credentials: %s", e)

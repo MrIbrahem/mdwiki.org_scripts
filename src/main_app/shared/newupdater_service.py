@@ -41,6 +41,8 @@ def newupdater_one_title(
         return UpdaterTextOutcome(kind="skipped", msg="No user")
 
     site = get_user_site(user.to_auth_payload())
+    if site is None:
+        return UpdaterTextOutcome(kind="skipped", msg="Failed to get site")
 
     page = MwClientPage(title, site)
     old_text = page.get_text()

@@ -49,7 +49,9 @@ def setup_logging(
 
     if use_colorlog:
         console_formatter = colorlog.ColoredFormatter(
-            fmt="%(asctime)s - %(name)s - %(log_color)s%(levelname)-s %(reset)s%(message)s",
+            # Standard format: Time - Name - Level - [File:Line] - Message
+            fmt="%(asctime)s - %(name)s - %(log_color)s%(levelname)-s %(reset)s- [%(filename)s:%(lineno)d] - %(message)s",
+            datefmt="%H:%M:%S",
             log_colors={
                 "DEBUG": "cyan",
                 "INFO": "green",
@@ -60,7 +62,8 @@ def setup_logging(
         )
     else:
         console_formatter = logging.Formatter(
-            fmt="%(asctime)s - %(name)s - %(levelname)-s - %(message)s",
+            # Standard format: Time - Name - Level - [File:Line] - Message
+            fmt="%(asctime)s - %(name)s - %(levelname)-s - [%(filename)s:%(lineno)d] - %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
         )
 
@@ -72,12 +75,14 @@ def setup_logging(
     project_logger.debug(f"Setting up logging for '{name}' with level '{level}'")
 
     if log_file:
-        log_file = prepare_log_file(log_file, project_logger)
-        setup_file_handler(project_logger, log_file, numeric_level)
+        log_file_path = prepare_log_file(log_file, project_logger)
+        if log_file_path:
+            setup_file_handler(project_logger, log_file_path, numeric_level)
 
     if error_log_file:
-        error_log_file = prepare_log_file(error_log_file, project_logger)
-        setup_file_handler(project_logger, error_log_file, logging.WARNING)
+        error_log_file_path = prepare_log_file(error_log_file, project_logger)
+        if error_log_file_path:
+            setup_file_handler(project_logger, error_log_file_path, logging.WARNING)
 
 
 def setup_file_handler(project_logger: logging.Logger, log_file: Path, level: int) -> None:
@@ -95,7 +100,7 @@ def setup_file_handler(project_logger: logging.Logger, log_file: Path, level: in
 
 
 def configure_logging(
-    level,
+    level: str,
     use_colorlog: bool = False,
 ) -> None:
     """
@@ -118,8 +123,8 @@ def configure_logging(
             return
 
     # Define paths
-    all_log_path = log_dir / "app.log"
-    error_log_path = log_dir / "errors.log"
+    all_log_path = str(log_dir / "app.log")
+    error_log_path = str(log_dir / "errors.log")
 
     setup_logging(
         level=level,

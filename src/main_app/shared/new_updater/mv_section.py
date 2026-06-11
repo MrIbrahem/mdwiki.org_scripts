@@ -1,25 +1,26 @@
 import logging
 import re
+from typing import Any
 
-import wikitextparser
+import wikitextparser as wtp
 
 logger = logging.getLogger(__name__)
 
 
 class MoveExternalLinksSection:
-    def __init__(self, text):
+    def __init__(self, text: str):
         self.text = text
         # ---
         self.new_text = self.text
         self.text_to_work = self.text
         # ---
-        self.parser = wikitextparser.parse(self.text)
+        self.parser = wtp.parse(self.text)
         # ---
         self.sections = self.parser.get_sections(include_subsections=True)
         # ---
         self.ext_sec = ""
         self.new_ext_sec = ""
-        self.last_sec = ""
+        self.last_sec: Any = None
         # ---
         self.run()
 
@@ -71,12 +72,11 @@ class MoveExternalLinksSection:
         # ---
         logger.debug("get_sects")
         # ---
-        last = ""
+        last = None
         # ---
         for _, s in enumerate(self.sections, start=-1):
             # ---
-            t = s.title
-            _c = s.contents
+            t = str(s.title) if s.title else ""
             # ---
             if t and t.strip().lower() == "external links":
                 self.ext_sec = str(s)
@@ -93,10 +93,14 @@ class MoveExternalLinksSection:
         # ---
         self.last_sec = last
         # ---
-        if self.last_sec.title.lower().strip() == "references":
-            l_c = self.last_sec.contents
+        if not self.last_sec:
+            return
+
+        ls_title = str(self.last_sec.title) if self.last_sec.title else ""
+        if ls_title.lower().strip() == "references":
+            l_c = str(self.last_sec.contents) if self.last_sec.contents else ""
             # ---
-            logger.debug(f"title: {self.last_sec.title}")
+            logger.debug(f"title: {ls_title}")
             logger.debug(f"contents: {l_c}")
             # ---
             mata = re.search(r"^{{reflist(?:[^{]|{[^{]|{{[^{}]+}}|)+}}", l_c, flags=re.IGNORECASE)
@@ -112,7 +116,7 @@ class MoveExternalLinksSection:
                 # logger.debug(f'l_c2 : {l_c2}')
                 # ---
                 g = mata.group()
-                g_to = f"== {self.last_sec.title.strip()} ==\n{g}\n"
+                g_to = f"== {ls_title.strip()} ==\n{g}\n"
                 # ---
                 logger.debug(f"g_to: {g_to}")
                 # ---

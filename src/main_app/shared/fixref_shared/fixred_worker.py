@@ -6,8 +6,8 @@ from __future__ import annotations
 
 import logging
 
-import mwclient
 import wikitextparser as wtp
+from mwclient.client import Site
 
 from ...api_services.query_api import get_page_links, resolve_redirects
 from ..replace_wikilink import replace_wikilink_redirects
@@ -46,7 +46,7 @@ def replace_in_text(text, new_targets):
     return newtext
 
 
-def work_on_text(title: str, text: str, site: mwclient.Site, state: RunState) -> str:
+def work_on_text(title: str, text: str, site: Site, state: RunState) -> str:
     """Fix redirect links in *text* for the given *title*."""
 
     links = get_page_links(title, site)
