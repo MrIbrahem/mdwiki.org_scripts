@@ -33,7 +33,7 @@ from .utils.routes_utils import can_run_bg_jobs, load_auth_payload
 logger = logging.getLogger(__name__)
 
 
-def _can_manage_job(job: Any, user: Any) -> bool:
+def can_manage_job(job: Any, user: Any) -> bool:
     """Check if the current user can manage (cancel/delete) a job.
 
     Returns True if the user is an admin (coordinator) or if the user
@@ -61,7 +61,7 @@ def _cancel_job(job_id: int, job_type: str) -> Response:
         flash("Job not found.", "warning")
         return redirect(url_for("public_jobs.jobs_list", job_type=job_type))
 
-    if not _can_manage_job(job, user):
+    if not can_manage_job(job, user):
         flash("You don't have permission to cancel this job.", "danger")
         return redirect(url_for("public_jobs.job_detail", job_type=job_type, job_id=job_id))
 
@@ -277,8 +277,8 @@ class JobsPublicRoutes:
                 abort(404)
             return _delete_job(job_id, job_type)
 
-        @self.bp.get("/read-job-result-file/<string:result_file>")
-        @self.bp.get("/read-job-result-file/<string:result_file>/<string:job_type>")
+        @self.bp.get("/job-file/<string:result_file>")
+        @self.bp.get("/job-file/<string:result_file>/<string:job_type>")
         def read_job_result_file(result_file: str, job_type: str = "") -> ResponseReturnValue:
             """ """
             result_data = load_job_result(result_file)

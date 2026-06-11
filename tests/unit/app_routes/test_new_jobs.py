@@ -6,13 +6,13 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.main_app.app_routes.public_jobs import _can_manage_job
+from src.main_app.app_routes.public_jobs import can_manage_job
 
 
 class TestCanManageJob:
     def test_no_user(self):
         job = MagicMock()
-        assert _can_manage_job(job, None) is False
+        assert can_manage_job(job, None) is False
 
     def test_admin_user(self):
         job = MagicMock()
@@ -20,7 +20,7 @@ class TestCanManageJob:
         user = MagicMock()
         user.username = "admin_user"
         user.is_active_admin = True
-        assert _can_manage_job(job, user) is True
+        assert can_manage_job(job, user) is True
 
     def test_job_owner(self):
         job = MagicMock()
@@ -28,7 +28,7 @@ class TestCanManageJob:
         user = MagicMock()
         user.username = "owner"
         user.is_active_admin = False
-        assert _can_manage_job(job, user) is True
+        assert can_manage_job(job, user) is True
 
     def test_non_owner_non_admin(self):
         job = MagicMock()
@@ -36,7 +36,7 @@ class TestCanManageJob:
         user = MagicMock()
         user.username = "regular_user"
         user.is_active_admin = False
-        assert _can_manage_job(job, user) is False
+        assert can_manage_job(job, user) is False
 
     def test_job_with_no_username(self):
         job = MagicMock()
@@ -44,7 +44,7 @@ class TestCanManageJob:
         user = MagicMock()
         user.username = "user"
         user.is_active_admin = False
-        assert _can_manage_job(job, user) is False
+        assert can_manage_job(job, user) is False
 
 
 @pytest.mark.usefixtures("app")
