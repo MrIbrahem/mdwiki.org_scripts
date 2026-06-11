@@ -318,3 +318,8 @@ class TextProcessor:
         self.add_section(last_section)
         # ---
         self.newdrugbox += "\n}}"
+
+
+__all__ = [
+    "TextProcessor",
+]

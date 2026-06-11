@@ -64,3 +64,8 @@ def rename_params(temptext):
         new_temptext = new_temptext.replace(old_temp, temp.string)
     # ---
     return new_temptext
+
+
+__all__ = [
+    "rename_params",
+]

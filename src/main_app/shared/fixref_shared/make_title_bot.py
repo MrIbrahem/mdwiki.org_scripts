@@ -8,8 +8,8 @@ from md_core.mdpy.bots import make_title_bot
 
 import logging
 import re
-import urllib.parse
 from typing import Dict
+from urllib.parse import quote
 
 from ...api_services.citation_api import get_citation_title
 
@@ -70,7 +70,7 @@ def make_title(url: str, cache: Dict[str, str] | None = None) -> str:
 
     cache[url] = ""
 
-    url2 = urllib.parse.quote(url)
+    url2 = quote(url)
     url2 = url2.replace("/", "%2F")
     url2 = url2.replace(":", "%3A")
     url2 = url2.replace("&", "%26")
@@ -91,3 +91,8 @@ def make_title(url: str, cache: Dict[str, str] | None = None) -> str:
         logger.info(f"<<green>> make_title_bot: newtitle: ({title})")
 
     return title
+
+
+__all__ = [
+    "make_title",
+]

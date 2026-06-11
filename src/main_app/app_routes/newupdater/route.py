@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-import urllib.parse
+from urllib.parse import unquote
 
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def _parse_title(title: str) -> str:
     title = title.replace("+", " ").replace("_", " ").strip()
-    title = urllib.parse.unquote(title)
+    title = unquote(title)
     title = title.rstrip("/")
     return title
 

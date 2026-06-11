@@ -12,3 +12,4 @@ coverage.xml
 **/work_on_text_result.wiki
 .claude/settings.json
 .claude/settings.local.json
+_works_files/add_all.py

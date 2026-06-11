@@ -61,3 +61,9 @@ def expend_infoboxs(new_text):
         del temp, new_temp
 
     return new_text
+
+
+__all__ = [
+    "expend_new",
+    "expend_infoboxs",
+]

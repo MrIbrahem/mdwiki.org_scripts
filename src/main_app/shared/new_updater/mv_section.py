@@ -128,3 +128,8 @@ class MoveExternalLinksSection:
         self.new_text = re.sub(r"\n\s*\[\[Category", "\n[[Category", self.new_text, flags=re.DOTALL | re.MULTILINE)
         # ---
         return self.new_text
+
+
+__all__ = [
+    "MoveExternalLinksSection",
+]

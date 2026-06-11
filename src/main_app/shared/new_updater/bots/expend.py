@@ -63,3 +63,8 @@ def expend_infoboxs_and_fix(new_text):
     new_text = parseds.string
     # ---
     return new_text
+
+
+__all__ = [
+    "expend_infoboxs_and_fix",
+]

@@ -49,3 +49,9 @@ def portal_remove(text):
     new_text = re.sub(r"\{\{\s*portal bar\s*\|\s*Medicine\s*\}\}", "", new_text, flags=re.IGNORECASE)
     # ---
     return new_text
+
+
+__all__ = [
+    "remove_cite_web",
+    "portal_remove",
+]

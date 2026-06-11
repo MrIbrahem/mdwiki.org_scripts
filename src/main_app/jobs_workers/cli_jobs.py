@@ -27,3 +27,8 @@ def register_cli_jobs(app: Flask) -> None:
             args={"update_all": "false"},
             app=app,
         )
+
+
+__all__ = [
+    "register_cli_jobs",
+]

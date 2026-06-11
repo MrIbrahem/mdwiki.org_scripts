@@ -13,3 +13,8 @@ class JobData:
     start_confirm_message: str | None = None
     job_details_template: Optional[str] = "jobs_templates/_help_templates/shared_details.html"
     ready: bool = False
+
+
+__all__ = [
+    "JobData",
+]

@@ -200,3 +200,9 @@ def move_resources(text, title, lkj=_lkj_, lkj2=_lkj2_):
     new_text = portal_remove(new_text)
     # ---
     return new_text
+
+
+__all__ = [
+    "add_resources",
+    "move_resources",
+]

@@ -111,3 +111,10 @@ def fix_ref_template(text, returnsummary=False):
             newtext = newtext.replace(temp_str, temp_new)
     # ---
     return (newtext, summary) if returnsummary else newtext
+
+
+__all__ = [
+    "change_lay_source",
+    "add_title",
+    "fix_ref_template",
+]
