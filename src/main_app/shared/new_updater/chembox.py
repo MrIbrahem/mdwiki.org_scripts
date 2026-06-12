@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class FixChembox:
-    def __init__(self, text):
+    def __init__(self, text) -> None:
         self.text = text
         self.new_text = text
 
@@ -36,7 +36,7 @@ class FixChembox:
         # ---
         return self.new_text
 
-    def get_params(self):
+    def get_params(self) -> None:
         # ---
         parsed = wtp.parse(self.text)
         # ---
@@ -78,7 +78,7 @@ class FixChembox:
                 # ---
                 self.all_params[x] = v
 
-    def new_temp(self):
+    def new_temp(self) -> None:
         # ---
         for p, value in self.all_params.items():
             param = rename_chem_params.get(p, "") if rename_chem_params.get(p, "") != "" else p

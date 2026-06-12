@@ -15,7 +15,7 @@ lkj2 = r"(<!--\s*(?:Monoclonal antibody data|External links|Names*|Clinical data
 
 
 class TextProcessor:
-    def __init__(self, text: str):
+    def __init__(self, text: str) -> None:
         # ---
         self.text = text
         self.new_text = text
@@ -72,7 +72,7 @@ class TextProcessor:
         # ---
         return txt, params
 
-    def run(self):
+    def run(self) -> None:
         # ---
         logger.debug("run")
         # ---
@@ -124,7 +124,7 @@ class TextProcessor:
         # ---
         return sec_text
 
-    def add_section(self, section):
+    def add_section(self, section) -> None:
         # ---
         section_title, sec_text = section[0].strip(), section[1].strip()
         # ---
@@ -281,7 +281,7 @@ class TextProcessor:
         # ---
         return [section_title, sec_text]
 
-    def new_temp(self):
+    def new_temp(self) -> None:
         # ---
         self.newdrugbox = "{{" + self.drugbox_title
         # ---
