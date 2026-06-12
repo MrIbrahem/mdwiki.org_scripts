@@ -7,6 +7,7 @@ Classes to test: BaseModel
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 from flask.app import Flask
 from sqlalchemy import String, func
@@ -22,6 +23,11 @@ class MockModel(db.Model):
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(nullable=False, server_default=func.current_timestamp())
+
+    def __init__(self, **kwargs: dict[str, Any]) -> None:
+        self.id = kwargs.get("id")
+        self.name = kwargs.get("name")
+        self.created_at = kwargs.get("created_at")
 
 
 def test_base_model_to_dict(app: Flask) -> None:

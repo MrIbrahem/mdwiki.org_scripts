@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import Index, String, UniqueConstraint, func, text
 from sqlalchemy.orm import Mapped, mapped_column
@@ -59,6 +60,18 @@ class JobRecord(db.Model):
         onupdate=func.current_timestamp(),
     )
     is_running: Mapped[int | None] = mapped_column(nullable=True)
+
+    def __init__(self, **kwargs: dict[str, Any]) -> None:
+        self.id = kwargs.get("id")
+        self.job_type = kwargs.get("job_type")
+        self.username = kwargs.get("username")
+        self.status = kwargs.get("status")
+        self.started_at = kwargs.get("started_at")
+        self.completed_at = kwargs.get("completed_at")
+        self.result_file = kwargs.get("result_file")
+        self.created_at = kwargs.get("created_at")
+        self.updated_at = kwargs.get("updated_at")
+        self.is_running = kwargs.get("is_running")
 
 
 __all__ = [

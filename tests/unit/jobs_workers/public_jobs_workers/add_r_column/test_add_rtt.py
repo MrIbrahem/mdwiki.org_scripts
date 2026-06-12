@@ -79,9 +79,9 @@ class TestWorkOneTable:
         cells = parsed.tables[0].cells()
         # Row 1 (data): cells[1] is list of Cells for the first data row
         # cells[1][1] is the 'R' cell
-        assert 'background:#C66A05" | R' in cells[1][1].string # type: ignore
+        assert 'background:#C66A05" | R' in cells[1][1].string  # type: ignore
         # cells[2][1] should NOT be updated (it's for Paracetamol)
-        assert 'background:#C66A05" | R' not in cells[2][1].string# type: ignore
+        assert 'background:#C66A05" | R' not in cells[2][1].string  # type: ignore
 
     def test_work_one_table_with_redirects(self):
         table_text = '{| class="wikitable"\n! #\n! R\n! Title\n|-\n| 1\n| \n| [[Acetaminophen]]\n|}'
