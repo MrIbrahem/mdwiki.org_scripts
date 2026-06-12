@@ -20,7 +20,7 @@ class MoveExternalLinksSection:
         # ---
         self.ext_sec = ""
         self.new_ext_sec = ""
-        self.last_sec: Any = None
+        self.last_sec: Any | None = None
         # ---
         self.run()
 
