@@ -25,9 +25,9 @@ class MockModel(db.Model):
     created_at: Mapped[datetime] = mapped_column(nullable=False, server_default=func.current_timestamp())
 
     def __init__(self, **kwargs: dict[str, Any]) -> None:
-        self.id = kwargs.get("id")
-        self.name = kwargs.get("name")
-        self.created_at = kwargs.get("created_at")
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
 
 def test_base_model_to_dict(app: Flask) -> None:

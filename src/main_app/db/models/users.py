@@ -41,11 +41,9 @@ class UsersRecord(db.Model):
     token: Mapped[UserTokenRecord | None] = relationship(back_populates="user", uselist=False)
 
     def __init__(self, **kwargs: dict[str, Any]) -> None:
-        self.user_id = kwargs.get("user_id")
-        self.username = kwargs.get("username")
-        self.can_run_jobs = kwargs.get("can_run_jobs")
-        self.can_run_bg_jobs = kwargs.get("can_run_bg_jobs")
-        self.created_at = kwargs.get("created_at")
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
 
 class AdminUserRecord(db.Model):
@@ -86,11 +84,9 @@ class AdminUserRecord(db.Model):
     )
 
     def __init__(self, **kwargs: dict[str, Any]) -> None:
-        self.id = kwargs.get("id")
-        self.username = kwargs.get("username")
-        self.is_active = kwargs.get("is_active")
-        self.created_at = kwargs.get("created_at")
-        self.updated_at = kwargs.get("updated_at")
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
 
 class UserTokenRecord(db.Model):
@@ -141,13 +137,9 @@ class UserTokenRecord(db.Model):
         return coerce_bytes(value)
 
     def __init__(self, **kwargs: dict[str, Any]) -> None:
-        self.user_id = kwargs.get("user_id")
-        self.access_token = kwargs.get("access_token")
-        self.access_secret = kwargs.get("access_secret")
-        self.created_at = kwargs.get("created_at")
-        self.updated_at = kwargs.get("updated_at")
-        self.last_used_at = kwargs.get("last_used_at")
-        self.rotated_at = kwargs.get("rotated_at")
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
 
 __all__ = [
