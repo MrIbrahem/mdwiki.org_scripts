@@ -35,9 +35,11 @@ def write_text(text_file, line, w_or_a="w"):
         logger.info(f"write_text error:{e}")
 
 
-def work(title, Find, Replace, nn, log_file):
+def work(title, str_find, str_replace, nn, log_file):
     # ---
     page = MainPage(title, "www", family="mdwiki")
+    # ---
+    title2 = title.replace('"', '\\"')
     # ---
     exists = page.exists()
     # ---
@@ -48,7 +50,7 @@ def work(title, Find, Replace, nn, log_file):
     # ---
     if not text.strip():
         logger.info(f"page:{title} text = ''")
-        line = '"%s":"no changes",\n' % title.replace('"', '\\"')
+        line = f'"{title2}":"no changes",\n'
         # ---
         write_text(log_file, line, w_or_a="a")
         # ---
@@ -57,12 +59,12 @@ def work(title, Find, Replace, nn, log_file):
     new_text = text
     # ---
     if "testtest" in sys.argv:
-        new_text = new_text.replace(Find, Replace, 1)
+        new_text = new_text.replace(str_find, str_replace, 1)
     else:
-        new_text = new_text.replace(Find, Replace)
+        new_text = new_text.replace(str_find, str_replace)
     # ---
     if new_text == text:
-        line = '"%s":"no changes",\n' % title.replace('"', '\\"')
+        line = f'"{title2}":"no changes",\n'
         # ---c
         # ---
         return 0
@@ -73,7 +75,7 @@ def work(title, Find, Replace, nn, log_file):
     # ---
     save_page = page.save(newtext=new_text, summary=sus)
     # ---
-    line = '"%s":%d,\n' % (title.replace('"', '\\"'), 0)
+    line = f'"{title2}":0,\n'
     # ---
     if save_page:
         # ---
@@ -81,7 +83,7 @@ def work(title, Find, Replace, nn, log_file):
         # ---
         if newrevid not in [revid, ""]:
             # ---
-            line = '"%s":%d,\n' % (title.replace('"', '\\"'), newrevid)
+            line = f'"{title2}":{newrevid},\n'
         # ---
         write_text(log_file, line, w_or_a="a")
         # ---

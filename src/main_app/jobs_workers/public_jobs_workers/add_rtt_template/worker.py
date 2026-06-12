@@ -106,9 +106,9 @@ class AddRttTemplateWorker(BaseObjectsJobWorker):
 
         logger.info(f"Job {self.job_id}: len of mdwiki_pages: {len(mdwiki_pages)}")
         template_pages = get_template_pages(
-            "Template:RTT",
-            namespace=0,
+            title="Template:RTT",
             site=self.site,
+            namespace=0,
         )
 
         logger.info(f"Job {self.job_id}: len of template_pages: {len(template_pages)}")

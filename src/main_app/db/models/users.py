@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import ForeignKey, String, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
@@ -31,13 +32,36 @@ class UsersRecord(db.Model):
     user_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
 
-    can_run_jobs: Mapped[bool] = mapped_column(nullable=False, default=False, server_default=text("0"))
-    can_run_bg_jobs: Mapped[bool] = mapped_column(nullable=False, default=False, server_default=text("0"))
+    can_run_jobs: Mapped[int] = mapped_column(nullable=False, server_default=text("0"), default=0)
+    can_run_bg_jobs: Mapped[int] = mapped_column(nullable=False, server_default=text("0"), default=0)
 
     created_at: Mapped[datetime] = mapped_column(nullable=False, server_default=func.current_timestamp())
 
     # One-to-One relationship with UserTokenRecord using the modern SQLAlchemy 2.0 style
     token: Mapped[UserTokenRecord | None] = relationship(back_populates="user", uselist=False)
+
+    def __init__(self, **kwargs: dict[str, Any]) -> None:
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serializes the pure model instance into a dictionary."""
+        data: dict[str, Any] = {}
+        table_keys = [
+            "user_id",
+            "username",
+            "can_run_jobs",
+            "can_run_bg_jobs",
+            "created_at",
+        ]
+        for column in table_keys:
+            value = getattr(self, column)
+            if hasattr(value, "isoformat"):
+                value = value.isoformat()
+            data[column] = value
+
+        return data
 
 
 class AdminUserRecord(db.Model):
@@ -76,6 +100,29 @@ class AdminUserRecord(db.Model):
         server_onupdate=func.current_timestamp(),
         onupdate=func.current_timestamp(),
     )
+
+    def __init__(self, **kwargs: dict[str, Any]) -> None:
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serializes the pure model instance into a dictionary."""
+        data: dict[str, Any] = {}
+        table_keys = [
+            "id",
+            "username",
+            "is_active",
+            "created_at",
+            "updated_at",
+        ]
+        for column in table_keys:
+            value = getattr(self, column)
+            if hasattr(value, "isoformat"):
+                value = value.isoformat()
+            data[column] = value
+
+        return data
 
 
 class UserTokenRecord(db.Model):
@@ -124,6 +171,31 @@ class UserTokenRecord(db.Model):
     @validates("access_token", "access_secret")
     def validate_bytes(self, key, value) -> bytes:
         return coerce_bytes(value)
+
+    def __init__(self, **kwargs: dict[str, Any]) -> None:
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serializes the pure model instance into a dictionary."""
+        data: dict[str, Any] = {}
+        table_keys = [
+            "user_id",
+            # "access_token",
+            # "access_secret",
+            "created_at",
+            "updated_at",
+            "last_used_at",
+            "rotated_at",
+        ]
+        for column in table_keys:
+            value = getattr(self, column)
+            if hasattr(value, "isoformat"):
+                value = value.isoformat()
+            data[column] = value
+
+        return data
 
 
 __all__ = [

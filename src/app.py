@@ -9,7 +9,6 @@ from pathlib import Path
 import logging
 import pymysql
 
-
 sys.path.insert(0, str(Path(__file__).parent))
 pymysql.install_as_MySQLdb()
 

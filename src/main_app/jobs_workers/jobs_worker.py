@@ -109,10 +109,10 @@ def start_job(
         job_type: The type of job to start
         args: Optional arguments to pass to the worker
     """
-    job_data: JobData = jobs_data.get(job_type)
+    job_data: JobData | None = jobs_data.get(job_type)
     target_func = job_data.job_callable if job_data else None
 
-    if not target_func:
+    if not job_data or not target_func:
         raise ValueError(f"Unknown job type: {job_type}")
 
     username = user.get("username") if user else None
@@ -163,10 +163,10 @@ def start_job_cli(
         job_type: The type of job to start
         args: Optional arguments to pass to the worker
     """
-    job_data: JobData = jobs_data.get(job_type)
+    job_data: JobData | None = jobs_data.get(job_type)
     target_func = job_data.job_callable if job_data else None
 
-    if not target_func:
+    if not job_data or not target_func:
         raise ValueError(f"Unknown job type: {job_type}")
 
     username = user.get("username") if user else None

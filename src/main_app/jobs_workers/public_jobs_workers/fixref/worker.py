@@ -170,6 +170,9 @@ class FixRefWorker(BaseObjectsJobWorker):
         titles: str | list[str] | None,
     ) -> list[str]:
         """Resolve which pages to process given the input options."""
+        if not titles:
+            return []
+
         if isinstance(titles, str):
             titles = [t.strip() for t in titles.splitlines() if t.strip()]
 

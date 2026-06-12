@@ -3,7 +3,6 @@
 
 import logging
 
-import tqdm
 import wikitextparser as wtp
 
 logger = logging.getLogger(__name__)
@@ -80,8 +79,8 @@ def work_one_table(table_text, redirects, pages):
     cell_errors = []
 
     data = table.data()
-
-    for n, x in enumerate(tqdm.tqdm(table.cells())):
+    table_cells = table.cells()
+    for n, x in enumerate(table_cells):
         if x[1].is_header or len(x) < 3:
             continue
 
