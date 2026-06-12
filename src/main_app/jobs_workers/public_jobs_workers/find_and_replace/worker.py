@@ -203,7 +203,7 @@ class FindAndReplaceWorker(BaseObjectsJobWorker):
 
         return UpdaterOutcome(kind="error", msg=result.get("error", "Unknown error"))
 
-    def make_new_text(self, str_find, str_replace, text: str):
+    def make_new_text(self, str_find, str_replace, text: str) -> tuple:
         new_text = text.replace(str_find, str_replace)
         summary = "Replace via mdwiki.toolforge.org find-and-replace tool."
         return new_text, summary

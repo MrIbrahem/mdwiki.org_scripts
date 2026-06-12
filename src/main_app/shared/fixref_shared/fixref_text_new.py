@@ -6,7 +6,7 @@ import wikitextparser as wtp
 from .make_title_bot import make_title
 
 
-def change_lay_source(temp):
+def change_lay_source(temp) -> tuple:
     # ---
     temp_name = "cite press release"
     # ---
@@ -74,7 +74,7 @@ def add_title(temp):
     return temp
 
 
-def fix_ref_template(text: str, returnsummary: bool=False):
+def fix_ref_template(text: str, returnsummary: bool = False):
     # ---
     summary = "Normalize references"
     # ---

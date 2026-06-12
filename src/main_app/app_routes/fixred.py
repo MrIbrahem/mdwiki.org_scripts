@@ -21,7 +21,7 @@ def _normalize_title(raw: str) -> str:
 
 @bp_fixred.route("/", methods=["GET"])
 @oauth_required
-def index():
+def index() -> str:
     title = _normalize_title(request.args.get("title", ""))
     save = 1 if request.args.get("save") == "1" else 0
     return render_template(
@@ -35,7 +35,7 @@ def index():
 
 @bp_fixred.route("/", methods=["POST"])
 @oauth_required
-def fixred_post():
+def fixred_post() -> str:
     title = _normalize_title(request.form.get("title", ""))
     save = 1 if request.form.get("save") == "1" else 0
 

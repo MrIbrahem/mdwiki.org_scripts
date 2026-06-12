@@ -12,7 +12,7 @@ from ..lists.expend_lists import main_temps_list
 logger = logging.getLogger(__name__)
 
 
-def expend_new(template, min_len: int=1):
+def expend_new(template, min_len: int = 1):
     # ---
     logger.debug("expend_new")
     # ---

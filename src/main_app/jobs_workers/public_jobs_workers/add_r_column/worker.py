@@ -260,7 +260,7 @@ class AddRColumnWorker(BaseObjectsJobWorker):
         logger.warning(f"Error code: {error_code}, details: {details}")
         return False
 
-    def _get_text_wikilinks(self, text: str):
+    def _get_text_wikilinks(self, text: str) -> list:
         to_f = "== List =="
 
         mdwiki_pages: list[Any] = []

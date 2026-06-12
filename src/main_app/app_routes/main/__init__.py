@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import logging
 
+
+from werkzeug.wrappers.response import Response
+
 from flask import (
     Blueprint,
     render_template,
@@ -20,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 @bp_main.route("/", methods=["GET"])
-def index():
+def index() -> str:
     return render_template(
         "index.html",
         jobs_data_for_all_pages=jobs_data_for_all_pages,
@@ -29,7 +32,7 @@ def index():
 
 
 @bp_main.get("/favicon.ico")
-def favicon():
+def favicon() -> Response:
     return send_from_directory("static", "favicon.ico", mimetype="image/x-icon")
 
 

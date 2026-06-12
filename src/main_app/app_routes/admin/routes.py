@@ -4,6 +4,10 @@ from __future__ import annotations
 
 import logging
 
+
+from typing import Any
+
+
 from flask import (
     Blueprint,
     render_template,
@@ -21,9 +25,8 @@ logger = logging.getLogger(__name__)
 
 bp_admin = Blueprint("admin", __name__, url_prefix="/admin")
 
-
 @bp_admin.app_context_processor
-def inject_sidebar():
+def inject_sidebar() -> dict[str, Any]:
     path_parts = request.path.strip("/").split("/")
     active_route = path_parts[1] if len(path_parts) > 1 else ""
     # logger.debug(f"Injecting sidebar for path='{request.path}', {active_route=}")
@@ -33,7 +36,7 @@ def inject_sidebar():
 
 @bp_admin.get("/")
 @admin_required
-def admin_dashboard():
+def admin_dashboard() -> str:
     return render_template(
         "admins/admin.html",
     )
