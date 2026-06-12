@@ -3,6 +3,7 @@ from .bots.expend_new import expend_infoboxs
 """
 
 import logging
+from typing import Any
 
 import wikitextparser as wtp
 
@@ -20,7 +21,7 @@ def expend_new(template, min_len=1):
     # ---
     template_name = str(template.normal_name()).strip()
     template.name = f"{template_name}\n"
-    to_del: list = []
+    to_del: list[Any] = []
 
     template.rm_dup_args_safe()
 

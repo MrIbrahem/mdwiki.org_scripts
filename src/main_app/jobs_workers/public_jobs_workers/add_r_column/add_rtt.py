@@ -2,6 +2,7 @@
 """ """
 
 import logging
+from typing import Any
 
 import wikitextparser as wtp
 
@@ -70,13 +71,13 @@ def work_one_table(table_text, redirects, pages):
         logger.info("<<red>> no R in table header!")
         return table_text
 
-    already_in: list = []
-    no_add: list = []
+    already_in: list[Any] = []
+    no_add: list[Any] = []
 
-    add_from_redirect: list = []
-    add_done: list = []
+    add_from_redirect: list[Any] = []
+    add_done: list[Any] = []
 
-    cell_errors: list = []
+    cell_errors: list[Any] = []
 
     data = table.data()
     table_cells = table.cells()

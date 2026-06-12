@@ -141,7 +141,7 @@ def _jobs_list(job_type: str) -> str:
     except Exception:  # pragma: no cover - defensive guard
         logger.exception("Unable to load jobs list.")
         flash("Unable to load jobs list.", "danger")
-        jobs: list = []
+        jobs: list[Any] = []
 
     template_data = jobs_data.get(job_type)
 
@@ -214,7 +214,7 @@ class JobsPublicRoutes:
             except Exception:  # pragma: no cover - defensive guard
                 logger.exception("Unable to load jobs list.")
                 flash("Unable to load jobs list.", "danger")
-                jobs: list = []
+                jobs: list[Any] = []
             return render_template("jobs_templates/all_jobs_list.html", jobs=jobs)
 
         # ================================

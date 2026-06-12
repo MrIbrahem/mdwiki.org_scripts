@@ -93,7 +93,7 @@ def main():
     limite = "max"
     starts = ""
     # ---
-    pages: list = []
+    pages: list[Any] = []
     # ---
     namespaces = "0"
     newpages = ""
@@ -176,7 +176,7 @@ def main():
             work(page, num, len(listen))
             # ---
     # ---
-    lista: list = []
+    lista: list[Any] = []
     # ---
     if newpages != "":
         lista = api_new.Get_Newpages(limit=newpages, namespace=namespaces)

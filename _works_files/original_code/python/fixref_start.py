@@ -47,7 +47,7 @@ def work(title):
 def main():
     # ---
     api_new = NewApi("www", family="mdwiki")
-    List: list = []
+    List: list[Any] = []
     # ---
     for arg in sys.argv:
         arg, _, value = arg.partition(":")

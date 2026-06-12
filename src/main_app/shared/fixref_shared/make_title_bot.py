@@ -6,9 +6,9 @@ from md_core.mdpy.bots import make_title_bot
 # ---
 """
 
+import functools
 import logging
 import re
-from typing import Dict
 from urllib.parse import quote
 
 from ...api_services.citation_api import get_citation_title
@@ -57,18 +57,13 @@ globalbadtitles = r"""
 """
 
 
-def make_title(url: str, cache: Dict[str, str] | None = None) -> str:
-    if cache is None:
-        cache: dict = {}
+@functools.lru_cache(maxsize=10000)
+def make_title(url: str) -> str:
+
     url = url.strip()
     if not url:
         logger.info("<<red>> url = '' return False")
         return ""
-
-    if url in cache:
-        return cache[url]
-
-    cache[url] = ""
 
     url2 = quote(url)
     url2 = url2.replace("/", "%2F")
@@ -84,8 +79,6 @@ def make_title(url: str, cache: Dict[str, str] | None = None) -> str:
     titleBlackList = re.compile(globalbadtitles, re.I | re.S | re.X)
     if titleBlackList.match(title):
         logger.error(f"<<red>> WARNING<<default>> {url} : Blacklisted title ({title})")
-
-    cache[url] = title
 
     if title:
         logger.info(f"<<green>> make_title_bot: newtitle: ({title})")

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from flask import (
     Blueprint,
@@ -28,7 +29,7 @@ def _coordinators_dashboard() -> str:
     except Exception:  # pragma: no cover - defensive guard
         logger.exception("Unable to list coordinators.")
         flash("Unable to list coordinators.", "danger")
-        coordinators: list = []
+        coordinators: list[Any] = []
 
     total = len(coordinators)
     total_active = sum(1 for coord in coordinators if coord.is_active)

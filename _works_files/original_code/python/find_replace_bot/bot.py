@@ -23,7 +23,7 @@ def get_jobs():
     # list of subdirs in work_dir if subdir/done.txt not exists
 
     dirs = os.listdir(work_dir)
-    jobs: list = []
+    jobs: list[Any] = []
     done = 0
     for nn in dirs:
         if not os.path.isdir(f"{work_dir}/{nn}"):

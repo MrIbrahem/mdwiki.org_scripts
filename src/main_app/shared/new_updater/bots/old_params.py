@@ -3,6 +3,7 @@ from .bots.old_params import rename_params
 """
 
 import logging
+from typing import Any
 
 import wikitextparser as wtp
 
@@ -31,7 +32,7 @@ def rename_params(temptext):
     # ---
     temps_okay = ["drugbox", "infobox drug"]
     # ---
-    _temps_: list = []
+    _temps_: list[Any] = []
     # ---
     for temp in temps:
         # ---

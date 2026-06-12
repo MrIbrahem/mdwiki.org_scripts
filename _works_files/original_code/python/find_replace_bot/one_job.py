@@ -112,7 +112,7 @@ def do_one_job(nn):
     # ---
     info_file = f"{work_dir}/{nn}/info.json"
     # ---
-    nn_info: dict = {}
+    nn_info: dict[str, Any] = {}
     # ---
     if Path(info_file).exists():
         try:

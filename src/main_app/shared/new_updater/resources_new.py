@@ -91,7 +91,7 @@ def move_resources(text: str, title: str, lkj: str = _lkj_, lkj2: str = _lkj2_) 
     # ---
     new_text = text
     # ---
-    page_identifier_params: dict = {}
+    page_identifier_params: dict[str, Any] = {}
     # ---
     drug_resources = ""
     # resources_params = {}

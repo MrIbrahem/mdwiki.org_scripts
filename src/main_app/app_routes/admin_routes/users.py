@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from flask import (
     Blueprint,
@@ -27,7 +28,7 @@ def _dashboard() -> str:
     except Exception as e:  # pragma: no cover - defensive guard
         logger.error(f"Error listing users: {e}")
         flash("Error listing users", "error")
-        users: list = []
+        users: list[Any] = []
 
     total = len(users)
 

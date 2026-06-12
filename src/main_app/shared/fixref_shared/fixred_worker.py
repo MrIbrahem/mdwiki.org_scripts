@@ -5,6 +5,7 @@ Service: fix redirects in page text on mdwiki.
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 import wikitextparser as wtp
 from mwclient.client import Site
@@ -60,7 +61,7 @@ def work_on_text(title: str, text: str, site: Site, state: RunState) -> str:
 
     data = resolve_redirects(titles=link_titles, site=site)
 
-    new_targets: dict = {}
+    new_targets: dict[str, Any] = {}
     for _, info in links["links"].items():
         oldlink = info["title"]
         oldlink2 = data.get("normalized", {}).get(oldlink, oldlink)

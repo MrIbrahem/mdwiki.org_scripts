@@ -60,7 +60,7 @@ def get_titles_redirects(
     titles: list[str],
     site: Site,
 ) -> dict[str, bool]:
-    from_to: dict = {}
+    from_to: dict[str, Any] = {}
 
     params = {
         # "action": "query",
@@ -263,7 +263,7 @@ class AddRColumnWorker(BaseObjectsJobWorker):
     def _get_text_wikilinks(self, text):
         to_f = "== List =="
 
-        mdwiki_pages: list = []
+        mdwiki_pages: list[Any] = []
 
         if text.find(to_f) != -1:
             text = text.split(to_f)[1]

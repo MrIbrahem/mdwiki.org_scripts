@@ -205,7 +205,9 @@ reportUndefinedVariable = "warning"
 
 reportReturnType = false
 reportArgumentType = false
-reportAttributeAccessIssue = false
-reportAssignmentType = false
-reportOptionalMemberAccess = false
+reportAttributeAccessIssue = "warning"
+reportAssignmentType = "warning"
+reportOptionalMemberAccess = "warning"
 reportCallIssue = "warning"
+reportOptionalSubscript = "warning"
+

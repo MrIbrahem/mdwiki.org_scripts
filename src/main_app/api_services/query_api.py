@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from mwclient.client import Site
 
@@ -41,7 +42,7 @@ def is_pages_exists(
     titles: list[str],
     site: Site,
 ) -> dict[str, bool]:
-    result: dict = {}
+    result: dict[str, Any] = {}
 
     for i in range(0, len(titles), 50):
         group = titles[i : i + 50]
@@ -66,8 +67,8 @@ def resolve_redirects(
     titles: list[str],
     site: Site,
 ) -> dict[str, bool]:
-    normalized: dict = {}
-    from_to: dict = {}
+    normalized: dict[str, Any] = {}
+    from_to: dict[str, Any] = {}
 
     params = {
         "prop": "redirects",
@@ -195,7 +196,7 @@ def get_page_links(
         "converttitles": 1,
     }
     data = site.get("query", **params)
-    out: dict = {"links": {}, "normalized": [], "redirects": []}
+    out: dict[str, Any] = {"links": {}, "normalized": [], "redirects": []}
     if not data:
         return out
 
