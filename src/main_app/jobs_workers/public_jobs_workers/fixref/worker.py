@@ -63,7 +63,7 @@ class FixRefWorker(BaseObjectsJobWorker):
 
         self._save_progress()
 
-        pages = []
+        pages: list = []
 
         if titles_raw:
             pages = self._resolve_targets(titles_raw)

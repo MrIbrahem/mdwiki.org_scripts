@@ -27,7 +27,7 @@ def add_param_named(text: str) -> str:
         "eponym",
     ]
     # ---
-    false_params = []
+    false_params: list = []
 
     for temp in parsed.templates:
         name = str(temp.normal_name()).strip().lower().replace("_", " ")

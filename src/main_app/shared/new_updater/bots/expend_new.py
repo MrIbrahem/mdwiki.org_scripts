@@ -20,7 +20,7 @@ def expend_new(template, min_len=1):
     # ---
     template_name = str(template.normal_name()).strip()
     template.name = f"{template_name}\n"
-    to_del = []
+    to_del: list = []
 
     template.rm_dup_args_safe()
 

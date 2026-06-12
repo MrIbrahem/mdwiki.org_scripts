@@ -60,7 +60,7 @@ def work_on_text(title: str, text: str, site: Site, state: RunState) -> str:
 
     data = resolve_redirects(titles=link_titles, site=site)
 
-    new_targets = {}
+    new_targets: dict = {}
     for _, info in links["links"].items():
         oldlink = info["title"]
         oldlink2 = data.get("normalized", {}).get(oldlink, oldlink)

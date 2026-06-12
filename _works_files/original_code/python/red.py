@@ -67,7 +67,7 @@ def get_red(title):
         "rdlimit": "max",
     }
     # ---
-    lista = []
+    lista: list = []
     # ---
     Session = _load_session()
     # ---
@@ -174,7 +174,7 @@ def main():
     limite = "max"
     starts = ""
     # ---
-    pages = []
+    pages: list = []
     # ---
     namespaces = "0"
     newpages = ""
@@ -258,7 +258,7 @@ def main():
             work(page, num, len(listen))
             # ---
     # ---
-    list = []
+    list: list = []
     # ---
     if newpages != "":
         list = api_new.Get_Newpages(limit=newpages, namespace=namespaces)

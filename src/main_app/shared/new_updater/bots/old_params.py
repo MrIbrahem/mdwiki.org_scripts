@@ -31,7 +31,7 @@ def rename_params(temptext):
     # ---
     temps_okay = ["drugbox", "infobox drug"]
     # ---
-    _temps_ = []
+    _temps_: list = []
     # ---
     for temp in temps:
         # ---

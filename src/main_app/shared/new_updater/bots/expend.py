@@ -31,7 +31,7 @@ def expend_infoboxs_and_fix(new_text):
                 # ---
                 new_temp = "{{" + name + "\n"
                 # ---
-                params = {}
+                params: dict = {}
                 # ---
                 for param in template.arguments:
                     na = str(param.name).strip()

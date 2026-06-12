@@ -33,7 +33,7 @@ class TestMakeTitle:
     @patch("src.main_app.shared.fixref_shared.make_title_bot.get_citation_title")
     def test_caching(self, mock_get_citation):
         mock_get_citation.return_value = "Cached Title"
-        cache = {}
+        cache: dict = {}
         result1 = make_title("https://example.com/cached", cache=cache)
         result2 = make_title("https://example.com/cached", cache=cache)
         assert result1 == "Cached Title"

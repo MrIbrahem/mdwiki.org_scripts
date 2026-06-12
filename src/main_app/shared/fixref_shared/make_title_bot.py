@@ -59,7 +59,7 @@ globalbadtitles = r"""
 
 def make_title(url: str, cache: Dict[str, str] | None = None) -> str:
     if cache is None:
-        cache = {}
+        cache: dict = {}
     url = url.strip()
     if not url:
         logger.info("<<red>> url = '' return False")

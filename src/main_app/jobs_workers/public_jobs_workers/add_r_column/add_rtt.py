@@ -70,13 +70,13 @@ def work_one_table(table_text, redirects, pages):
         logger.info("<<red>> no R in table header!")
         return table_text
 
-    already_in = []
-    no_add = []
+    already_in: list = []
+    no_add: list = []
 
-    add_from_redirect = []
-    add_done = []
+    add_from_redirect: list = []
+    add_done: list = []
 
-    cell_errors = []
+    cell_errors: list = []
 
     data = table.data()
     table_cells = table.cells()
