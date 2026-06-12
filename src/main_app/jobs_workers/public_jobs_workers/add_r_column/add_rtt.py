@@ -18,7 +18,7 @@ def fix_title(title):
     return title
 
 
-def header_has_r(text, table=False):
+def header_has_r(text, table=False) -> bool:
     if not table:
         parsed = wtp.parse(text)
         table = parsed.tables[0]
