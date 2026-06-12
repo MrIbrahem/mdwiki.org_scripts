@@ -19,7 +19,7 @@ _lkj_ = r"<!--\s*(Monoclonal antibody data|External links|Names*|Clinical data|L
 _lkj2_ = r"(<!--\s*(?:Monoclonal antibody data|External links|Names*|Clinical data|Legal data|Legal status|Pharmacokinetic data|Chemical and physical data|Definition and medical uses|Chemical data|Chemical and physical data|index_label\s*=\s*Free Base|\w+ \w+ data|\w+ \w+ \w+ data|\w+ data|\w+ status|Identifiers)\s*-->)"
 
 
-def add_resources(new_text, drug_resources, page_identifier_params):
+def add_resources(new_text: str, drug_resources: str, page_identifier_params: dict[str, str]) -> tuple[str, str]:
     # ---
     logger.debug("add_resources")
     # ---
@@ -91,7 +91,7 @@ def move_resources(text: str, title: str, lkj: str = _lkj_, lkj2: str = _lkj2_) 
     # ---
     new_text = text
     # ---
-    page_identifier_params = {}
+    page_identifier_params: dict[str, str] = {}
     # ---
     drug_resources = ""
     # resources_params = {}

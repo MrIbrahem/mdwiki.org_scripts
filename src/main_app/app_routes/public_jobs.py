@@ -141,7 +141,7 @@ def _jobs_list(job_type: str) -> str:
     except Exception:  # pragma: no cover - defensive guard
         logger.exception("Unable to load jobs list.")
         flash("Unable to load jobs list.", "danger")
-        jobs = []
+        jobs: list[Any] = []
 
     template_data = jobs_data.get(job_type)
 
@@ -198,11 +198,11 @@ def _job_detail(job_id: int, job_type: str, expand_all: bool = False) -> Respons
 class JobsPublicRoutes:
     """Jobs management routes."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.bp = Blueprint("public_jobs", __name__, url_prefix="/public_jobs")
         self._setup_routes()
 
-    def _setup_routes(self):
+    def _setup_routes(self) -> None:
         # ================================
         # All Jobs List route
         # ================================
@@ -214,7 +214,7 @@ class JobsPublicRoutes:
             except Exception:  # pragma: no cover - defensive guard
                 logger.exception("Unable to load jobs list.")
                 flash("Unable to load jobs list.", "danger")
-                jobs = []
+                jobs: list[Any] = []
             return render_template("jobs_templates/all_jobs_list.html", jobs=jobs)
 
         # ================================

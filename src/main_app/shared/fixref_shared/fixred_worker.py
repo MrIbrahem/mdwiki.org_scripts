@@ -37,7 +37,7 @@ def _replace_links(
     return str(parsed)
 
 
-def replace_in_text(text, new_targets):
+def replace_in_text(text: str, new_targets: dict[str, str]) -> str:
     newtext = text
 
     for oldlink, target in new_targets.items():
@@ -60,7 +60,7 @@ def work_on_text(title: str, text: str, site: Site, state: RunState) -> str:
 
     data = resolve_redirects(titles=link_titles, site=site)
 
-    new_targets = {}
+    new_targets: dict[str, str] = {}
     for _, info in links["links"].items():
         oldlink = info["title"]
         oldlink2 = data.get("normalized", {}).get(oldlink, oldlink)

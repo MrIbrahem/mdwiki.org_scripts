@@ -1,6 +1,5 @@
 import logging
 import re
-from typing import Dict, List, Optional
 
 import wikitextparser as wtp
 
@@ -15,33 +14,33 @@ lkj2 = r"(<!--\s*(?:Monoclonal antibody data|External links|Names*|Clinical data
 
 
 class TextProcessor:
-    def __init__(self, text: str):
+    def __init__(self, text: str) -> None:
         # ---
         self.text = text
         self.new_text = text
 
-        self.drugbox_params: Dict[str, str] = {}
-        self.all_drugbox_params: Dict[str, str] = {}
+        self.drugbox_params: dict[str, str] = {}
+        self.all_drugbox_params: dict[str, str] = {}
         self.olddrugbox = ""
         self.drugbox_title = ""
         self.newdrugbox = ""
         # ---
-        self.params_done_lowers: List[str] = []
+        self.params_done_lowers: list[str] = []
         # ---
         self.run()
 
-    def get_new_temp(self):
+    def get_new_temp(self) -> str:
         return self.newdrugbox
 
-    def get_old_temp(self):
+    def get_old_temp(self) -> str:
         return self.olddrugbox
 
-    def get_txt_params(self, text: str):
+    def get_txt_params(self, text: str) -> tuple[str, dict]:
         # ---
         logger.debug("get_txt_params")
         # ---
         txt = ""
-        params: Dict[str, str] = {}
+        params: dict[str, str] = {}
         parsed = wtp.parse(text)
         # ---
         for template in parsed.templates:
@@ -72,7 +71,7 @@ class TextProcessor:
         # ---
         return txt, params
 
-    def run(self):
+    def run(self) -> None:
         # ---
         logger.debug("run")
         # ---
@@ -91,7 +90,7 @@ class TextProcessor:
         # create self.newdrugbox
         self.new_temp()
 
-    def add_section_title_to_sec_text2(self, section_title, sec_text):
+    def add_section_title_to_sec_text2(self, section_title, sec_text) -> str:
         # ---
         if self.newdrugbox.strip().endswith(section_title) or self.newdrugbox.find(section_title) != -1:
             logger.debug(f"({section_title}) already in self.newdrugbox \n")
@@ -100,7 +99,7 @@ class TextProcessor:
         # ---
         return sec_text
 
-    def add_section_title_to_sec_text(self, section_title, sec_text):
+    def add_section_title_to_sec_text(self, section_title, sec_text) -> str:
         # ---
         if self.newdrugbox.strip().endswith(section_title):
             # ---
@@ -124,7 +123,7 @@ class TextProcessor:
         # ---
         return sec_text
 
-    def add_section(self, section):
+    def add_section(self, section) -> None:
         # ---
         section_title, sec_text = section[0].strip(), section[1].strip()
         # ---
@@ -138,17 +137,17 @@ class TextProcessor:
         # ---
         self.newdrugbox += s_text
 
-    def get_combo(self):
+    def get_combo(self) -> tuple[str, list]:
         # ---
         logger.debug("get_combo")
         # ---
         combo_titles = {"mab": "Monoclonal antibody data", "vaccine": "Vaccine data", "combo": "Combo data"}
         # ---
-        all_combo: List[str] = list(all_params.get("combo", {}).get("all", []))
+        all_combo: list[str] = list(all_params.get("combo", {}).get("all", []))
         # ---
         _type = self.drugbox_params.get("type", "").lower().strip()
         # ---
-        sec_title: Optional[str] = "| type = mab / vaccine / combo"
+        sec_title: str | None = "| type = mab / vaccine / combo"
         # ---
         if _type:
             empty = bool(re.match(r"<!--\s*empty\s*-->", _type))
@@ -162,7 +161,7 @@ class TextProcessor:
             # ---
             if _type in combo_titles:
                 # ---
-                params: List[str] = list(all_params.get("combo", {}).get(_type, []))
+                params: list[str] = list(all_params.get("combo", {}).get(_type, []))
                 # ---
                 for p in all_combo:
                     if p not in params:
@@ -182,11 +181,11 @@ class TextProcessor:
         # ---
         return sec_title, sec_params
 
-    def get_chemical(self):
+    def get_chemical(self) -> tuple:
         # ---
         logger.debug("get_chemical")
         # ---
-        sec_params: List[str] = list(all_params.get("chemical", []))
+        sec_params: list[str] = list(all_params.get("chemical", []))
         # ---
         sec_text = ""
         # ---
@@ -220,7 +219,7 @@ class TextProcessor:
         # ---
         return sec_text, sec_params
 
-    def create_section(self, sectionname: str) -> List[str]:
+    def create_section(self, sectionname: str) -> list[str]:
         # ---
         sections_titles = {
             "first": "",
@@ -281,7 +280,7 @@ class TextProcessor:
         # ---
         return [section_title, sec_text]
 
-    def new_temp(self):
+    def new_temp(self) -> None:
         # ---
         self.newdrugbox = "{{" + self.drugbox_title
         # ---

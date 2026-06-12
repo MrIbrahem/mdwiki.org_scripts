@@ -5,7 +5,6 @@ from __future__ import annotations
 import threading
 from unittest.mock import MagicMock, patch
 
-import pytest
 from flask import Flask
 
 from src.main_app.jobs_workers.jobs_worker import (

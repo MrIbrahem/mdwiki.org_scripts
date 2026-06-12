@@ -147,7 +147,7 @@ class FixRedAllWorker(BaseObjectsJobWorker):
 
         return UpdaterOutcome(kind="error", msg=result.get("error", "Unknown error"))
 
-    def make_new_text(self, title, state, text):
+    def make_new_text(self, title: str, state: RunState, text: str) -> tuple[str, str]:
         new_text = work_on_text(title, text, self.site, state)
         summary = "Fix redirects"
         return new_text, summary

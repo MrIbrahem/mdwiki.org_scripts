@@ -11,7 +11,7 @@ from ..lists.expend_lists import main_temps_list
 logger = logging.getLogger(__name__)
 
 
-def expend_new(template, min_len=1):
+def expend_new(template: wtp.Template | None, min_len: int = 1) -> wtp.Template | None:
     # ---
     logger.debug("expend_new")
     # ---
@@ -20,7 +20,6 @@ def expend_new(template, min_len=1):
     # ---
     template_name = str(template.normal_name()).strip()
     template.name = f"{template_name}\n"
-    to_del = []
 
     template.rm_dup_args_safe()
 
@@ -31,13 +30,10 @@ def expend_new(template, min_len=1):
         arg.value = f"{value}\n"
         arg.name = arg.name.strip().ljust(16)
 
-    for aa in to_del:
-        template.del_arg(aa)
-
     return template
 
 
-def expend_infoboxs(new_text):
+def expend_infoboxs(new_text: str) -> str:
     # ---
     logger.debug("expend_infoboxs")
     # ---

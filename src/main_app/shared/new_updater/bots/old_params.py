@@ -9,7 +9,7 @@ import wikitextparser as wtp
 logger = logging.getLogger(__name__)
 
 
-def rename_params(temptext):
+def rename_params(temptext: str) -> str:
     # ---
     logger.debug("rename_params")
     # ---
@@ -31,7 +31,7 @@ def rename_params(temptext):
     # ---
     temps_okay = ["drugbox", "infobox drug"]
     # ---
-    _temps_ = []
+    _temps_: list[wtp.Template] = []
     # ---
     for temp in temps:
         # ---

@@ -157,7 +157,6 @@ warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = false
 ignore_missing_imports = true
-line-length = 120
 
 [tool.pylint.messages_control]
 max-line-length = 120
@@ -205,7 +204,9 @@ reportUndefinedVariable = "warning"
 
 reportReturnType = false
 reportArgumentType = false
-reportAttributeAccessIssue = false
-reportAssignmentType = false
-reportOptionalMemberAccess = false
+reportAttributeAccessIssue = "warning"
+reportAssignmentType = "warning"
+reportOptionalMemberAccess = "warning"
 reportCallIssue = "warning"
+reportOptionalSubscript = "warning"
+

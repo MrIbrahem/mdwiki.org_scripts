@@ -2,6 +2,7 @@
 """ """
 
 import logging
+from typing import Any
 
 import wikitextparser as wtp
 
@@ -17,7 +18,7 @@ def fix_title(title):
     return title
 
 
-def header_has_r(text, table=False):
+def header_has_r(text: str, table: bool = False) -> bool:
     if not table:
         parsed = wtp.parse(text)
         table = parsed.tables[0]
@@ -34,7 +35,7 @@ def header_has_r(text, table=False):
     return False
 
 
-def add_header_r(text, table=False):
+def add_header_r(text: str, table: bool = False) -> str:
     if not table:
         parsed = wtp.parse(text)
         table = parsed.tables[0]
@@ -70,13 +71,13 @@ def work_one_table(table_text, redirects, pages):
         logger.info("<<red>> no R in table header!")
         return table_text
 
-    already_in = []
-    no_add = []
+    already_in: list[Any] = []
+    no_add: list[Any] = []
 
-    add_from_redirect = []
-    add_done = []
+    add_from_redirect: list[Any] = []
+    add_done: list[Any] = []
 
-    cell_errors = []
+    cell_errors: list[Any] = []
 
     data = table.data()
     table_cells = table.cells()

@@ -5,7 +5,7 @@ from .bots.Remove import remove_cite_web, portal_remove
 import re
 
 
-def remove_cite_web(text, resources_get_nlm, line, title):
+def remove_cite_web(text: str, resources_get_nlm: str, line: str, title: str) -> str:
     new_text = text
     External2 = re.search(r"(\=\=\s*External links\s*\=\=)", new_text)
     # ---
@@ -43,7 +43,7 @@ def remove_cite_web(text, resources_get_nlm, line, title):
     return new_text
 
 
-def portal_remove(text):
+def portal_remove(text: str) -> str:
     # par = "{{portal bar|Medicine}}"
     new_text = text
     new_text = re.sub(r"\{\{\s*portal bar\s*\|\s*Medicine\s*\}\}", "", new_text, flags=re.IGNORECASE)

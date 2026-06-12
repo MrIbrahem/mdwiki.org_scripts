@@ -83,6 +83,19 @@ pyright src/              # Type check
 
 Line length is 120 across all tools.
 
+### Auto Typing
+
+```bash
+mypy --install-types src
+autotyping --none-return --scalar-return src
+autotyping --bool-param --int-param src
+autotyping --guess-common-names src
+autotyping --annotate-magics src
+autotyping --annotate-imprecise-magics src
+autotyping --safe src
+autotyping --aggressive src # aggressive
+```
+
 ## Deployment
 
 The application is deployed on Wikimedia Toolforge using Kubernetes. Deployment details and templates are located in the `toolforge_tool/` directory.

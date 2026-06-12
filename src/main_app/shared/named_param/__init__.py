@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 import wikitextparser as wtp
 
@@ -27,7 +28,7 @@ def add_param_named(text: str) -> str:
         "eponym",
     ]
     # ---
-    false_params = []
+    false_params: list[Any] = list(_false_params_old)
 
     for temp in parsed.templates:
         name = str(temp.normal_name()).strip().lower().replace("_", " ")

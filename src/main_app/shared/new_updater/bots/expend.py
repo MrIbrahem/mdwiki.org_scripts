@@ -3,6 +3,7 @@ from .bots.expend import expend_infoboxs_and_fix
 """
 
 import logging
+from typing import Any
 
 import wikitextparser as wtp
 
@@ -31,7 +32,7 @@ def expend_infoboxs_and_fix(new_text):
                 # ---
                 new_temp = "{{" + name + "\n"
                 # ---
-                params = {}
+                params: dict[str, Any] = {}
                 # ---
                 for param in template.arguments:
                     na = str(param.name).strip()

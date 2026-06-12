@@ -8,6 +8,7 @@ python3 core8/pwb.py md_core/mdpy/find_replace_bot/bot
 import logging
 import os
 import sys
+from typing import Any
 
 from one_job import do_one_job
 
@@ -23,7 +24,7 @@ def get_jobs():
     # list of subdirs in work_dir if subdir/done.txt not exists
 
     dirs = os.listdir(work_dir)
-    jobs = []
+    jobs: list[Any] = []
     done = 0
     for nn in dirs:
         if not os.path.isdir(f"{work_dir}/{nn}"):

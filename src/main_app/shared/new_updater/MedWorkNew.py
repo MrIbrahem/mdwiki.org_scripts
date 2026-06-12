@@ -59,7 +59,7 @@ def _drugbox_work(new_text):
     return new_text
 
 
-def _work_on_text_md(title, text):
+def _work_on_text_md(title: str, text: str) -> str:
     # ---
     logger.debug("_work_on_text_md")
     # ---
@@ -80,7 +80,7 @@ def _work_on_text_md(title, text):
     return new_text
 
 
-def med_updater_one(title, text):
+def med_updater_one(title: str, text: str) -> str:
     # ---
     newtext = text
     # ---

@@ -96,7 +96,7 @@ def load_nonredirects() -> list[str]:
 def find_redirects(links):
     # ---
     # titles = [ x for x in links if links[x].get('ns','') == '0' ]
-    titles = []
+    titles: list[Any] = []
     for x in links:
         if x not in from_to:
             ns = links[x].get("ns", "")
@@ -252,7 +252,7 @@ def treat_page(title):
 
 def main():
     # ---
-    ttab = []
+    ttab: list[Any] = []
     # ---
     # python3 fixred.py
     # python  fixred.py -page:WikiProjectMed:List ask

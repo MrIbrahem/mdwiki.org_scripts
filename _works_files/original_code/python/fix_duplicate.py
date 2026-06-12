@@ -107,7 +107,7 @@ def resolve_redirect_chains(redirects: list[dict]) -> list[dict]:
     redirect_map = {item["from"]: item["to"] for item in redirects if "from" in item and "to" in item}
     all_targets = set(redirect_map.values())
 
-    resolved_dict = []
+    resolved_dict: list[Any] = []
 
     # Process only the root starting pages
     for start_page in redirect_map.keys():

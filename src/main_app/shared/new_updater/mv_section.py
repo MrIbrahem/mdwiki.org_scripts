@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class MoveExternalLinksSection:
-    def __init__(self, text: str):
+    def __init__(self, text: str) -> None:
         self.text = text
         # ---
         self.new_text = self.text
@@ -24,7 +24,7 @@ class MoveExternalLinksSection:
         # ---
         self.run()
 
-    def run(self):
+    def run(self) -> None:
         # ---
         logger.debug("run")
         # ---
@@ -38,7 +38,7 @@ class MoveExternalLinksSection:
         # ---
         self.add_ext_section()
 
-    def add_ext_section(self):
+    def add_ext_section(self) -> None:
         # ---
         logger.debug("add_ext_section")
         # ---
@@ -68,7 +68,7 @@ class MoveExternalLinksSection:
         # ---
         self.new_text = newtext
 
-    def get_sects(self):
+    def get_sects(self) -> None:
         # ---
         logger.debug("get_sects")
         # ---
@@ -125,7 +125,7 @@ class MoveExternalLinksSection:
                 # ---
                 self.text_to_work = self.text_to_work.replace(str(self.last_sec).strip(), l_c2.strip())
 
-    def make_new_txt(self):
+    def make_new_txt(self) -> str:
         # ---
         logger.debug("make_new_txt")
         # ---
