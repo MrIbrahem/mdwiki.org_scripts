@@ -8,8 +8,18 @@ from .find_and_replace.worker import find_and_replace_worker_entry
 from .fixred_all.worker import fixred_all_worker_entry
 from .fixref.worker import fixref_worker_entry
 from .import_history.worker import import_history_worker_entry
+from .newupdater_all.worker import newupdater_all_worker_entry
 
 jobs_data_for_all_pages = {
+    "newupdater_all": JobData(
+        job_type="newupdater_all",
+        job_name="Medical content updater (Category:RTT)",
+        job_list_template="jobs_templates/public/newupdater_all/list.html",
+        job_callable=newupdater_all_worker_entry,
+        job_args=[],
+        start_confirm_message="Start medical content updater for all Category:RTT pages?",
+        ready=True,
+    ),
     "add_unlinkedwikibase": JobData(
         job_type="add_unlinkedwikibase",
         job_name="Add unlinkedwikibase tag",
