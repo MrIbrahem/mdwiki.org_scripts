@@ -1,0 +1,172 @@
+"""
+Worker module for newupdater_all.
+
+Runs Medical content updater on all pages in Category:RTT.
+"""
+
+from __future__ import annotations
+
+import logging
+import threading
+from typing import Any, Dict
+
+from mwclient.client import Site
+
+from ....api_services import MwClientPage
+from ....api_services.category import get_category_members
+from ....api_services.clients import get_user_site
+from ....jobs_workers.base_worker_object import BaseObjectsJobWorker
+from ....shared.named_param import add_param_named
+from ....shared.new_updater import med_updater_one
+from ...shared_objects import SharedworkerObject, UpdaterOutcome
+
+logger = logging.getLogger(__name__)
+
+
+class NewUpdaterAllWorker(BaseObjectsJobWorker):
+    """Run Medical content updater on all Category:RTT pages."""
+
+    def __init__(
+        self,
+        job_id: int,
+        args: Any,
+        user: dict[str, Any] | None,
+        cancel_event: threading.Event | None = None,
+    ) -> None:
+        self.args = args
+        self.site: Site | None = None
+
+        super().__init__(job_id, user, cancel_event)
+
+        self.result: SharedworkerObject = SharedworkerObject()
+
+    # ------------------------------------------------------------------
+    # BaseObjectsJobWorker hooks
+    # ------------------------------------------------------------------
+
+    def get_job_type(self) -> str:
+        return "newupdater_all"
+
+    def process(self) -> SharedworkerObject:
+        self.site = get_user_site(self.user)
+        if not self.site:
+            logger.warning(f"Job {self.job_id}: No site authentication available")
+            self.log_no_site_error()
+            return self.result
+
+        titles = get_category_members(
+            site=self.site,
+            category_title="Category:RTT",
+            namespace=0,
+        )
+
+        total = len(titles)
+        self.result.summary.total = total
+        per_item = self.get_priority(total) if total else 1
+
+        logger.info(f"Job {self.job_id}: Processing {total} pages from Category:RTT")
+
+        for i, title in enumerate(titles, start=1):
+            logger.debug(f"i: {i}/{total}, page: {title}.")
+            if self.is_cancelled():
+                break
+
+            self.result.summary.scanned += 1
+
+            try:
+                outcome = self._process_one(title)
+            except Exception as exc:
+                logger.exception("job failed for %s", title)
+                self.result.pages_errors.append({"title": title, "msg": str(exc)})
+                continue
+
+            self.record_page_outcome(outcome, title)
+
+            if outcome.kind == "changed" and self.check_cancel_db_periodic():
+                break
+
+            if i == 1 or i % per_item == 0:
+                self._save_progress()
+
+        if self.result.status in ("pending", "running"):
+            self.result.status = "completed"
+
+        return self.result
+
+    def record_page_outcome(self, outcome: UpdaterOutcome, title: str) -> None:
+        page_record = {
+            "title": title,
+            "msg": outcome.msg,
+        }
+        if outcome.kind == "changed":
+            page_record["newrevid"] = outcome.newrevid
+            self.result.pages_changed.append(page_record)
+
+        elif outcome.kind == "missing":
+            self.result.pages_missing.append(title)
+
+        elif outcome.kind == "skipped":
+            self.result.pages_skipped.append(page_record)
+
+        elif outcome.kind == "error":
+            self.result.pages_errors.append(page_record)
+
+        else:
+            page_record["status"] = outcome.kind
+            self.result.pages_processed.append(page_record)
+
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+
+    def _process_one(self, title: str) -> UpdaterOutcome:
+        page = MwClientPage(title, self.site)
+        if not page.exists():
+            logger.info(f"Job {self.job_id}: {title!r}: missing!")
+            return UpdaterOutcome(kind="missing")
+
+        text = page.get_text()
+        if not text or not text.strip():
+            return UpdaterOutcome(kind="skipped", msg="Page is empty")
+
+        new_text, summary = self.make_new_text(title, text)
+
+        if new_text == text:
+            return UpdaterOutcome(kind="skipped", msg="No changes")
+
+        result = page.edit(new_text, summary)
+
+        if result.get("success"):
+            return UpdaterOutcome(kind="changed", newrevid=result.get("newrevid", 0))
+
+        return UpdaterOutcome(kind="error", msg=result.get("error", "Unknown error"))
+
+    def make_new_text(self, title: str, text: str) -> tuple[str, str]:
+        new_text = med_updater_one(title, text)
+        new_text = add_param_named(new_text)
+        summary = "Med updater."
+        return new_text, summary
+
+
+def newupdater_all_worker_entry(
+    job_id: int,
+    user: Dict[str, Any] | None = None,
+    *,
+    cancel_event: threading.Event | None = None,
+    args: Dict[str, Any] | None = None,
+) -> None:
+    """Background worker entry-point."""
+    logger.info(f"Starting job {job_id}: newupdater_all")
+    worker = NewUpdaterAllWorker(
+        job_id=job_id,
+        user=user,
+        args=args,
+        cancel_event=cancel_event,
+    )
+    worker.run()
+
+
+__all__ = [
+    "NewUpdaterAllWorker",
+    "newupdater_all_worker_entry",
+]
