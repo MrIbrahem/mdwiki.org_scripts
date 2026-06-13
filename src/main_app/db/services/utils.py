@@ -66,6 +66,11 @@ def db_guard(default_return: Any = False, msg: str = "") -> Callable[[Callable[P
                 logger.exception(f"{msg}: %s", exc)
                 db.session.rollback()
                 return default_return
+            finally:
+                try:
+                    db.session.remove()
+                except Exception:
+                    pass
 
         return wrapper
 

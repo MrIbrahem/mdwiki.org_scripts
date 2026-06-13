@@ -14,6 +14,7 @@ from ..db.services import (
     cancel_job_db,
     create_job,
 )
+from ..extensions import db
 from ..su_services.jobs_files_service import create_job_cancelled_file
 from .objects import JobData
 from .public_jobs_workers.workers_list_public import jobs_data
@@ -61,6 +62,10 @@ def _runner(
             )
         finally:
             _pop_cancel_event(job_id)
+            try:
+                db.session.remove()
+            except Exception:
+                pass
 
 
 def cancel_job_worker(job_id: int, job_type: str | None = None, job: JobRecord | None = None) -> bool:
