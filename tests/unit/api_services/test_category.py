@@ -1,4 +1,7 @@
-"""Tests for category helpers."""
+# ruff: noqa: F401
+"""
+Tests for category helpers.
+"""
 
 from __future__ import annotations
 
