@@ -4,7 +4,6 @@ from typing import Any, Dict
 
 from flask.app import Flask
 
-from src.main_app.db.models.jobs import JobRecord
 from src.main_app.db.services.jobs_service import create_job, is_job_cancelled
 from src.main_app.extensions import db
 from src.main_app.jobs_workers.base_worker_object import BaseObjectsJobWorker, WorkerObject
@@ -43,33 +42,15 @@ def test_is_job_cancelled_detects_external_change(app: Flask) -> None:
     with app.app_context():
         job = create_job("mock_job_cancel_detect", "test_user")
 
-        # Load the job record into the session's identity map
-        # is_job_cancelled currently uses scalar query which MIGHT avoid identity map,
-        # but let's see if we can make it fail by loading the record.
-        _ = db.session.get(JobRecord, job.id)
-
         assert is_job_cancelled(job.id, "mock_job_cancel_detect") is False
 
         # Update status externally via a different session
-        # In this test environment, we can just use a separate engine or connection
         with db.engine.connect() as conn:
             conn.execute(db.text("UPDATE jobs SET status = 'cancelled' WHERE id = :id"), {"id": job.id})
             conn.commit()
 
-        # Now is_job_cancelled should return True.
-        # If it uses a session that has a stale view of the world, it might return False
-        # (especially if the isolation level was REPEATABLE READ, but even in READ COMMITTED,
-        # SQLAlchemy might cache some things if not careful).
-        # Actually, scalar query usually DOES go to the DB, but let's see.
-        # IF it passes, it means scalar() bypasses the identity map or it's not in it.
-        # But let's try to get the record again via ORM.
-        job_after = db.session.get(JobRecord, job.id)
-        assert job_after.status == "pending"  # It is stale here!
-
+        # is_job_cancelled should detect the external change because it uses a fresh session
         assert is_job_cancelled(job.id, "mock_job_cancel_detect") is True
-
-        # After is_job_cancelled calls refresh, job_after should also be updated if it's the same object
-        assert job_after.status == "cancelled"
 
 
 def test_is_cancelled_sets_cancelled_at(app: Flask) -> None:

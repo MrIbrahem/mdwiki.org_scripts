@@ -287,10 +287,16 @@ def update_job_status(job_id: int, status: str, result_file: str | None = None, 
     Query to match:
 
     """
-    if status == "running":
-        return _update_running_status(job_id, result_file, job_type=job_type)
+    try:
+        if status == "running":
+            return _update_running_status(job_id, result_file, job_type=job_type)
 
-    return _update_status(job_id, status, result_file, job_type)
+        return _update_status(job_id, status, result_file, job_type)
+    finally:
+        try:
+            db.session.remove()
+        except Exception:
+            pass
 
 
 @db_guard_rollback
